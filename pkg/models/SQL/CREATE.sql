@@ -14,8 +14,8 @@ CREATE TABLE estacion(
     REFERENCES linea (linea_id)
 );
 
-CREATE TABLE linea(
-    linea_id            integer PRIMARY KEY,
+CREATE TABLE lineas(
+    ID                  integer PRIMARY KEY,
     sistema             character varying,
     anio_inauguracion   integer,
     color_en            character varying,

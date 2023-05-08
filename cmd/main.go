@@ -1,9 +1,11 @@
 package main
 
 import (
-	routes "github.com/galigaribaldi/Apimetro/pkg/routes"
+	routes "Apimetro/pkg/routes"
+	"fmt"
 )
 
 func main() {
 	routes.Run()
+	fmt.Println("NN")
 }
