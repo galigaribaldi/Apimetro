@@ -3,19 +3,16 @@ package routes
 import (
 	"net/http"
 
+	metro "github.com/galigaribaldi/Apimetro/pkg/controller/metro"
 	"github.com/gin-gonic/gin"
 )
 
 func addMetterRoute(rg *gin.RouterGroup) {
-	rg.GET("/metro", getMetro)
+	rg.GET("/metro", getEstacion)
 }
 
-func getMetro(c *gin.Context) {
+func getEstacion(c *gin.Context) {
 
-	c.JSON(http.StatusOK, gin.H{
-		"code":    0,
-		"message": "It Works!",
-		"data":    "",
-	})
+	c.JSON(http.StatusOK, metro.SelectAllEstations())
 	return
 }
