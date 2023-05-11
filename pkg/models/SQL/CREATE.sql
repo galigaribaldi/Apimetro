@@ -1,12 +1,12 @@
 CREATE TABLE lineas(
-    linea_id                  integer PRIMARY KEY,
+    ID                  integer PRIMARY KEY,
     sistema             character varying,
     anio_inauguracion   integer,
     color_en            character varying,
     color_esp           character varying
 );
 CREATE TABLE estacions(
-    estacion_id         SERIAL PRIMARY KEY,
+    ID                  SERIAL PRIMARY KEY,
     nombre              character varying,
     cve_est             character varying,
     tipo                character varying,
@@ -15,8 +15,8 @@ CREATE TABLE estacions(
     estado_ciudad       character varying,
     longitud            float,
     latitud             float,
-    linea               integer,
-    CONSTRAINT linea_fk FOREIGN KEY (linea)
+    linea_id               integer,
+    CONSTRAINT linea_id_fk FOREIGN KEY (linea_id)
     REFERENCES lineas (ID)
 );
 
