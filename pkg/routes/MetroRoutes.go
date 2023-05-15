@@ -141,7 +141,7 @@ Lineas
 
 // Obtener datos de Lineas
 func getLineaRoute(c *gin.Context) {
-	colorLine := c.Query("color")
+	colorLine := strings.ToUpper(c.Query("color_esp"))
 	idLine, err := strconv.Atoi(c.Query("idLine"))
 	if err != nil && idLine != 0 {
 		c.JSON(http.StatusBadRequest, err)
@@ -169,6 +169,7 @@ func getLineaRoute(c *gin.Context) {
 func postLineaRoute(c *gin.Context) {
 	var newLinea models.Linea
 	if err := c.BindJSON(&newLinea); err != nil {
+		log.Println(&newLinea)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
