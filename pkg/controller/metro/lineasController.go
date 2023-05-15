@@ -57,9 +57,23 @@ func SelectLineByColor(color string) []models.Linea {
 DELETE
 ------
 */
+func DeleteLinea(id int) {
+	var linea models.Linea
+	if result := con.DB.Delete(&linea, id); result.Error != nil {
+		return
+	}
+}
 
 /*
 ------
 UPDATE
 ------
 */
+func UpdateLinea(linea models.Linea) {
+	con.DB.Model(&linea).Updates(models.Linea{
+		Sistema:           linea.Sistema,
+		Anio_inauguracion: linea.Anio_inauguracion,
+		Color_en:          linea.Color_en,
+		Color_esp:         linea.Color_esp,
+	})
+}

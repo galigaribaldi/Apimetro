@@ -14,17 +14,25 @@ import (
 
 func addMetterRoute(rg *gin.RouterGroup) {
 	//Estaciones
-	rg.GET("/estacion", getEstacion)
-	rg.POST("/estacion", postEstacion)
-	rg.DELETE("/estacion", deleteEstacion)
+	rg.GET("/estacion", getEstacionRoute)
+	rg.POST("/estacion", postEstacionRoute)
+	rg.DELETE("/estacion", deleteEstacionRoute)
+	rg.PATCH("/estacion", updateEstacionRoute)
 	//Lineas
-	rg.GET("/linea", getLinea)
-	rg.POST("/linea", postLinea)
-	rg.DELETE("/linea", deleteLinea)
+	rg.GET("/linea", getLineaRoute)
+	rg.POST("/linea", postLineaRoute)
+	rg.DELETE("/linea", deleteLineaRoute)
+	rg.PATCH("linea", updateLineaRoute)
 }
 
+/*
+------
+Estaciones
+------
+*/
+
 // Obtener datos de Estaciones
-func getEstacion(c *gin.Context) {
+func getEstacionRoute(c *gin.Context) {
 	nombreEstacion := c.Query("nombre")
 	anioEstacion := c.Query("anio")
 	anioAntes := c.Query("anio_antes")
@@ -93,7 +101,8 @@ func getEstacion(c *gin.Context) {
 	return
 }
 
-func postEstacion(c *gin.Context) {
+// Crear una nueva estacion
+func postEstacionRoute(c *gin.Context) {
 	var newEstacion models.Estacion
 	if err := c.BindJSON(&newEstacion); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -103,11 +112,35 @@ func postEstacion(c *gin.Context) {
 	c.JSON(http.StatusOK, newEstacion)
 }
 
-func deleteEstacion(c *gin.Context) {
-
+// Eliminar una estacion
+func deleteEstacionRoute(c *gin.Context) {
+	ids, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	metro.DeleteEstacion(ids)
+	c.JSON(http.StatusOK, "Estacion eliminada")
 }
 
-func getLinea(c *gin.Context) {
+// Actualizar estaciones
+func updateEstacionRoute(c *gin.Context) {
+	var newEstacion models.Estacion
+	if err := c.BindJSON(&newEstacion); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	metro.UpdateEstacion(newEstacion)
+	c.JSON(http.StatusOK, newEstacion)
+}
+
+/*
+------
+Lineas
+------
+*/
+
+// Obtener datos de Lineas
+func getLineaRoute(c *gin.Context) {
 	colorLine := c.Query("color")
 	idLine, err := strconv.Atoi(c.Query("idLine"))
 	if err != nil && idLine != 0 {
@@ -132,7 +165,8 @@ func getLinea(c *gin.Context) {
 	return
 }
 
-func postLinea(c *gin.Context) {
+// Crear una nueva Linea
+func postLineaRoute(c *gin.Context) {
 	var newLinea models.Linea
 	if err := c.BindJSON(&newLinea); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -142,6 +176,23 @@ func postLinea(c *gin.Context) {
 	c.JSON(http.StatusOK, newLinea)
 }
 
-func deleteLinea(c *gin.Context) {
+// Eliminar una linea
+func deleteLineaRoute(c *gin.Context) {
+	ids, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	metro.DeleteLinea(ids)
+	c.JSON(http.StatusOK, "Estacion eliminada")
+}
 
+// Actualizar una Linea
+func updateLineaRoute(c *gin.Context) {
+	var newLinea models.Linea
+	if err := c.BindJSON(&newLinea); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	metro.UpdateLinea(newLinea)
+	c.JSON(http.StatusOK, newLinea)
 }

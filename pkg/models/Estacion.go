@@ -1,7 +1,7 @@
 package models
 
 type Estacion struct {
-	ID                 uint    `gorm:"primary_key" json:"-"`
+	ID                 uint    `gorm:"primary_key" json:"estacion_id"`
 	Nombre             string  `json:"nombre"`
 	Cve_est            string  `json:"cve_est"`
 	Tipo               string  `json:"tipo"`

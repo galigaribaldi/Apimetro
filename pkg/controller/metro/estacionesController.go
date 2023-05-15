@@ -140,9 +140,28 @@ func SelectAllEstations() []models.Estacion {
 DELETE
 ------
 */
+func DeleteEstacion(id int) {
+	var estacion models.Estacion
+	if result := con.DB.Delete(&estacion, id); result.Error != nil {
+		return
+	}
+}
 
 /*
 ------
 UPDATE
 ------
 */
+func UpdateEstacion(estacion models.Estacion) {
+	con.DB.Model(&estacion).Updates(models.Estacion{
+		Nombre:             estacion.Nombre,
+		Cve_est:            estacion.Cve_est,
+		Tipo:               estacion.Tipo,
+		Alcaldia_municipio: estacion.Alcaldia_municipio,
+		Anio:               estacion.Anio,
+		Estado_ciudad:      estacion.Estado_ciudad,
+		Longitud:           estacion.Longitud,
+		Latitud:            estacion.Latitud,
+		LineaID:            estacion.LineaID,
+	})
+}
