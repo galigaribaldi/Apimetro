@@ -1,32 +1,42 @@
-import requests
+from WebR import requestWebLinea
+from WebR import requestWebEstacion
+from Data import DataLinea
+from Data import DataEstacion
 
+def WebLineaMain():
+    print(requestWebLinea.getLinea(idLine=1))
+    #print(requestWebLinea.postLinea(lineaId=6, sistema="STC Metro", anioInauguracion=1980, colorEsp="ROJINEGRO", colorEn="ROJINEGRO"))
+    #print(requestWebLinea.updateLinea(lineaId=6, sistema="STC Metro", anioInauguracion=1980, colorEsp="AZULNEGRI", colorEn="AZULNEGRI"))
+    #print(requestWebLinea.deleteLinea())
+def WebEstacionMain():
+    #print(requestWebEstacion.getEstacion(nombre="Pantitlán"))
+    """
+    print(requestWebEstacion.postEstacion(
+        nombre="Gomez Farías", 
+        anio=1969, 
+        ciudad="CDMX", 
+        alacaldiaMunicipio="Venustiano Carranza", 
+        lineaId=1, 
+        cveEst = "STC0103", 
+        tipo="Intermedia", 
+        longitud = 19.4166353160295, 
+        latitud = -99.0900784397441
+        ))
 
-headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-
-def get_response():
-    ##GET
-    data_send = {"idLine":"1"}
-    response = requests.request("GET", "http://localhost:5001/stc/linea", headers=headers,params = data_send)
-
-    print(response.json())
-
-def post_respones():
-    ##POST
-    data_POST = {
-    "linea_id": 4,
-    "sistema": "STC Metro",
-    "anio_inauguracion": 1969,
-    "color_en": "ROJINEGRO",
-    "color_esp": "ROJINEGRO",
-    }
-
-    response = requests.request(
-        "POST", 
-        "http://localhost:5001/stc/linea", 
-        headers = headers,
-        json = data_POST,
-    )
-    print(response.json())
-
-#post_respones()
-get_response()
+    print(requestWebEstacion.updateEstacion(
+        estacionId=9,
+        nombre="Gomez Farías", 
+        anio=1969, 
+        ciudad="CDMX", 
+        alacaldiaMunicipio="Venustiano Carranza", 
+        lineaId=1, 
+        cveEst = "STC0105", 
+        tipo="Intermedia", 
+        longitud = 19.4166353160295, 
+        latitud = -99.0900784397441
+        ))
+    """
+    print(requestWebEstacion.deleteEstacion(lineaId=8))
+#WebEstacionMain()
+DataLinea.Linea()
+DataEstacion.estacion()
