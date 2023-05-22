@@ -1,9 +1,11 @@
 CREATE TABLE lineas(
     ID                  integer PRIMARY KEY,
     sistema             character varying,
+    nombre              character varying,
     anio_inauguracion   integer,
     color_en            character varying,
-    color_esp           character varying
+    color_esp           character varying,
+    tam_km              float
 );
 CREATE TABLE estacions(
     ID                  SERIAL PRIMARY KEY,

@@ -38,5 +38,8 @@ def WebEstacionMain():
     """
     print(requestWebEstacion.deleteEstacion(lineaId=8))
 #WebEstacionMain()
-DataLinea.Linea()
-DataEstacion.estacion()
+c = DataLinea.LineaETL()
+#print(c.extractIngresos())
+tuples = c.generateList(c.extractIngresos())
+print(c.chargeLineaWeb(tuples))
+#DataEstacion.estacion()
