@@ -2,7 +2,6 @@
 import psycopg2
 import psycopg2.extras as extras
 import pandas as pd
-import time
 from WebR import requestWebLinea
 from conf import host, database, user, password, port, keepalive_kwargs
 class LineaETL():
