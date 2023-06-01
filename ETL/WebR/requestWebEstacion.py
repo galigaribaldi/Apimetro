@@ -37,7 +37,7 @@ def postEstacion(nombre=None, anio=None, ciudad=None, alacaldiaMunicipio=None, l
         "nombre": nombre,
         "cve_est": cveEst,
         "tipo": tipo,
-        "alacaldia_municipio":alacaldiaMunicipio,
+        "alcaldia_municipio":alacaldiaMunicipio,
         "anio": str(anio),
         "estado_ciudad": ciudad,
         "longitud": longitud,

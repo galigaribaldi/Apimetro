@@ -46,7 +46,7 @@ class EstacionETL():
             requestWebEstacion.postEstacion(
                 nombre=j[0],
                 anio=j[4],
-                ciudad=j[0],
+                ciudad=j[5],
                 alacaldiaMunicipio=j[3],
                 lineaId=j[8],
                 cveEst=j[1],
