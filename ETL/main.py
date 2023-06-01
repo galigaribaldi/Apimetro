@@ -1,3 +1,4 @@
+import time
 from WebR import requestWebLinea
 from WebR import requestWebEstacion
 from Data import DataLinea
@@ -42,4 +43,8 @@ c = DataLinea.LineaETL()
 #print(c.extractIngresos())
 tuples = c.generateList(c.extractIngresos())
 print(c.chargeLineaWeb(tuples))
-#DataEstacion.estacion()
+time.sleep(5)
+c = DataEstacion.EstacionETL()
+#print(c.extractIngresos())
+tuples = c.generateList(c.extractIngresos())
+print(c.chargeLineaWeb(tuples))

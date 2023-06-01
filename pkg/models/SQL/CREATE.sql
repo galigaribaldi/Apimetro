@@ -17,7 +17,10 @@ CREATE TABLE estacions(
     estado_ciudad       character varying,
     longitud            float,
     latitud             float,
-    linea_id               integer,
+    linea_id            integer,
+    num_estacion        integer,
+    estacion_id_oficial integer,
+    sistema             character varying,
     CONSTRAINT linea_id_fk FOREIGN KEY (linea_id)
     REFERENCES lineas (ID)
 );
