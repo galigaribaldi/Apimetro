@@ -32,7 +32,7 @@ GET
 //Seleccionar por nombre
 func SelectEstacionbyName(name string) []models.Estacion {
 	var estacion []models.Estacion
-	if result := con.DB.Where("nombre LIKE ?", "%"+name+"%").Find(&estacion); result.Error != nil {
+	if result := con.DB.Where("nombre LIKE ?", "%"+name+"%").Order("ID").Find(&estacion); result.Error != nil {
 		return estacion
 	}
 	return estacion
@@ -41,7 +41,7 @@ func SelectEstacionbyName(name string) []models.Estacion {
 //Seleccionar por Año (exacto)
 func SelectEstacionbyAnio(anioEstacion string) []models.Estacion {
 	var estacion []models.Estacion
-	if result := con.DB.Where("anio = ?", anioEstacion).Find(&estacion); result.Error != nil {
+	if result := con.DB.Where("anio = ?", anioEstacion).Order("ID").Find(&estacion); result.Error != nil {
 		return estacion
 	}
 	return estacion
@@ -95,7 +95,7 @@ func SelectEstacionbyAlcaldia(alcaldiaEstacion string) []models.Estacion {
 //Seleccionar por Linea de Metro
 func SelectEstacionbyLineaID(lineaID int) []models.Estacion {
 	var estacion []models.Estacion
-	if result := con.DB.Where("linea_id = ?", lineaID).Find(&estacion); result.Error != nil {
+	if result := con.DB.Where("linea_id = ?", lineaID).Order("ID").Find(&estacion); result.Error != nil {
 		return estacion
 	}
 	return estacion
