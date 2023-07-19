@@ -28,13 +28,14 @@ class EstacionETL():
             int(dataframe["LINEA_ID"][i]),
             int(dataframe["NUM_ESTACION"][i]),
             int(dataframe["ESTACION_ID_OFICIAL"][i]),
-            str(dataframe["SISTEMA"][i]),            
+            str(dataframe["SISTEMA"][i]),
+            bool(dataframe["EXISTE"][i]),
         ])for i in range(len(dataframe)))
         return lista
     
     def chargeLinea(self, tuples):
         conexion = psycopg2.connect(host=host, database=database, user=user, password=password, port = port,**keepalive_kwargs)
-        query = "INSERT INTO estacions(nombre, cve_est, tipo, alcaldia_municipio, anio, estado_ciudad, longitud, latitud, linea_id, num_estacion, estacion_id_oficial, sistema) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+        query = "INSERT INTO estacions(nombre, cve_est, tipo, alcaldia_municipio, anio, estado_ciudad, longitud, latitud, linea_id, num_estacion, estacion_id_oficial, sistema, existe) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
         cursor = conexion.cursor()
         extras.execute_batch(cursor, query, tuples, page_size=1000)
         conexion.commit()
@@ -56,5 +57,6 @@ class EstacionETL():
                 num_estacion=j[9],
                 estacion_id_oficial=j[10],
                 sistema=j[11],
+                existe=j[12]
             )
         return requestWebEstacion.getEstacion()

@@ -15,4 +15,5 @@ type Estacion struct {
 	Num_estacion        int16   `json:"num_estacion"`
 	Estacion_id_oficial int16   `json:"estacion_id_oficial"`
 	Sistema             string  `json:"sistema"`
+	Existe              bool    `json:"existe"`
 }

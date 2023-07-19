@@ -8,4 +8,5 @@ type Linea struct {
 	Color_en          string  `json:"color_en"`
 	Color_esp         string  `json:"color_esp"`
 	Tam_km            float64 `json:"tam_km"`
+	Existe            bool    `json:"existe"`
 }

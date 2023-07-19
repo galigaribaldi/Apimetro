@@ -22,13 +22,14 @@ class LineaETL():
             int(dataframe["ANIO_INAUGURACION"][i]),
             str(dataframe["COLOR_EN"][i]),            
             str(dataframe["COLOR_ESP"][i]),
-            float(dataframe["TAM_KM"][i])
+            float(dataframe["TAM_KM"][i]),
+            bool(dataframe["EXISTE"][i])
         ])for i in range(len(dataframe)))
         return lista
     
     def chargeLinea(self, tuples):
         conexion = psycopg2.connect(host=host, database=database, user=user, password=password, port = port,**keepalive_kwargs)
-        query = "INSERT INTO lineas(id, sistema, nombre,anio_inauguracion, color_en, color_esp, tam_km) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+        query = "INSERT INTO lineas(id, sistema, nombre,anio_inauguracion, color_en, color_esp, tam_km, existe) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"
         cursor = conexion.cursor()
         extras.execute_batch(cursor, query, tuples, page_size=100)
         conexion.commit()
@@ -44,6 +45,7 @@ class LineaETL():
                 anioInauguracion = j[3],
                 colorEn = j[4],
                 colorEsp = j[5],
-                tamKm= j[6]
+                tamKm= j[6],
+                existe=j[7]
             )
         return requestWebLinea.getLinea()

@@ -31,7 +31,7 @@ def getEstacion(nombre=None, anio=None, anio_antes=None, anio_despues=None, ciud
         response = requests.request("GET", "http://localhost:5001/stc/estacion", headers=headers)
     return response.json()
     
-def postEstacion(nombre=None, anio=None, ciudad=None, alacaldiaMunicipio=None, lineaId=None, cveEst = None, tipo=None, longitud = None, latitud = None, num_estacion=None, estacion_id_oficial=None,sistema=None):
+def postEstacion(nombre=None, anio=None, ciudad=None, alacaldiaMunicipio=None, lineaId=None, cveEst = None, tipo=None, longitud = None, latitud = None, num_estacion=None, estacion_id_oficial=None,sistema=None, existe=None):
     print("POST")
     data_POST = {
         "nombre": nombre,
@@ -46,6 +46,7 @@ def postEstacion(nombre=None, anio=None, ciudad=None, alacaldiaMunicipio=None, l
         "num_estacion":num_estacion,
         "estacion_id_oficial": estacion_id_oficial,
         "sistema":sistema,
+        "existe": existe
     }
     if nombre==None and anio==None and ciudad==None and alacaldiaMunicipio==None and lineaId==None and cveEst == None and tipo==None and longitud == None and latitud == None:
         return None

@@ -15,7 +15,7 @@ def getLinea(idLine=None, colorEsp=None):
         response = requests.request("GET", "http://localhost:5001/stc/linea", headers=headers)
     return response.json()
     
-def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, colorEn=None, colorEsp=None, tamKm =None):
+def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, colorEn=None, colorEsp=None, tamKm =None, existe=None):
     data_POST = {    
         "linea_id": lineaId,
         "nombre": nombre,
@@ -23,7 +23,8 @@ def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, c
         "anio_inauguracion": anioInauguracion,
         "color_en": colorEn,
         "color_esp": colorEsp,
-        "tam_km": tamKm
+        "tam_km": tamKm,
+        "existe":existe
         }
     print(data_POST)
     if lineaId== None and sistema == None and anioInauguracion == None and colorEn == None and colorEsp == None:
