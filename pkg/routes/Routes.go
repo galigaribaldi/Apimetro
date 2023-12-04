@@ -1,6 +1,12 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"log"
+
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 var (
 	router = gin.Default()
@@ -8,9 +14,17 @@ var (
 
 func Run() {
 	getRoutes()
-	router.Run(":5001")
+	router.GET("/", getInit)
+	router.Run(":8080")
+
 }
 func getRoutes() {
 	metro := router.Group("/stc")
 	addMetterRoute(metro)
+}
+
+func getInit(c *gin.Context) {
+	log.Println("Alive")
+	c.JSON(http.StatusOK, 200)
+	return
 }

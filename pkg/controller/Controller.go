@@ -3,6 +3,7 @@ package controller
 import (
 	models "Apimetro/pkg/models"
 	"log"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -11,7 +12,9 @@ import (
 var DB *gorm.DB
 
 func ConnectDataBase() {
-	dbURL := "postgresql://postgres:postgress@localhost:5433/Data"
+	log.Println(os.Getenv("DATABASE_URL"))
+	dbURL := os.Getenv("DATABASE_URL")
+	//postgresql://postgres:postgress@localhost:5433/Data
 
 	database, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 

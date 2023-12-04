@@ -13,6 +13,7 @@ import (
 )
 
 func addMetterRoute(rg *gin.RouterGroup) {
+
 	//Estaciones
 	rg.GET("/estacion", getEstacionRoute)
 	rg.POST("/estacion", postEstacionRoute)
