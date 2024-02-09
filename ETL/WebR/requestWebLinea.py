@@ -10,9 +10,9 @@ def getLinea(idLine=None, colorEsp=None):
         data_send["color_esp"] = str(colorEsp)
     if len(data_send) > 0:
         print("Send Response: ", data_send)
-        response = requests.request("GET", Production.HOST + "/stc/linea", headers=headers,params = data_send)
+        response = requests.request("GET", Developer.HOST + "/stc/linea", headers=headers,params = data_send)
     else:
-        response = requests.request("GET", Production.HOST + "/stc/linea", headers=headers)
+        response = requests.request("GET", Developer.HOST + "/stc/linea", headers=headers)
     return response.json()
     
 def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, colorEn=None, colorEsp=None, tamKm =None, existe=None):
@@ -32,7 +32,7 @@ def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, c
         return None
     response = requests.request(
         "POST", 
-        Production.HOST + "/stc/linea", 
+        Developer.HOST + "/stc/linea", 
         headers = headers,
         json = data_POST,
     )
@@ -53,7 +53,7 @@ def updateLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None,
         return None
     response = requests.request(
         "PATCH", 
-        Production.HOST + "/stc/linea", 
+        Developer.HOST + "/stc/linea", 
         headers = headers,
         json = data_POST,
     )
@@ -64,7 +64,7 @@ def deleteLinea(lineaId=None):
         return None
     response = requests.request(
         "DELETE", 
-        Production.HOST + "/stc/linea", 
+        Developer.HOST + "/stc/linea", 
         headers = headers,
         params = {"id":lineaId},
     )
