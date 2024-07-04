@@ -1,5 +1,6 @@
 import requests
 from Variables import Production, Developer
+import time
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
 def getLinea(idLine=None, colorEsp=None):
@@ -15,7 +16,7 @@ def getLinea(idLine=None, colorEsp=None):
         response = requests.request("GET", Developer.HOST + "/stc/linea", headers=headers)
     return response.json()
     
-def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, colorEn=None, colorEsp=None, tamKm =None, existe=None):
+def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, colorEn=None, colorEsp=None, tamKm =None, existe=None, ramal_id=None, linea_base=None):
     data_POST = {    
         "linea_id": lineaId,
         "nombre": nombre,
@@ -24,9 +25,12 @@ def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, c
         "color_en": colorEn,
         "color_esp": colorEsp,
         "tam_km": tamKm,
-        "existe":existe
+        "existe":existe,
+        "ramal_id":ramal_id,
+        "linea_base_ramal":linea_base
         }
     print(data_POST)
+    #time.sleep(5)
     if lineaId== None and sistema == None and anioInauguracion == None and colorEn == None and colorEsp == None:
         data_POST = None
         return None
@@ -38,7 +42,7 @@ def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, c
     )
     return response.json()
 
-def updateLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, colorEn=None, colorEsp=None, tamKm =None):
+def updateLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, colorEn=None, colorEsp=None, tamKm =None, existe=None, ramal_id=None, linea_base=None):
     data_POST = {    
         "linea_id": lineaId,
         "nombre": nombre,
@@ -46,7 +50,10 @@ def updateLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None,
         "anio_inauguracion": anioInauguracion,
         "color_en": colorEn,
         "color_esp": colorEsp,
-        "tam_km": tamKm
+        "tam_km": tamKm,
+        "existe":existe,
+        "ramal_id":ramal_id,
+        "linea_base_ramal":linea_base
         }
     if lineaId== None and sistema == None and anioInauguracion == None and colorEn == None and colorEsp == None:
         data_POST = None

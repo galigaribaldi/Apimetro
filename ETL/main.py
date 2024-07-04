@@ -12,15 +12,21 @@ def WebLineaMain():
 def WebEstacionMain():
     print(requestWebEstacion.deleteEstacion(lineaId=8))
 #WebEstacionMain()
-c = DataLinea.LineaETL()
-#print(c.extractIngresos())
-tuples = c.generateList(c.extractIngresos())
-print(c.chargeLineaWeb(tuples))
-#time.sleep(5)
-c = DataEstacion.EstacionETL()
-print(c.extractIngresos())
-time.sleep(5)
-tuples = c.generateList(c.extractIngresos())
-print(tuples[0:1])
-#print(len(tuples))
-print(c.chargeLineaWeb(tuples))
+
+if __name__ == '__main__':
+    ##Linea
+    c = DataLinea.LineaETL()
+    #print(c.extractIngresos())
+    tuples = c.generateList(c.extractIngresos())
+    print(c.chargeLineaWeb(tuples))
+    time.sleep(5)    
+    
+    ##Estaciones
+    c = DataEstacion.EstacionETL()
+    #print(c.extractIngresos())
+    #time.sleep(5)
+    tuples = c.generateList(c.extractIngresos())
+    print(tuples[0:1])
+    #print(len(tuples))
+    print(c.chargeLineaWeb(tuples))    
+
