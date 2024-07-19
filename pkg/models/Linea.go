@@ -10,4 +10,6 @@ type Linea struct {
 	Tam_km            float64            `json:"tam_km"`
 	Existe            bool               `json:"existe"`
 	DescripcionLinea  []DescripcionLinea `json:"descripcion_linea"`
+	Ramal_id          int                `json:"ramal_id"`
+	Linea_base        int                `json:"linea_base_ramal"`
 }
