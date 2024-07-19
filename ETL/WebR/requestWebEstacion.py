@@ -27,9 +27,9 @@ def getEstacion(nombre=None, anio=None, anio_antes=None, anio_despues=None, ciud
         
     if len(data_send) > 0:
         print("Send Response: ", data_send)
-        response = requests.request("GET", Developer.HOST + "/stc/estacion", headers=headers,params = data_send)
+        response = requests.request("GET", Production.HOST + "/stc/estacion", headers=headers,params = data_send)
     else:
-        response = requests.request("GET", Developer.HOST + "/stc/estacion", headers=headers)
+        response = requests.request("GET", Production.HOST + "/stc/estacion", headers=headers)
     return response.json()
     
 def postEstacion(nombre=None, anio=None, ciudad=None, alacaldiaMunicipio=None, lineaId=None, cveEst = None, tipo=None, longitud = None, latitud = None, num_estacion=None, estacion_id_oficial=None,sistema=None, existe=None):
@@ -54,7 +54,7 @@ def postEstacion(nombre=None, anio=None, ciudad=None, alacaldiaMunicipio=None, l
     print(data_POST)
     response = requests.request(
         "POST", 
-        Developer.HOST + "/stc/estacion", 
+        Production.HOST + "/stc/estacion", 
         headers = headers,
         json = data_POST,
     )
@@ -79,7 +79,7 @@ def updateEstacion(estacionId=None,nombre=None, anio=None, ciudad=None, alacaldi
     print(data_POST)
     response = requests.request(
         "PATCH", 
-        Developer.HOST + "/stc/estacion", 
+        Production.HOST + "/stc/estacion", 
         headers = headers,
         json = data_POST,
     )
@@ -91,7 +91,7 @@ def deleteEstacion(lineaId=None):
         return None
     response = requests.request(
         "DELETE", 
-        Developer.HOST + "/stc/estacion", 
+        Production.HOST + "/stc/estacion", 
         headers = headers,
         params = {"id":lineaId},
     )
