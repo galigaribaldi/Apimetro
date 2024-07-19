@@ -30,3 +30,7 @@ if __name__ == '__main__':
     #print(len(tuples))
     print(c.chargeLineaWeb(tuples))    
 
+###comandos para conectarse a Fly
+#fly postgres connect -a apimetro-db
+#\l
+#\c apimetro
