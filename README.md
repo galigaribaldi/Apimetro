@@ -62,3 +62,5 @@ Fly.io
 
 
 
+## Notas
+Instalar los siguientes paquetes: psycopg2, psycopg-binary, sudo apt-get install libpq-dev python3-dev

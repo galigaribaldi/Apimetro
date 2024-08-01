@@ -20,7 +20,7 @@ if __name__ == '__main__':
     tuples = c.generateList(c.extractIngresos())
     print(c.chargeLineaWeb(tuples))
     time.sleep(5)    
-    
+    #"""
     ##Estaciones
     c = DataEstacion.EstacionETL()
     #print(c.extractIngresos())
@@ -28,7 +28,8 @@ if __name__ == '__main__':
     tuples = c.generateList(c.extractIngresos())
     print(tuples[0:1])
     #print(len(tuples))
-    print(c.chargeLineaWeb(tuples))    
+    print(c.chargeLineaWeb(tuples))
+    #"""
 
 ###comandos para conectarse a Fly
 #fly postgres connect -a apimetro-db
