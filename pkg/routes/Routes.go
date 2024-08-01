@@ -19,8 +19,10 @@ func Run() {
 
 }
 func getRoutes() {
-	metro := router.Group("/stc")
-	addMetterRoute(metro)
+	stc := router.Group("/stc")
+	addLineRoute(stc)
+	addEstacionRoute(stc)
+	addDescriptionRoute(stc)
 }
 
 func getInit(c *gin.Context) {

@@ -16,6 +16,6 @@ type Estacion struct {
 	Estacion_id_oficial   int16                 `json:"estacion_id_oficial"`
 	Sistema               string                `json:"sistema"`
 	Existe                bool                  `json:"existe"`
-	DescripcionEstacion   []DescripcionEstacion `json:"descripcion_estacion"`
-	DescripcionEstacionID int16                 `gorm:"foreignKey:DescripcionEstacionID;references:ID" json:"-"`
+	//DescripcionEstacion   []DescripcionEstacion `json:"descripcion_estacion"`
+	//DescripcionEstacionID int16                 `gorm:"foreignKey:DescripcionEstacionID;references:ID" json:"-"`
 }
