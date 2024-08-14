@@ -6,6 +6,7 @@ import (
 	con "Apimetro/pkg/controller"
 
 	models "Apimetro/pkg/models"
+	joins "Apimetro/pkg/models/JOINS"
 )
 
 func init() {
@@ -68,8 +69,8 @@ func SelectLineByColorEng(color string) []models.Linea {
 }
 
 //Seleccionar atraves de JOINS
-func SelectLineabyTerminalOriginal(terminal string) []models.JoinLineaDescripcion {
-	var newLineaDescription []models.JoinLineaDescripcion
+func SelectLineabyTerminalOriginal(terminal string) []joins.JoinLineaDescripcion {
+	var newLineaDescription []joins.JoinLineaDescripcion
 	if result := con.DB.Raw(`
 	SELECT 
 		lin.ID as Linea_ID, 
