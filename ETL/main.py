@@ -3,6 +3,7 @@ from WebR import requestWebLinea
 from WebR import requestWebEstacion
 from Data import DataLinea
 from Data import DataEstacion
+from Data import DataDescripcionLinea
 
 def WebLineaMain():
     print(requestWebLinea.getLinea(idLine=1))
@@ -16,20 +17,24 @@ def WebEstacionMain():
 if __name__ == '__main__':
     ##Linea
     c = DataLinea.LineaETL()
-    #print(c.extractIngresos())
+    print(c.extractIngresos())
     tuples = c.generateList(c.extractIngresos())
     print(c.chargeLineaWeb(tuples))
-    time.sleep(5)    
+    #time.sleep(5)    
     #"""
     ##Estaciones
     c = DataEstacion.EstacionETL()
-    #print(c.extractIngresos())
+    print(c.extractIngresos())
     #time.sleep(5)
     tuples = c.generateList(c.extractIngresos())
-    print(tuples[0:1])
+    #print(tuples[0:1])
     #print(len(tuples))
     print(c.chargeLineaWeb(tuples))
-    #"""
+    #Descripcion Linea
+    c = DataDescripcionLinea.DescripcionLineaETL()
+    #print(c.extractDescripcionLinea())
+    tuples = c.generateListDescripcionLinea(c.extractDescripcionLinea())
+    print(c.chargeDescripcionLineaWeb(tuples))
 
 ###comandos para conectarse a Fly
 #fly postgres connect -a apimetro-db
