@@ -3,10 +3,10 @@ package metro
 import (
 	//"fmt"
 	"log"
-	con "Apimetro/pkg/controller"
+	con "Apimetro/cmd/pkg/controller"
 
-	models "Apimetro/pkg/models"
-	joins "Apimetro/pkg/models/JOINS"
+	models "Apimetro/cmd/pkg/models"
+	joins "Apimetro/cmd/pkg/models/JOINS"
 )
 
 func init() {

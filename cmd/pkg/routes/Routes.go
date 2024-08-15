@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/gin-swagger" // gin-swagger middleware
+	"github.com/swaggo/files" // swagger embed files		
 )
 
 var (
@@ -15,9 +17,11 @@ var (
 func Run() {
 	getRoutes()
 	router.GET("/", getInit)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 
 }
+
 func getRoutes() {
 	stc := router.Group("/stc")
 	addLineRoute(stc)

@@ -1,0 +1,136 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API sobre el Sistema de Transporte Colectivo (STC) de la Ciudad de México",
+        "title": "Apimetro",
+        "contact": {
+            "name": "galigaribaldi (Galileo Cabrera Garibaldi)",
+            "email": "galigaribaldi0@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/stc",
+    "paths": {
+        "/accounts/{id}": {
+            "get": {
+                "description": "get string by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Show an account",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Linea"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.DescripcionLinea": {
+            "type": "object",
+            "properties": {
+                "anio_fin_ampliacion": {
+                    "type": "integer"
+                },
+                "anio_inicio_ampliacion": {
+                    "type": "integer"
+                },
+                "descripcion": {
+                    "type": "string"
+                },
+                "descripcion_linea_id": {
+                    "type": "integer"
+                },
+                "direccion": {
+                    "type": "string"
+                },
+                "inicio_original": {
+                    "type": "string"
+                },
+                "linea_base": {
+                    "type": "integer"
+                },
+                "terminal_original": {
+                    "type": "string"
+                },
+                "tipo_linea": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Linea": {
+            "type": "object",
+            "properties": {
+                "anio_inauguracion": {
+                    "type": "integer"
+                },
+                "color_en": {
+                    "type": "string"
+                },
+                "color_esp": {
+                    "type": "string"
+                },
+                "descripcion_linea": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.DescripcionLinea"
+                    }
+                },
+                "existe": {
+                    "type": "boolean"
+                },
+                "linea_base_ramal": {
+                    "type": "integer"
+                },
+                "linea_id": {
+                    "type": "integer"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "ramal_id": {
+                    "type": "integer"
+                },
+                "sistema": {
+                    "type": "string"
+                },
+                "tam_km": {
+                    "type": "number"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
+        }
+    },
+    "externalDocs": {
+        "description": "Github",
+        "url": "https://github.com/galigaribaldi/Apimetro"
+    }
+}

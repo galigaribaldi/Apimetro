@@ -6,8 +6,8 @@ import (
 	"strings"
 	"fmt"
 
-	metro "Apimetro/pkg/controller/metro"
-	"Apimetro/pkg/models"
+	metro "Apimetro/cmd/pkg/controller/metro"
+	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
 )

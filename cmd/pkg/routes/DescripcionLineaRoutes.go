@@ -6,8 +6,8 @@ import (
 	"strconv"
 	//"strings"
 
-	descripcion "Apimetro/pkg/controller/descripcion"
-	"Apimetro/pkg/models"
+	descripcion "Apimetro/cmd/pkg/controller/descripcion"
+	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,13 +19,15 @@ func addDescriptionRoute(rg *gin.RouterGroup){
 	rg.POST("/descripcion", postDescripcionLineaRoute)
 }
 
-
-/*
---------
-GET METHOD
---------
-*/
-
+// ShowAccount godoc
+//	@Summary		Show an account
+//	@Description	get string by ID
+//	@Tags			accounts
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Account ID"
+//	@Success		200	{object}	models.Linea
+//	@Router			/accounts/{id} [get]
 func getDescripcionLineaRoute(c *gin.Context){
 	terminalOriginal := c.Query("terminal_original")
 	//inicioOriginal := c.Query("inicio_original")

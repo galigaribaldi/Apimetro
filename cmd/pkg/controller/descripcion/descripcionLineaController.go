@@ -1,8 +1,8 @@
 package metro
 import (
-	con "Apimetro/pkg/controller"
+	con "Apimetro/cmd/pkg/controller"
 
-	models "Apimetro/pkg/models"
+	models "Apimetro/cmd/pkg/models"
 )
 
 func init() {

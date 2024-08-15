@@ -1,7 +1,7 @@
 package controller
 
 import (
-	models "Apimetro/pkg/models"
+	models "Apimetro/cmd/pkg/models"
 	"log"
 	"os"
 

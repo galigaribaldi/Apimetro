@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	metro "Apimetro/pkg/controller/metro"
-	"Apimetro/pkg/models"
+	metro "Apimetro/cmd/pkg/controller/metro"
+	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,9 +26,10 @@ func addLineRoute(rg *gin.RouterGroup) {
 ------
 Lineas
 ------
+
+Obtener datos de Lineas
 */
 
-// Obtener datos de Lineas
 func getLineaRoute(c *gin.Context) {
 	colorLine := strings.ToUpper(c.Query("color_esp"))
 	colorLineEng := strings.ToLower(c.Query("color_eng"))
