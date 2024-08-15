@@ -22,9 +22,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/accounts/{id}": {
+        "/linea": {
             "get": {
-                "description": "get string by ID",
+                "description": "Obtener datos a través de los siguientes parámetros: Numero de Linea (linea_id), color en español(color_esp), color en inglés(color_eng)",
                 "consumes": [
                     "application/json"
                 ],
@@ -32,16 +32,30 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "Linea"
                 ],
-                "summary": "Show an account",
+                "summary": "Datos de Linea",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Account ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "type": "string",
+                        "format": "linea_id",
+                        "description": "Search by linea_id",
+                        "name": "linea_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "color_esp",
+                        "description": "Search by Color Español",
+                        "name": "color_esp",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "color_eng",
+                        "description": "Search by Color Ingles",
+                        "name": "color_eng",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -50,12 +64,43 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Linea"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "httputil.HTTPError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "message": {
+                    "type": "string",
+                    "example": "status bad request"
+                }
+            }
+        },
         "models.DescripcionLinea": {
             "type": "object",
             "properties": {

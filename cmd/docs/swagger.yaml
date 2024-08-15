@@ -1,5 +1,14 @@
 basePath: /stc
 definitions:
+  httputil.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
   models.DescripcionLinea:
     properties:
       anio_fin_ampliacion:
@@ -64,17 +73,28 @@ info:
   title: Apimetro
   version: "1.0"
 paths:
-  /accounts/{id}:
+  /linea:
     get:
       consumes:
       - application/json
-      description: get string by ID
+      description: 'Obtener datos a través de los siguientes parámetros: Numero de
+        Linea (linea_id), color en español(color_esp), color en inglés(color_eng)'
       parameters:
-      - description: Account ID
-        in: path
-        name: id
-        required: true
-        type: integer
+      - description: Search by linea_id
+        format: linea_id
+        in: query
+        name: linea_id
+        type: string
+      - description: Search by Color Español
+        format: color_esp
+        in: query
+        name: color_esp
+        type: string
+      - description: Search by Color Ingles
+        format: color_eng
+        in: query
+        name: color_eng
+        type: string
       produces:
       - application/json
       responses:
@@ -82,9 +102,21 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.Linea'
-      summary: Show an account
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Datos de Linea
       tags:
-      - accounts
+      - Linea
 securityDefinitions:
   BasicAuth:
     type: basic

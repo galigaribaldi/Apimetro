@@ -19,15 +19,6 @@ func addDescriptionRoute(rg *gin.RouterGroup){
 	rg.POST("/descripcion", postDescripcionLineaRoute)
 }
 
-// ShowAccount godoc
-//	@Summary		Show an account
-//	@Description	get string by ID
-//	@Tags			accounts
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path		int	true	"Account ID"
-//	@Success		200	{object}	models.Linea
-//	@Router			/accounts/{id} [get]
 func getDescripcionLineaRoute(c *gin.Context){
 	terminalOriginal := c.Query("terminal_original")
 	//inicioOriginal := c.Query("inicio_original")

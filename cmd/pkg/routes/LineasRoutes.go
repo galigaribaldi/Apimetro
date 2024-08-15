@@ -30,6 +30,20 @@ Lineas
 Obtener datos de Lineas
 */
 
+//  getLineaRoute   GET linea
+//	@Summary		Datos de Linea
+//	@Description	Obtener datos a través de los siguientes parámetros: Numero de Linea (linea_id), color en español(color_esp), color en inglés(color_eng)
+//	@Tags			Linea
+//	@Accept			json
+//	@Produce		json
+//	@Param			linea_id	query		string	false	"Search by linea_id"		Format(linea_id)
+//	@Param			color_esp	query		string	false	"Search by Color Español"	Format(color_esp)
+//	@Param			color_eng	query		string	false	"Search by Color Ingles"	Format(color_eng)
+//	@Success		200			{object}	models.Linea
+//  @Failure      	400  		{object}  	httputil.HTTPError
+//  @Failure      	404  		{object}  	httputil.HTTPError
+//  @Failure      	500  		{object}  	httputil.HTTPError
+//	@Router			/linea [get]
 func getLineaRoute(c *gin.Context) {
 	colorLine := strings.ToUpper(c.Query("color_esp"))
 	colorLineEng := strings.ToLower(c.Query("color_eng"))
