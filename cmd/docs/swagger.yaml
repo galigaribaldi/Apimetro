@@ -30,6 +30,37 @@ definitions:
       tipo_linea:
         type: string
     type: object
+  models.Estacion:
+    properties:
+      alcaldia_municipio:
+        type: string
+      anio:
+        type: string
+      cve_est:
+        type: string
+      estacion_id:
+        type: integer
+      estacion_id_oficial:
+        type: integer
+      estado_ciudad:
+        type: string
+      existe:
+        type: boolean
+      latitud:
+        type: number
+      linea_id:
+        type: integer
+      longitud:
+        type: number
+      nombre:
+        type: string
+      num_estacion:
+        type: integer
+      sistema:
+        type: string
+      tipo:
+        type: string
+    type: object
   models.Linea:
     properties:
       anio_inauguracion:
@@ -73,6 +104,50 @@ info:
   title: Apimetro
   version: "1.0"
 paths:
+  /estacion:
+    get:
+      consumes:
+      - application/json
+      description: 'Obtener datos a través de los siguientes parámetros: Numero de
+        Linea (linea_id), color en español(color_esp), color en inglés(color_eng)'
+      parameters:
+      - description: Search by nombre
+        format: nombre
+        in: query
+        name: nombre
+        type: string
+      - description: Search by anio
+        format: anio
+        in: query
+        name: anio
+        type: string
+      - description: Search by Color Ingles
+        format: color_en
+        in: query
+        name: color_en
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Estacion'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Datos de Estacion
+      tags:
+      - Estacion
   /linea:
     get:
       consumes:

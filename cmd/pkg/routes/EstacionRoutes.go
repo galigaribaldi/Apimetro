@@ -1,10 +1,11 @@
 package routes
+
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-	"fmt"
 
 	metro "Apimetro/cmd/pkg/controller/metro"
 	"Apimetro/cmd/pkg/models"
@@ -21,13 +22,30 @@ func addEstacionRoute(rg *gin.RouterGroup) {
 	rg.PATCH("/estacion", updateEstacionRoute)
 
 }
+
 /*
 ------
 Estaciones
 ------
+
+Obtener datos de Estaciones
 */
 
-// Obtener datos de Estaciones
+// getEstacionRoute   	GET Route
+//
+//	@Summary		Datos de Estacion
+//	@Description	Obtener datos a través de los siguientes parámetros: Numero de Linea (linea_id), color en español(color_esp), color en inglés(color_eng)
+//	@Tags			Estacion
+//	@Accept			json
+//	@Produce		json
+//	@Param			nombre		query		string	false	"Search by nombre"			Format(nombre)
+//	@Param			anio		query		string	false	"Search by anio"			Format(anio)
+//	@Param			color_en	query		string	false	"Search by Color Ingles"	Format(color_en)
+//	@Success		200			{object}	models.Estacion
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Failure		404			{object}	httputil.HTTPError
+//	@Failure		500			{object}	httputil.HTTPError
+//	@Router			/estacion [get]
 func getEstacionRoute(c *gin.Context) {
 	nombreEstacion := c.Query("nombre")
 	anioEstacion := c.Query("anio")

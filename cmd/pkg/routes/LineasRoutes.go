@@ -40,9 +40,9 @@ Obtener datos de Lineas
 //	@Param			color_esp	query		string	false	"Search by Color Español"	Format(color_esp)
 //	@Param			color_eng	query		string	false	"Search by Color Ingles"	Format(color_eng)
 //	@Success		200			{object}	models.Linea
-//  @Failure      	400  		{object}  	httputil.HTTPError
-//  @Failure      	404  		{object}  	httputil.HTTPError
-//  @Failure      	500  		{object}  	httputil.HTTPError
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Failure		404			{object}	httputil.HTTPError
+//	@Failure		500			{object}	httputil.HTTPError
 //	@Router			/linea [get]
 func getLineaRoute(c *gin.Context) {
 	colorLine := strings.ToUpper(c.Query("color_esp"))

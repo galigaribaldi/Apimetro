@@ -22,6 +22,70 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/estacion": {
+            "get": {
+                "description": "Obtener datos a través de los siguientes parámetros: Numero de Linea (linea_id), color en español(color_esp), color en inglés(color_eng)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Estacion"
+                ],
+                "summary": "Datos de Estacion",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "format": "nombre",
+                        "description": "Search by nombre",
+                        "name": "nombre",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "anio",
+                        "description": "Search by anio",
+                        "name": "anio",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "color_en",
+                        "description": "Search by Color Ingles",
+                        "name": "color_en",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Estacion"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/linea": {
             "get": {
                 "description": "Obtener datos a través de los siguientes parámetros: Numero de Linea (linea_id), color en español(color_esp), color en inglés(color_eng)",
@@ -129,6 +193,53 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tipo_linea": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Estacion": {
+            "type": "object",
+            "properties": {
+                "alcaldia_municipio": {
+                    "type": "string"
+                },
+                "anio": {
+                    "type": "string"
+                },
+                "cve_est": {
+                    "type": "string"
+                },
+                "estacion_id": {
+                    "type": "integer"
+                },
+                "estacion_id_oficial": {
+                    "type": "integer"
+                },
+                "estado_ciudad": {
+                    "type": "string"
+                },
+                "existe": {
+                    "type": "boolean"
+                },
+                "latitud": {
+                    "type": "number"
+                },
+                "linea_id": {
+                    "type": "integer"
+                },
+                "longitud": {
+                    "type": "number"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "num_estacion": {
+                    "type": "integer"
+                },
+                "sistema": {
+                    "type": "string"
+                },
+                "tipo": {
                     "type": "string"
                 }
             }
