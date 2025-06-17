@@ -9,7 +9,8 @@ primary_region = "qro"
 [build]
   builder = "paketobuildpacks/builder:base"
   buildpacks = ["gcr.io/paketo-buildpacks/go"]
-
+  [build.args]
+    BP_GO_BUILD_IMPORT_PATH="cmd"
 [env]
   PORT = "8080"
 
