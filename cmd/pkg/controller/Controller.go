@@ -13,9 +13,9 @@ var DB *gorm.DB
 
 func ConnectDataBase() {
 	log.Println(os.Getenv("DATABASE_URL"))
-	//dbURL := "postgresql://postgres:postgress@localhost:5433/Data"
-	dbURL := os.Getenv("DATABASE_URL")
-	//postgresql://postgres:postgress@localhost:5433/Data
+	dbURL := "postgresql://prueba:postgres@localhost:5432/db_apimetro"
+	//dbURL := os.Getenv("DATABSAE_URL")
+	//postgresql://postgres:postgres@localhost:5433/Data
 
 	database, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 

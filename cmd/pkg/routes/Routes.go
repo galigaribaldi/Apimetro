@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/gin-swagger" // gin-swagger middleware
-	"github.com/swaggo/files" // swagger embed files		
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 var (
@@ -27,6 +27,7 @@ func getRoutes() {
 	addLineRoute(stc)
 	addEstacionRoute(stc)
 	addDescriptionRoute(stc)
+	addGeoJsonRoute(stc)
 }
 
 func getInit(c *gin.Context) {
