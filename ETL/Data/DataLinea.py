@@ -2,8 +2,13 @@
 import psycopg2
 import psycopg2.extras as extras
 import pandas as pd
+import geopandas as gpd
+from shapely import wkt
+from shapely.geometry import MultiLineString
+from sqlalchemy import create_engine
 from WebR import requestWebLinea
 from conf import host, database, user, password, port, keepalive_kwargs
+
 class LineaETL():
     nombreArchivo = "data.xlsx"
     nombreHoja = "Linea"
@@ -28,6 +33,33 @@ class LineaETL():
             int((dataframe["BASE"][i]))
         ])for i in range(len(dataframe)))
         return lista
+    
+    def extractWithGeopandas(self, dataframeOrigin):
+        def safe_load_wkt(geom_text):
+            if geom_text.strip().upper() == "MULTILINESTRING EMPTY":
+                return MultiLineString()
+            return wkt.loads(geom_text)
+        # Convierte columna WKT a objeto geométrico y nómbrala 'geom'
+        dataframeOrigin["geom"] = dataframeOrigin["geom"].apply(safe_load_wkt)
+        # Corrige los tipos de columnas numéricas
+        columnas_enteros = ["id", "anio_inauguracion", "ramal_id", "linea_base_ramal"]
+        for col in columnas_enteros:
+            dataframeOrigin[col] = dataframeOrigin[col].fillna(0).astype(int)
+        dataframeOrigin["existe"] = dataframeOrigin["existe"].astype(bool)
+ 
+        # Crea el GeoDataFrame y define el CRS
+        gdf = gpd.GeoDataFrame(dataframeOrigin, geometry="geom", crs="EPSG:4326")
+        return gdf
+    
+    def chargeLineaGeo(self, gdf):
+         # Cambia el nombre de la columna geometry → geom
+        #gdf = gdf.rename(columns={"geometry": "geom"})
+        #gdf.set_geometry("geom", inplace=True)
+        ###
+        conexion = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+        engine = create_engine(conexion)
+        gdf.to_postgis(name="lineas", con=engine, if_exists="append", index=False)
+        
     
     def chargeLinea(self, tuples):
         conexion = psycopg2.connect(host=host, database=database, user=user, password=password, port = port,**keepalive_kwargs)

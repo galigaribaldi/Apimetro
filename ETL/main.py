@@ -17,12 +17,15 @@ def WebEstacionMain():
 if __name__ == '__main__':
     ##Linea
     c = DataLinea.LineaETL()
-    print(c.extractIngresos())
-    tuples = c.generateList(c.extractIngresos())
-    print(c.chargeLineaWeb(tuples))
+    #print(c.extractIngresos())
+    #tuples = c.generateList(c.extractIngresos())
+    tuples = c.extractWithGeopandas(c.extractIngresos())
+    print(tuples.columns)
+    c.chargeLineaGeo(tuples)
     #time.sleep(5)    
     #"""
     ##Estaciones
+    """
     c = DataEstacion.EstacionETL()
     print(c.extractIngresos())
     #time.sleep(5)
@@ -35,6 +38,7 @@ if __name__ == '__main__':
     #print(c.extractDescripcionLinea())
     tuples = c.generateListDescripcionLinea(c.extractDescripcionLinea())
     print(c.chargeDescripcionLineaWeb(tuples))
+    """
 
 ###comandos para conectarse a Fly
 #fly postgres connect -a apimetro-db
