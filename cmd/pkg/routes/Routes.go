@@ -27,7 +27,8 @@ func getRoutes() {
 	addLineRoute(stc)
 	addEstacionRoute(stc)
 	addDescriptionRoute(stc)
-	addGeoJsonRoute(stc)
+	addGeoJsonRouteEstacion(stc)
+	addGeoJsonRouteLine(stc)
 }
 
 func getInit(c *gin.Context) {

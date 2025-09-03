@@ -16,6 +16,7 @@ func ConnectDataBase() {
 	dbURL := "postgresql://prueba:postgres@localhost:5432/db_apimetro"
 	//dbURL := os.Getenv("DATABSAE_URL")
 	//postgresql://postgres:postgres@localhost:5433/Data
+	//psql --dbname="postgresql://prueba:postgres@localhost:5432/db_apimetro"
 
 	database, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 

@@ -1,8 +1,8 @@
 host = 'localhost'
-database = 'Data'
-user = 'postgres'
-password = 'postgress'
-port = '5433'
+database = 'db_apimetro'
+user = 'prueba'
+password = 'postgres'
+port = '5432'
 keepalive_kwargs = {
   "keepalives": 1,
   "keepalives_idle": 60,
