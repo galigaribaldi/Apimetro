@@ -1,0 +1,302 @@
+route_id,agency_id,route_short_name,route_long_name,route_type,route_color,route_text_color
+TR13,SEMOVI,13,Trolebús Línea 13,11,009B3A,FFFFFF
+B_CMX0800L3,CBB,3,Los Pinos/Constituyentes a Vasco de Quiroga,6,4EC3E0,FFFFFF
+B_CMX100001,INTERURBANO,1,Zinacantepec - Santa Fe,2,83332E,FFFFFF
+B_CMX040L12,TROLE,12,Tasqueña - Perisur,3,1F5AF0,FFFFFF
+B_CMX01022D,CC,22D,Av. 5 Ermita - Metro Aeropuerto,3,9B26B6,FFFFFF
+B_CMX01022C,CC,22C,Centro de Abasto - Metro Aeropuerto,3,9B26B6,FFFFFF
+B_CMX01022B,CC,22B,UPIICSA - Metro Aeropuerto,3,9B26B6,FFFFFF
+B_CMX01022A,CC,22A,Félix Parra Mixcoac - Metro Aeropuerto,3,9B26B6,FFFFFF
+B_CMX01021D,CC,21D,Metro Observatorio - San Ángel Clínica 4 y 8,3,9B26B6,FFFFFF
+B_CMX01021C,CC,21C,Barranca del Muerto - San Ángel,3,9B26B6,FFFFFF
+B_CMX01021B,CC,21B,Chapultepec por Circuito - San Ángel,3,9B26B6,FFFFFF
+B_CMX01021A,CC,21A,Chapultepec por Mazatlán - San Ángel,3,9B26B6,FFFFFF
+B_CMX01020D,CC,20D,La Raza Línea 5 - Juanacatlán,3,9B26B6,FFFFFF
+B_CMX01020C,CC,20C,La Raza Línea 3 - Juanacatlán,3,9B26B6,FFFFFF
+B_CMX01020B,CC,20B,Tacubaya por Platino - Metro Aeropuerto,3,9B26B6,FFFFFF
+B_CMX01020A,CC,20A,Metro Tacubaya - Metro Aeropuerto,3,9B26B6,FFFFFF
+B_CMX010Z2J,CC,Z2J,Metro Tacubaya - Tepeaca,3,9B26B6,FFFFFF
+B_CMX010Z2I,CC,Z2I,Metro Tacubaya - Cehuayo,3,9B26B6,FFFFFF
+B_CMX010Z2H,CC,Z2H,Mixcoac - Queso,3,9B26B6,FFFFFF
+B_CMX010Z2G,CC,Z2G,Mixcoac - Puerta Grande,3,9B26B6,FFFFFF
+B_CMX010Z2F,CC,Z2F,Metro Mixcoac - San Bartolo,3,9B26B6,FFFFFF
+B_CMX010Z2E,CC,Z2E,Metro Mixcoac - Puente Colorado,3,9B26B6,FFFFFF
+B_CMX010Z2D,CC,Z2D,Metro Barranca del Muerto - Lomas de Tarango,3,9B26B6,FFFFFF
+B_CMX010Z2C,CC,Z2C,Metro Barranca del Muerto - Bosques,3,9B26B6,FFFFFF
+B_CMX010Z2B,CC,Z2B,Metro Barranca del Muerto - Llano Redondo,3,9B26B6,FFFFFF
+B_CMX010Z2A,CC,Z2A,San Ángel - Santa Lucía,3,9B26B6,FFFFFF
+B_CMX010Z4K,CC,Z4K,Metro Rio de los Remedios - Metro Aeropuerto,3,9B26B6,FFFFFF
+B_CMX010Z4J,CC,Z4J,Esmeralda - Metro Aeropuerto,3,9B26B6,FFFFFF
+B_CMX010Z4I,CC,Z4I,Metro Impulsora - Metro Balbuena,3,9B26B6,FFFFFF
+B_CMX010Z4H,CC,Z4H,Metro Impulsora - Pino Suárez,3,9B26B6,FFFFFF
+B_CMX010Z4G,CC,Z4G,Metro San Lázaro - Valle de Guadalupe -Múzquiz,3,9B26B6,FFFFFF
+B_CMX010Z4F,CC,Z4F,Metro San Lázaro - Valle de Aragón - Múzquiz,3,9B26B6,FFFFFF
+B_CMX010Z4E,CC,Z4E,Carretones -Tepito,3,9B26B6,FFFFFF
+B_CMX010Z4D,CC,Z4D,Metro Potrero - Metro Eduardo Molina,3,9B26B6,FFFFFF
+B_CMX010Z4C,CC,Z4C,Metro Potrero - Gertrudis Sánchez,3,9B26B6,FFFFFF
+B_CMX010Z4B,CC,Z4B,San Felipe - Santa Anita,3,9B26B6,FFFFFF
+B_CMX010Z4A,CC,Z4A,Metro Santa Anita - Vergel,3,9B26B6,FFFFFF
+B_CMX05300B,RTP,300-B,Paseo Acoxpa - Santa Fe (UAM Cuajimalpa),3,E20613,FFFFFF
+B_CMX010Z3H,CC,Z3H,Metro Taxqueña - UACM Tezonco por Torres,3,9B26B6,FFFFFF
+B_CMX010Z3G,CC,Z3G,Metro Taxqueña - UACM Tezonco por Escuela,3,9B26B6,FFFFFF
+B_CMX010Z3F,CC,Z3F,Metro Taxqueña - Técnicos y Manuales,3,9B26B6,FFFFFF
+B_CMX010Z3E,CC,Z3E,Metro Taxqueña - UAM Xochimilco por 18-19,3,9B26B6,FFFFFF
+B_CMX010Z3D,CC,Z3D,Metro Taxqueña - UAM Xochimilco por Carmen 8-9,3,9B26B6,FFFFFF
+B_CMX010Z3C,CC,Z3C,Metro Taxqueña - UAM Xochimilco por Bachilleres 4,3,9B26B6,FFFFFF
+B_CMX010Z3B,CC,Z3B,Metro Taxqueña - Unidad San Marcos,3,9B26B6,FFFFFF
+B_CMX010Z3A,CC,Z3A,Metro Taxqueña - Los Reyes Culhuacán,3,9B26B6,FFFFFF
+B_CMX01025E,CC,25E,Xochimilco - Milpa Alta,3,9B26B6,FFFFFF
+B_CMX01025D,CC,25D,Tasqueña - San Gregorio,3,9B26B6,FFFFFF
+B_CMX01025C,CC,25C,Tasqueña - Milpa Alta,3,9B26B6,FFFFFF
+B_CMX01025B,CC,25B,Tasqueña - Galeana,3,9B26B6,FFFFFF
+B_CMX01025A,CC,25A,Tasqueña - Madreselva,3,9B26B6,FFFFFF
+B_CMX0400L7,TROLE,7,CETRAM Periférico Oriente  - Ciudad Universitaria,3,1F5AF0,FFFFFF
+B_CMX0400L9,TROLE,9,Villa de Cortés - Apatlaco - Tepalcates,3,1F5AF0,FFFFFF
+B_CMX03SL01,MB,SL01,París - Alameda Tacubaya (Servicio de Apoyo L1),3,,FFFFFF
+B_CMX05E4L1,RTP,Ordinario4 L1,Observatorio - Tacubaya,3,76B729,FFFFFF
+B_CMX05E3L1,RTP,Ordinario3 L1,Balderas - Alameda Tacubaya,3,76B729,FFFFFF
+B_CMX05E2L1,RTP,Ordinario2 L1,Balderas - CETRAM Chapultepec,3,76B729,FFFFFF
+B_CMX05E1L1,RTP,Ordinario1 L1,Balderas - Observatorio,3,76B729,FFFFFF
+B_CMX01024D,CC,24D,Estadio Azteca - Santo Domingo,3,9B26B6,FFFFFF
+B_CMX01024C,CC,24C,División del Norte - Sauzales,3,9B26B6,FFFFFF
+B_CMX01024B,CC,24B,Merced - Salto del Agua - Cuemanco,3,9B26B6,FFFFFF
+B_CMX01024A,CC,24A,Chapultepec - Preparatoria 5,3,9B26B6,FFFFFF
+B_CMX040L10,TROLE,10,Constitución de 1917 - Acahualtepec,3,1F5AF0,FFFFFF
+B_CMX01017L,CC,17L,San Lázaro-Taxqueña,3,9B26B6,FFFFFF
+B_CMX01009F,CC,9F,Tacubaya-Pantitlán,3,9B26B6,FFFFFF
+B_CMX01019I,CC,19I,Chapultepec-Pantitlán,3,9B26B6,FFFFFF
+B_CMX090R13,PUMABUS,PUMA13,Metrobús CU - Unidad de Posgrado,3,,
+B_CMX090R11,PUMABUS,PUMA11,Metrobús CU -  AAPAUNAM,3,5155A4,
+B_CMX090R10,PUMABUS,PUMA10,Metrobús CU - Av. Imán,3,2D1C0C,
+B_CMX0900R9,PUMABUS,PUMA9,Metrobús CU - Islas,3,830A2B,
+B_CMX0900R8,PUMABUS,PUMA8,Metrobús CU - Estadio Olímpico Universitario (por alberca),3,003E69,
+B_CMX0900R7,PUMABUS,PUMA7,Estadio Olímpico Universitario - Medicina,3,E3A023,
+B_CMX0900R6,PUMABUS,PUMA6,Metrobús CU - Estadio Olímpico Universitario,3,F47325,
+B_CMX0900R5,PUMABUS,PUMA5,Metro Universidad - Av. Universidad,3,00B3EE,
+B_CMX0900R4,PUMABUS,PUMA4,Metro Universidad - Jardín Botánico,3,83531D,
+B_CMX0900R3,PUMABUS,PUMA3,Metro Universidad - Zona Cultural,3,00673E,
+B_CMX0900R2,PUMABUS,PUMA2,Metro Universidad - Metrobús CU,3,FFE616,
+B_CMX0900R1,PUMABUS,PUMA1,Metro Universidad - Islas,3,C2D83F,
+B_CMX01023D,CC,23D,CETRAM Tacuba - ESIA,3,9B26B6,FFFFFF
+B_CMX01023C,CC,23C,CETRAM Tacuba - Tecamachalco,3,9B26B6,FFFFFF
+B_CMX01023B,CC,23B,CETRAM Tacuba - San Isidro,3,9B26B6,FFFFFF
+B_CMX01023A,CC,23A,CETRAM Tacuba - Especialidades Médicas,3,9B26B6,FFFFFF
+B_CMX0100Z1,CC,Z1,Zonal 1 Cuautepec,3,9B26B6,FFFFFF
+B_CMX0200LB,METRO,B,Ciudad Azteca - Buenavista,1,118751,FFFFFF
+B_CMX0200LA,METRO,A,Pantitlán - La Paz,1,A02D96,FFFFFF
+B_CMX0200L9,METRO,9,Pantitlán - Tacubaya,1,512826,FFFFFF
+B_CMX0200L8,METRO,8,Garibaldi - Constitución de 1917,1,118749,FFFFFF
+B_CMX0200L7,METRO,7,El Rosario - Barranca del Muerto,1,E87511,FFFFFF
+B_CMX0200L6,METRO,6,El Rosario - Martín Carrera,1,D81E05,FFFFFF
+B_CMX0200L5,METRO,5,Politécnico - Pantitlán,1,F9D616,FFFFFF
+B_CMX0200L4,METRO,4,Santa Anita - Martín Carrera,1,7FBCAA,FFFFFF
+B_CMX0200L3,METRO,3,Indios verdes - Universidad,1,AD9B0C,FFFFFF
+B_CMX0200L2,METRO,2,Cuatro Caminos - Tasqueña,1,0071C1,FFFFFF
+B_CMX0300L7,MB,7,Indios Verdes - Campo Marte,3,116633,FFFFFF
+B_CMX0300L6,MB,6,Villa de Aragón - El Rosario,3,E44599,FFFFFF
+B_CMX0300L5,MB,5,Río de lo Remedios - Preparatoria 1,3,141982,FFFFFF
+B_CMX0300L4,MB,4,Centro Histórico - Buenavista - San Lázaro/AICM T1 y T2/Pantitlán,3,FF9A03,FFFFFF
+B_CMX0300L3,MB,3,Tenayuca - Pueblo Sta. Cruz Atoyac,3,7A9A01,FFFFFF
+B_CMX0300L2,MB,2,Tepalcates - Tacubaya,3,8D1A96,FFFFFF
+B_CMX0300L1,MB,1,Indios Verdes - El Caminero,3,D40D0D,FFFFFF
+B_CMX0600L1,TL,1,Tasqueña - Xochimilco,0,1F5AF0,FFFFFF
+B_CMX0700L1,SUB,1,Buenavista-Cuautitlan,1,FF0000,FFFFFF
+B_CMX0400L8,TROLE,8,Circuito Politécnico,3,1F5AF0,FFFFFF
+B_CMX0400L6,TROLE,6,Metro El Rosario / Metro Chapultepec,3,1F5AF0,FFFFFF
+B_CMX0400L5,TROLE,5,San Felipe de Jesús / Metro Hidalgo,3,1F5AF0,FFFFFF
+B_CMX0400L4,TROLE,4,Metro Boulevard Puerto Aéreo / Metro El Rosario,3,1F5AF0,FFFFFF
+B_CMX0400L3,TROLE,3,"Corredor cero emisiones ""Eje 7-7A Sur""",3,1F5AF0,FFFFFF
+B_CMX0400L2,TROLE,2,"Corredor cero emisiones ""Eje 2-2A Sur""",3,1F5AF0,FFFFFF
+B_CMX0400L1,TROLE,1,"Corredor cero emisiones ""Eje Central""",3,1F5AF0,FFFFFF
+B_CMX0800L2,CBB,2,Constitución de 1917 a Santa Marta,6,4EC3E0,FFFFFF
+B_CMX0800L1,CBB,1,Cuautepec/Tlalpexco a Indios Verdes,6,4EC3E0,FFFFFF
+B_CMX01001A,CC,1A,Cuatro Caminos - Canal de Chalco,3,9B26B6,FFFFFF
+B_CMX01001B,CC,1B,Tacubaya - Canal de Chalco,3,9B26B6,FFFFFF
+B_CMX01001C,CC,1C,Barranca del Muerto - Canal de Chalco,3,9B26B6,FFFFFF
+B_CMX01002A,CC,2A,Taxqueña - Pirul,3,9B26B6,FFFFFF
+B_CMX01002B,CC,2B,C. U. - Pirul,3,9B26B6,FFFFFF
+B_CMX01002C,CC,2C,C. U. - Tlaxopan,3,9B26B6,FFFFFF
+B_CMX01002D,CC,2D,Taxqueña - Tlaxopan,3,9B26B6,FFFFFF
+B_CMX01002E,CC,2E,C. U . - Moras,3,9B26B6,FFFFFF
+B_CMX01002F,CC,2F,Taxqueña - Moras,3,9B26B6,FFFFFF
+B_CMX01003A,CC,3A,Iztacala - Politécnico,3,9B26B6,FFFFFF
+B_CMX01004A,CC,4A,Alameda Oriente - Constitución,3,9B26B6,FFFFFF
+B_CMX01004B,CC,4B,Canal de San Juan - Constitución,3,9B26B6,FFFFFF
+B_CMX01004C,CC,4C,Central de Abasto - Alameda Oriente,3,9B26B6,FFFFFF
+B_CMX01005A,CC,5A,Martín Carrera - Escuela Naval,3,9B26B6,FFFFFF
+B_CMX01006A,CC,6A,Barranca del Muerto - Ermita,3,9B26B6,FFFFFF
+B_CMX01007A,CC,7A,Odontología por puente - Chapultepec por puente,3,9B26B6,FFFFFF
+B_CMX01007B,CC,7B,Odontología - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01007C,CC,7C,Odontología por Av. 504 - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01007D,CC,7D,Odontología por Av. 504 por puente - Chapultepec por Av. 504 por puente,3,9B26B6,FFFFFF
+B_CMX01008A,CC,8A,Bosques - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01008B,CC,8B,Palmas - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01008C,CC,8C,Duraznos - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01008D,CC,8D,Tecamachalco - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01009A,CC,9A,Tacubaya por Querétaro - La Valenciana,3,9B26B6,FFFFFF
+B_CMX01009B,CC,9B,Metro Puebla por Sur 8 - La Valenciana,3,9B26B6,FFFFFF
+B_CMX01009C,CC,9C,Tacubaya Contraflujo Eje 3 - La Valenciana,3,9B26B6,FFFFFF
+B_CMX01009D,CC,9D,Metro Puebla por Sur 20 - La Valenciana,3,9B26B6,FFFFFF
+B_CMX01009E,CC,9E,Tacubaya por Campeche - Tepalcates,3,9B26B6,FFFFFF
+B_CMX01010A,CC,10A,Panteón San Isidro - Metro Oceanía Norte 172,3,9B26B6,FFFFFF
+B_CMX01010B,CC,10B,Panteón San Isidro - Peñón,3,9B26B6,FFFFFF
+B_CMX01010C,CC,10C,RCA Víctor - Peñón,3,9B26B6,FFFFFF
+B_CMX01010D,CC,10D,Metro Camarones - Peñón,3,9B26B6,FFFFFF
+B_CMX01010E,CC,10E,Metro Camarones - Manchuria,3,9B26B6,FFFFFF
+B_CMX01011A,CC,11A,Cuatro Caminos - Metro Pantitlán,3,9B26B6,FFFFFF
+B_CMX01011B,CC,11B,Metro Normal - Pantitlán Calle 7,3,9B26B6,FFFFFF
+B_CMX01011C,CC,11C,Metro Normal - Pantitlán,3,9B26B6,FFFFFF
+B_CMX01011D,CC,11D,Cuatro Caminos por Flores Magón - Aeropuerto,3,9B26B6,FFFFFF
+B_CMX01011E,CC,11E,Metro Normal - Canal de San Juan,3,9B26B6,FFFFFF
+B_CMX01011F,CC,11F,Cuatro Caminos - Aeropuerto,3,9B26B6,FFFFFF
+B_CMX01012A,CC,12A,Cuatro Caminos - Buenavista,3,9B26B6,FFFFFF
+B_CMX01012B,CC,12B,Lomas de Sotelo - Buenavista,3,9B26B6,FFFFFF
+B_CMX01012C,CC,12C,Cuatro Caminos - San Cosme,3,9B26B6,FFFFFF
+B_CMX01012D,CC,12D,Lomas de Sotelo - San Cosme,3,9B26B6,FFFFFF
+B_CMX01013A,CC,13A,Ingenieros Militares - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01013B,CC,13B,Av. Homero - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01013C,CC,13C,Ejército Nacional - Metro Sevilla,3,9B26B6,FFFFFF
+B_CMX01013D,CC,13D,Av. Homero - Metro Sevilla,3,9B26B6,FFFFFF
+B_CMX01013E,CC,13E,Lomas de Sotelo por Homero - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01014A,CC,14A,Metro Tepalcates - San Antonio Abad,3,9B26B6,FFFFFF
+B_CMX01015A,CC,15A,Av. Ceylán - Av. Central,3,9B26B6,FFFFFF
+B_CMX01015B,CC,15B,Metro Basílica - Pradera,3,9B26B6,FFFFFF
+B_CMX01015C,CC,15C,Metro Potrero - Bosques de Aragón,3,9B26B6,FFFFFF
+B_CMX01016A,CC,16A,Cuatro Caminos - Alameda,3,9B26B6,FFFFFF
+B_CMX01016B,CC,16B,Cuatro Caminos - Revolución,3,9B26B6,FFFFFF
+B_CMX01016C,CC,16C,Lomas Verdes - Metro Cuitláhuac,3,9B26B6,FFFFFF
+B_CMX01016D,CC,16D,Echegaray - Metro Cuitláhuac,3,9B26B6,FFFFFF
+B_CMX01017A,CC,17A,Caseta a Cuernavaca - Izazaga,3,9B26B6,FFFFFF
+B_CMX01017B,CC,17B,Xochimilco - Izazaga por Miramontes,3,9B26B6,FFFFFF
+B_CMX01017C,CC,17C,Deportivo Xochimilco - Izazaga,3,9B26B6,FFFFFF
+B_CMX01017D,CC,17D,Santiago Tepelcatlalpan - Izazaga,3,9B26B6,FFFFFF
+B_CMX01017E,CC,17E,Allende - Izazaga,3,9B26B6,FFFFFF
+B_CMX01017F,CC,17F,La Joya - Corregiddora,3,9B26B6,FFFFFF
+B_CMX01017G,CC,17G,La Joya Hospitales - Izazaga,3,9B26B6,FFFFFF
+B_CMX01017H,CC,17H,Fuentes Brotantes - Izazaga,3,9B26B6,FFFFFF
+B_CMX01017I,CC,17I,Coapa - Izazaga,3,9B26B6,FFFFFF
+B_CMX01017J,CC,17J,Totoltepec - Izazaga,3,9B26B6,FFFFFF
+B_CMX01017K,CC,17K,Tepeximilpa - Izazaga,3,9B26B6,FFFFFF
+B_CMX01018A,CC,18A,Valle Dorado - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01018B,CC,18B,1ro de Mayo - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01018C,CC,18C,Valle Dorado - Insurgentes,3,9B26B6,FFFFFF
+B_CMX01018D,CC,18D,Satélite - Chapultepec,3,9B26B6,FFFFFF
+B_CMX01019A,CC,19A,Metro Tacuba por Fray Servando - Metro Pantitlán,3,9B26B6,FFFFFF
+B_CMX01019B,CC,19B,Pemex por Fray Servando - Metro Pantitlán,3,9B26B6,FFFFFF
+B_CMX01019C,CC,19C,Metro Chapultepec - Calle 81,3,9B26B6,FFFFFF
+B_CMX01019D,CC,19D,Tacuba - Central de Abasto,3,9B26B6,FFFFFF
+B_CMX01019E,CC,19E,Metro Chapultepec - Central de Abasto,3,9B26B6,FFFFFF
+B_CMX01019F,CC,19F,Chapultepec por Boturini - Metro Pantitlán,3,9B26B6,FFFFFF
+B_CMX01019G,CC,19G,Periférico - Balneario,3,9B26B6,FFFFFF
+B_CMX01019H,CC,19H,Metro Tacuba - Calle 81,3,9B26B6,FFFFFF
+B_CMX0200L1,METRO,1,Pantitlán - Observatorio,1,F94F8E,FFFFFF
+B_CMX05001D,RTP,1-D,Metro Santa Martha -  Metro Mixcoac,3,00A099,FFFFFF
+B_CMX050101,RTP,101,Lomas de Cuautepec - La Villa Ferroplaza,3,2D2E82,FFFFFF
+B_CMX05101A,RTP,101-A,Ampliación Malacates -  La Villa/Ferroplaza,3,2D2E82,FFFFFF
+B_CMX05101B,RTP,101-B,Colonia Forestal - La Villa Ferroplaza,3,2D2E82,FFFFFF
+B_CMX05101D,RTP,101-D,La Brecha Cocoyotes - La Villa Ferroplaza,3,2D2E82,FFFFFF
+B_CMX050102,RTP,102,La Brecha - Metro Indios Verdes,3,2D2E82,FFFFFF
+B_CMX050103,RTP,103,Ampliación Malacates - Metro la Raza (Linea 3),3,2D2E82,FFFFFF
+B_CMX050104,RTP,104,Colonia El Tepetatal (El Charco) -  Metro Potrero,3,2D2E82,FFFFFF
+B_CMX050107,RTP,107,Metro El Rosario - Metro Tacuba,3,E20613,FFFFFF
+B_CMX05107B,RTP,107-B,La Villa/Cantera - Metro Tacuba por Ceylán,3,E20613,FFFFFF
+B_CMX050108,RTP,108,Colonia El Tepetatal (El Charco)  -  Metro Indios Verdes,3,2D2E82,FFFFFF
+B_CMX0511AX,RTP,11-A,Aragón por Av. 604 - Metro Chapultepec (Expreso),3,E20613,FFFFFF
+B_CMX0511AN,RTP,11-A,Aragón por Av. 604 - Metro Chapultepec (Nochebús),3,E20613,FFFFFF
+B_CMX050110,RTP,110,Chimalpa - Metro Tacubaya,3,A5C731,FFFFFF
+B_CMX05110B,RTP,110-B,San Lorenzo Acopilco - Metro Tacubaya,3,A5C731,FFFFFF
+B_CMX05110C,RTP,110-C,La Pila - Metro Tacubaya,3,A5C731,FFFFFF
+B_CMX05111A,RTP,111-A,Izazaga - Caseta,3,FC9408,FFFFFF
+B_CMX050112,RTP,112,Ampliación Jalalpa - Metro Tacubaya (Av. Jalisco),3,A5C731,FFFFFF
+B_CMX05113B,RTP,113-B,Col. Navidad (Las Piedras) - Metro Tacubaya,3,A5C731,FFFFFF
+B_CMX05115O,RTP,115,Jesús del Monte (Cuajimalpa) - Metro Tacubaya (Ordinario),3,A5C731,FFFFFF
+B_CMX05115N,RTP,115,Jesús del Monte (Cuajimalpa) - Metro Tacubaya (Nochebús),3,A5C731,FFFFFF
+B_CMX05115A,RTP,115-A,Las Águilas - Metro Chapultepec,3,A5C731,FFFFFF
+B_CMX050116,RTP,116,Santa Rosa Xochiac - Metro Mixcoac,3,A5C731,FFFFFF
+B_CMX05116A,RTP,116-A,Río Guadalupe - Metro General Anaya,3,FC9408,FFFFFF
+B_CMX050118,RTP,118,Santa Rosa Xochiac - Metro Tacubaya,3,A5C731,FFFFFF
+B_CMX050119,RTP,119,Piloto - Metro Tacubya (Av. Jalisco),3,A5C731,FFFFFF
+B_CMX05119B,RTP,119-B,Presidentes - Metro Mixcoac,3,A5C731,FFFFFF
+B_CMX050012,RTP,12,Aragón - Panteón San Isidro,3,E20613,FFFFFF
+B_CMX050120,RTP,120,Metro Zapata - San Mateo Tlaltenango,3,A5C731,FFFFFF
+B_CMX05121A,RTP,121-A,San Bartolo - Metro Zapata,3,A5C731,FFFFFF
+B_CMX05123A,RTP,123-A,Pedregal de San Nicolás - Metro Universidad,3,FC9408,FFFFFF
+B_CMX050124,RTP,124,Puerta Grande - Metro Mixcoac,3,A5C731,FFFFFF
+B_CMX05124A,RTP,124-A,Tepeaca - Metro Mixcoac,3,A5C731,FFFFFF
+B_CMX050125,RTP,125,Bosques del Pedregal - Metro Universidad por López Portillo,3,FC9408,FFFFFF
+B_CMX050126,RTP,126,Magdalena Atlitico a Metro Copilco,3,76B729,FFFFFF
+B_CMX050128,RTP,128,San Bernabé/Oyamel - Metro Universidad,3,FC9408,FFFFFF
+B_CMX05013A,RTP,13-A,Metro Chapultepec - Torres de Padierna/Pedregal de San Nicolás,3,FC9408,FFFFFF
+B_CMX050131,RTP,131,Estadio Azteca - Caseta Cuernavaca,3,FC9408,FFFFFF
+B_CMX050132,RTP,132,Tlalmille - Estadio Azteca,3,FC9408,FFFFFF
+B_CMX050134,RTP,134,Santo Tomás Ajusco - Estadio Azteca,3,FC9408,FFFFFF
+B_CMX05134A,RTP,134-A,Parres - Estadio Azteca,3,FC9408,FFFFFF
+B_CMX05134B,RTP,134-B,Estadio Azteca - Topilejo,3,FC9408,FFFFFF
+B_CMX05134C,RTP,134-C,Santo Tomás Ajusco - Metro Universidad,3,FC9408,FFFFFF
+B_CMX05134D,RTP,134-D,Topilejo - Metro Universidad,3,FC9408,FFFFFF
+B_CMX050141,RTP,141,Villa Milpa Alta - Metro Tláhuac,3,E61B72,FFFFFF
+B_CMX050142,RTP,142,Tulyehualco - Xochimilco/Palmas,3,E61B72,FFFFFF
+B_CMX050143,RTP,143,Villa Milpa Alta - Metro Tasqueña,3,E61B72,FFFFFF
+B_CMX050144,RTP,144,San Pablo Oztotepec -  Xochimilco/Palmas,3,E61B72,FFFFFF
+B_CMX05144C,RTP,144-C,San Salvador Cuahutenco - Villa Milpa Alta,3,E61B72,FFFFFF
+B_CMX050145,RTP,145,Pedregal de San Francisco - Xochimilco/Palmas,3,E61B72,FFFFFF
+B_CMX05145A,RTP,145-A,Santiago Tepalcatlalpan - República del Salvador,3,E61B72,FFFFFF
+B_CMX050146,RTP,146,San Miguel Tehuizco - Xochimilco/Palmas,3,E61B72,FFFFFF
+B_CMX050147,RTP,147,San Bartolomé Xicomulco - Xochimilco/Palmas,3,E61B72,FFFFFF
+B_CMX050148,RTP,148,San Nicolás Tetelco - Metro Tláhuac,3,E61B72,FFFFFF
+B_CMX050149,RTP,149,Mixquic - Metro Tláhuac,3,E61B72,FFFFFF
+B_CMX050159,RTP,159,Metro Constitución de 1917 - Palmitas,3,00A099,FFFFFF
+B_CMX050161,RTP,161,Metro Constitución de 1917 - Ampliación Santiago,3,00A099,FFFFFF
+B_CMX05161C,RTP,161-C,Metro Constitución de 1917 - Palmas,3,00A099,FFFFFF
+B_CMX05161D,RTP,161-D,Colonia Buenavista - Central de Abasto,3,00A099,FFFFFF
+B_CMX05161E,RTP,161-E,San José Buenavista - Metro Constitución de 1917,3,00A099,FFFFFF
+B_CMX05161F,RTP,161-F,Barranca de Guadalupe - Metro Constitución de 1917,3,00A099,FFFFFF
+B_CMX050162,RTP,162,Santa Catarina - Metro Constitución de 1917,3,00A099,FFFFFF
+B_CMX05162B,RTP,162-B,Campestre Potrero - Metro Zaragoza,3,00A099,FFFFFF
+B_CMX05162D,RTP,162-D,Santa Catarina - Metro Universidad,3,00A099,FFFFFF
+B_CMX050163,RTP,163,San Miguel Teotongo/Guadalupe  -  Metro Zaragoza,3,00A099,FFFFFF
+B_CMX05163A,RTP,163-A,San Miguel Teotongo/Torres  -  Metro Zaragoza/M. Tepalcates,3,00A099,FFFFFF
+B_CMX05163B,RTP,163-B,San Miguel Teotongo/Avisadero -  Metro Zaragoza,3,00A099,FFFFFF
+B_CMX050164,RTP,164,Colonia Miguel de la Madrid -  Metro Zaragoza,3,00A099,FFFFFF
+B_CMX05165AO,RTP,165-A,Ejército de Oriente - Metro Constitución de 1917 (Ordinario),3,00A099,FFFFFF
+B_CMX05165AX,RTP,165-A,Ejército de Oriente - Metro Constitución de 1917 (Expreso),3,00A099,FFFFFF
+B_CMX05165AE,RTP,165-A,Ejército de Oriente - Metro Constitución de 1917 (Ecobús),3,00A099,FFFFFF
+B_CMX050166,RTP,166,Colonia Ixtlahuacan Avisadero -  Metro Zaragoza,3,00A099,FFFFFF
+B_CMX050167,RTP,167,Avisadero/Colonia Miravalle -  Metro Zaragoza,3,00A099,FFFFFF
+B_CMX050168,RTP,168,Arenal 4ta. Sección - Metro Pantitlán,3,F0D600,FFFFFF
+B_CMX05017E,RTP,17-E,Metro Universidad - San Pedro Martir por Carretera Federal,3,FC9408,FFFFFF
+B_CMX05017F,RTP,17-F,Metro Tasqueña - San Pedro Martir por FOVISSSTE,3,FC9408,FFFFFF
+B_CMX050018,RTP,18,Metro Cuatro Caminos -  Colonia Moctezuma 2da. Sección,3,E20613,FFFFFF
+B_CMX050019,RTP,19,Metro El Rosario - Parque México por Cuitláhuac,3,E20613,FFFFFF
+B_CMX05019A,RTP,19-A,Metro El Rosario - Parque México por Normal,3,E20613,FFFFFF
+B_CMX05002A,RTP,2-A,Izazaga - San Pedro Martir por FOVISSSTE,3,FC9408,FFFFFF
+B_CMX05200X,RTP,200,Circuito Bicentenario (Expreso),3,E20613,FFFFFF
+B_CMX05200N,RTP,200,Circuito Bicentenario (Nochebús),3,E20613,FFFFFF
+B_CMX050023,RTP,23,Colonia El Tepetatal (El Charco) - Metro La Raza,3,2D2E82,FFFFFF
+B_CMX050025,RTP,25,Zacatenco - Metro Potrero,3,2D2E82,FFFFFF
+B_CMX05027A,RTP,27-A,Reclusorio Norte - Metro Hidalgo/Alameda Central,3,2D2E82,FFFFFF
+B_CMX05300A,RTP,300-A,Paseo Acoxpa - Metro Auditorio,3,E20613,FFFFFF
+B_CMX05031B,RTP,31-B,Izazaga- Deportivo Xochimilco,3,E61B72,FFFFFF
+B_CMX050033,RTP,33,León de los Aldama - Metro Chabacano,3,F0D600,FFFFFF
+B_CMX05034A,RTP,34-A,Metro Balderas - Centro Comercial Santa Fe,3,A5C731,FFFFFF
+B_CMX0534BO,RTP,34-B,Parque de la Bombilla - Centro comercial Santa Fe (Ordinario),3,FC9408,FFFFFF
+B_CMX0534BE,RTP,34-B,Parque de la Bombilla - Centro comercial Santa Fe (Ecobús),3,FC9408,FFFFFF
+B_CMX050037,RTP,37,U.C.T.M. Atzacoalco - Carmen Serdán,3,F0D600,FFFFFF
+B_CMX05039B,RTP,39-B,Av. Santa Ana - Xochimilco/Bosque de Nativitas,3,E61B72,FFFFFF
+B_CMX050043,RTP,43,San Felipe/León de Los Aldama -  Central de Abastos,3,F0D600,FFFFFF
+B_CMX05046C,RTP,46-C,Lienzo Charro/Santa Catarina - Central de Abasto,3,00A099,FFFFFF
+B_CMX0547AX,RTP,47-A,Alameda Oriente - Xochimilco / Bosque de Nativitas (Expreso),3,00A099,FFFFFF
+B_CMX0547AN,RTP,47-A,Alameda Oriente - Xochimilco / Bosque de Nativitas (Nochebús),3,00A099,FFFFFF
+B_CMX05052C,RTP,52-C,Metro Santa Martha - Metro Zapata,3,00A099,FFFFFF
+B_CMX0557AX,RTP,57-A,Toreo - Metro Constitución de 1917 (Expreso),3,E20613,FFFFFF
+B_CMX0557AN,RTP,57-A,Toreo - Metro Constitución de 1917 (Nochebús),3,E20613,FFFFFF
+B_CMX05057C,RTP,57-C,Toreo - Metro Constitución de 1917 ,3,00A099,FFFFFF
+B_CMX050059,RTP,59,Metro El Rosario - Metro Chapultepec,3,E20613,FFFFFF
+B_CMX05059A,RTP,59-A,Metro el Rosario  - Sullivan,3,E20613,FFFFFF
+B_CMX050069,RTP,69,Estadio Azteca - Loloigque,3,FC9408,FFFFFF
+B_CMX05076X,RTP,76,Centro Comercial Santa Fe -  Metro Auditorio por Palmas (Expreso),3,A5C731,FFFFFF
+B_CMX05076N,RTP,76,Centro Comercial Santa Fe -  Metro Auditorio por Palmas (Nochebús),3,A5C731,FFFFFF
+B_CMX05076A,RTP,76-A,Centro Comercial Santa Fe – Metro Auditorio por Reforma,3,A5C731,FFFFFF
+B_CMX05081A,RTP,81-A,San Gregorio Atlapulco - Metro Taxqueña,3,E61B72,FFFFFF
+B_CMX05009C,RTP,9-C,Centro Comercial Santa Fe  - Tlacuitlapa/Puerta Grande,3,A5C731,FFFFFF
+B_CMX020L12,METRO,L12,Tláhuac-Mixcoac,1,B99E51,FFFFFF
