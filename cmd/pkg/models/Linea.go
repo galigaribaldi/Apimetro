@@ -2,7 +2,9 @@ package models
 
 type Linea struct {
 	ID                int                `gorm:"primary_key" json:"linea_id"`
+	RouteGTFS         string             `json:"route_gtfs"`
 	Nombre            string             `json:"nombre"`
+	Num_comercial     string             `json:"num_comercial"`
 	Sistema           string             `json:"sistema"`
 	Anio_inauguracion int                `json:"anio_inauguracion"`
 	Color_en          string             `json:"color_en"`
@@ -12,5 +14,6 @@ type Linea struct {
 	Ramal_id          int                `json:"ramal_id"`
 	Linea_base_ramal  int                `json:"linea_base_ramal"`
 	Descripcion_linea []DescripcionLinea `gorm:"foreignKey:Linea_base;references:ID" json:"descripcion_linea"`
-	Geom              string             `gorm:"column:geom" json:"geom"` // Campo de geometría (no mapeado directamente por GORM)
+	Ramales           []Ramal            `gorm:"foreignKey:LineaID" json:"ramales"`
+	Geom              string             `gorm:"column:geom" json:"geom"`
 }

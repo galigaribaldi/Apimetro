@@ -10,6 +10,7 @@ import (
 	"github.com/paulmach/orb/encoding/wkb"
 )
 
+// La función ConvertLineaToFeature NO necesita cambios, ya que hace su trabajo correctamente.
 func ConvertLineaToFeature(linea models.Linea) (*GeoJSONFeature, error) {
 	data, err := hex.DecodeString(linea.Geom)
 	if err != nil {
@@ -67,23 +68,35 @@ func ConvertLineaToFeature(linea models.Linea) (*GeoJSONFeature, error) {
 	}, nil
 }
 
-func ConvertLineasToFeatureCollection(lineas []models.Linea) ([]*GeoJSONFeature, error) {
-	var features []*GeoJSONFeature
+// FUNCIÓN MODIFICADA: Devuelve el objeto FeatureCollection completo
+func ConvertLineasToFeatureCollection(lineas []models.Linea) (*FeatureCollection, error) {
+	// Usamos el tipo concreto de tu definición GeoJSONFeature
+	var features []GeoJSONFeature
 	var failedIDs []int
 
 	for _, linea := range lineas {
-		feature, err := ConvertLineaToFeature(linea)
+		// La función ConvertLineaToFeature devuelve *GeoJSONFeature
+		featurePtr, err := ConvertLineaToFeature(linea)
 		if err != nil {
 			log.Printf("Error convirtiendo linea_id=%d: %v", linea.ID, err)
 			failedIDs = append(failedIDs, linea.ID)
 			continue
 		}
-		features = append(features, feature)
+		// Desreferenciamos el puntero para añadir el valor al slice
+		features = append(features, *featurePtr)
 	}
 
 	if len(failedIDs) > 0 {
-		return features, fmt.Errorf("algunas líneas fallaron al convertir: %v", failedIDs)
+		// Puedes decidir si devolver un error o solo los datos parciales
+		log.Printf("ADVERTENCIA: Se devolvieron datos incompletos. Fallaron IDs: %v", failedIDs)
+		// Continuaremos y devolveremos el FeatureCollection parcial
 	}
 
-	return features, nil
+	// AHORA CONSTRUIMOS EL OBJETO FeatureCollection ESTÁNDAR
+	collection := &FeatureCollection{
+		Type:     "FeatureCollection", // Clave fija
+		Features: features,            // El slice de Features
+	}
+
+	return collection, nil
 }
