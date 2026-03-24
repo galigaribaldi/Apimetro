@@ -32,10 +32,11 @@ def getEstacion(nombre=None, anio=None, anio_antes=None, anio_despues=None, ciud
         response = requests.request("GET", Developer.HOST + "/stc/estacion", headers=headers)
     return response.json()
     
-def postEstacion(nombre=None, anio=None, ciudad=None, alacaldiaMunicipio=None, lineaId=None, cveEst = None, tipo=None, longitud = None, latitud = None, num_estacion=None, estacion_id_oficial=None,sistema=None, existe=None):
+def postEstacion(nombre=None, stop_gtfs=None, anio=None, ciudad=None, alacaldiaMunicipio=None, lineaId=None, cveEst = None, tipo=None, longitud = None, latitud = None, num_estacion=None, estacion_id_oficial=None,sistema=None, existe=None):
     print("POST")
     data_POST = {
         "nombre": nombre,
+        "stop_gtfs": stop_gtfs,
         "cve_est": cveEst,
         "tipo": tipo,
         "alcaldia_municipio":alacaldiaMunicipio,
