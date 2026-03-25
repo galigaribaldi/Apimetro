@@ -1,7 +1,7 @@
 package routes
 
 import (
-	controllerGeoJson "Apimetro/cmd/pkg/controller/geoJson"
+	GeoJson "Apimetro/cmd/pkg/controller/utils/GeoJson"
 	"log"
 	"net/http"
 
@@ -16,11 +16,11 @@ func getGeoJsonRouteLinea(c *gin.Context) {
 	sistema := c.Query("sistema")
 
 	if sistema == "" {
-		sistema = "Metro"
+		sistema = "%"
 	}
 
 	log.Println("Consultado mapa GeoJson para el sistema: ", sistema)
-	featureCollection := controllerGeoJson.SelectGeoJsonLineaBysistema(sistema)
+	featureCollection := GeoJson.SelectGeoJsonLineaBysistema(sistema)
 
 	if len(featureCollection.Features) == 0 {
 		log.Println("No se encontraron traos para el sistema:", sistema)

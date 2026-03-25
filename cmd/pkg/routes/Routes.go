@@ -30,12 +30,15 @@ func getRoutes() {
 	metro := api.Group("/metro")
 	metrobus := api.Group("/metrobus")
 	cablebus := api.Group("/cablebus")
+	// Subgrupos para mapas
+	mapas := api.Group("/mapas")
 
 	addLineRoute(metro)
 	addEstacionRoute(metro)
 	addDescriptionRoute(metro)
-	addGeoJsonRouteEstacion(metro)
-	addGeoJsonRouteLine(metro)
+
+	addGeoJsonRouteEstacion(mapas)
+	addGeoJsonRouteLine(mapas)
 	_, _ = metrobus, cablebus
 
 }
