@@ -11,6 +11,7 @@ type Linea struct {
 	Color_esp         string             `json:"color_esp"`
 	Tam_km            float64            `json:"tam_km"`
 	Existe            bool               `json:"existe"`
+	Clasificacion     string             `gorm:"default:'existente'" json:"clasificacion"`
 	Ramal_id          int                `json:"ramal_id"`
 	Linea_base_ramal  int                `json:"linea_base_ramal"`
 	Descripcion_linea []DescripcionLinea `gorm:"foreignKey:Linea_base;references:ID" json:"descripcion_linea"`

@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"     // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var (
@@ -23,16 +23,25 @@ func Run() {
 }
 
 func getRoutes() {
-	stc := router.Group("/stc")
-	addLineRoute(stc)
-	addEstacionRoute(stc)
-	addDescriptionRoute(stc)
-	addGeoJsonRouteEstacion(stc)
-	addGeoJsonRouteLine(stc)
+	// Ruta Base
+	api := router.Group("/movilidad")
+
+	// Subgrupos divididos por transporte
+	metro := api.Group("/metro")
+	metrobus := api.Group("/metrobus")
+	cablebus := api.Group("/cablebus")
+
+	addLineRoute(metro)
+	addEstacionRoute(metro)
+	addDescriptionRoute(metro)
+	addGeoJsonRouteEstacion(metro)
+	addGeoJsonRouteLine(metro)
+	_, _ = metrobus, cablebus
+
 }
 
 func getInit(c *gin.Context) {
-	log.Println("Alive")
-	c.JSON(http.StatusOK, 200)
-	return
+	log.Println("APImetro (Servidor de Movilidad CDMX) Vivo!")
+	c.JSON(http.StatusOK,
+		gin.H{"status": "alive!"})
 }
