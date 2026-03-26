@@ -3,52 +3,52 @@ package routes
 import (
 	"log"
 	"net/http"
-	"strconv"
-	//"strings"
 
-	descripcion "Apimetro/cmd/pkg/controller/descripcion"
+	"strconv"
+
+	transporte "Apimetro/cmd/pkg/controller/transporte"
 	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
 )
 
+func addDescriptionLineRoute(rg *gin.RouterGroup) {
 
-func addDescriptionRoute(rg *gin.RouterGroup){
-	//Estaciones
-	rg.GET("/descripcion", getDescripcionLineaRoute)
-	rg.POST("/descripcion", postDescripcionLineaRoute)
+	rg.GET("/descripcion-linea", getDescripcionLineaRoute)
+	rg.POST("/descripcion-linea", postDescripcionLineaRoute)
+	rg.DELETE("/descripcion-linea/:id", deleteDescripcionLineaRoute)
+	rg.PUT("/descripcion-linea/:id", putDescripcionLineaRoute)
 }
 
-func getDescripcionLineaRoute(c *gin.Context){
-	terminalOriginal := c.Query("terminal_original")
-	//inicioOriginal := c.Query("inicio_original")
-	lineaBase := c.Query("linea_base")
-	descripcionLineaId, err := strconv.Atoi(c.Query("descripcion_linea_id"))
-	if err != nil && descripcionLineaId != 0 {
-		c.JSON(http.StatusBadRequest, err)
-		return
+/*
+--------
+GET METHODS
+--------
+*/
+func getDescripcionLineaRoute(c *gin.Context) {
+	sistema := c.MustGet("sistemaValidado").(string)
+
+	filtros := map[string]interface{}{
+		"sistema": sistema,
 	}
-	//Descripcion Linea ID
-	if descripcionLineaId != 0 {
-		log.Println("Descripcion Linea ID: ", descripcionLineaId)
-		c.JSON(http.StatusOK, descripcion.SelectDescripcionById(descripcionLineaId))
-		return
+
+	if id := c.Query("id"); id != "" {
+		filtros["id"] = id
 	}
-	//Terminal Original
-	if terminalOriginal != "" {
-		log.Println("Terminal Original: ", terminalOriginal)
-		c.JSON(http.StatusOK, descripcion.SelectTerminalOriginal(terminalOriginal))
-		return
-	
+	if terminal := c.Query("terminal_original"); terminal != "" {
+		filtros["terminal_original"] = terminal
 	}
-	//linea Base
-	if lineaBase != "" {
-		log.Println("Linea Base: ", lineaBase)
-		c.JSON(http.StatusOK, descripcion.SelectLineaBase(lineaBase))
-		return
-	
+	if lineaBase := c.Query("linea_base"); lineaBase != "" {
+		filtros["linea_base"] = lineaBase
 	}
-	c.JSON(http.StatusOK, descripcion.SelectAllDescription())	
+	if numComercial := c.Query("num_comercial"); numComercial != "" {
+		filtros["num_comercial"] = numComercial
+	}
+
+	log.Println("Buscando Descripción de Línea con filtros:", filtros)
+
+	resultados := transporte.SearchDescripcionesLinea(filtros)
+	c.JSON(http.StatusOK, resultados)
 }
 
 /*
@@ -56,13 +56,64 @@ func getDescripcionLineaRoute(c *gin.Context){
 POST METHODS
 --------
 */
-func postDescripcionLineaRoute(c *gin.Context){
-	var newDescripcionLinea models.DescripcionLinea
-	if err:= c.BindJSON(&newDescripcionLinea); err != nil{
-		log.Println(&newDescripcionLinea)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func postDescripcionLineaRoute(c *gin.Context) {
+	var newDescripcion models.DescripcionLinea
+	if err := c.BindJSON(&newDescripcion); err != nil {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error":   "JSON inválido",
+				"detalle": err.Error(),
+			})
 		return
 	}
-	descripcion.CreateDescripcionLinea(newDescripcionLinea)
-	c.JSON(http.StatusOK, newDescripcionLinea)
+	transporte.CreateDescripcionLinea(newDescripcion)
+	c.JSON(
+		http.StatusCreated,
+		gin.H{
+			"mensaje": "Descripción de línea creada con éxito",
+		})
+}
+
+/*
+--------
+DELETE METHODS
+--------
+*/
+
+func deleteDescripcionLineaRoute(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+
+	transporte.DeleteDescripcionLinea(id)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Descripción eliminada con éxito"})
+
+}
+
+/*
+--------
+PUT METHODS
+--------
+*/
+func putDescripcionLineaRoute(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		return
+	}
+
+	var updateData models.DescripcionLinea
+	if err := c.BindJSON(&updateData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON inválido"})
+		return
+	}
+
+	updateData.ID = uint(id)
+	transporte.UpdateDescripcionLinea(updateData)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Descripción actualizada con éxito"})
 }

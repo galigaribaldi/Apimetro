@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	metro "Apimetro/cmd/pkg/controller/metro"
+	transporte "Apimetro/cmd/pkg/controller/transporte"
 	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
@@ -55,7 +55,7 @@ func getLineaRoute(c *gin.Context) {
 		}
 	}
 	log.Println("🔍 Filtros detectados en la petición:", filtros)
-	lineas := metro.SearchLineas(filtros)
+	lineas := transporte.SearchLineas(filtros)
 	c.JSON(http.StatusOK, lineas)
 }
 
@@ -78,7 +78,7 @@ func postLineaRoute(c *gin.Context) {
 		newLinea.Sistema = "METRO"
 	}
 
-	if err := metro.CreateLinea(newLinea); err != nil {
+	if err := transporte.CreateLinea(newLinea); err != nil {
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{
@@ -108,7 +108,7 @@ func deleteLineaRoute(c *gin.Context) {
 		return
 	}
 
-	if err := metro.DeleteLinea(id); err != nil {
+	if err := transporte.DeleteLinea(id); err != nil {
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{
@@ -149,7 +149,7 @@ func updateLineaRoute(c *gin.Context) {
 
 	delete(dataActualizada, "linea_id")
 
-	if err := metro.UpdateLinea(id, dataActualizada); err != nil {
+	if err := transporte.UpdateLinea(id, dataActualizada); err != nil {
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	metro "Apimetro/cmd/pkg/controller/metro"
+	transporte "Apimetro/cmd/pkg/controller/transporte"
 	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
@@ -64,37 +64,37 @@ func getEstacionRoute(c *gin.Context) {
 	//nombre de la Estacion
 	if nombreEstacion != "" {
 		log.Println("Nombre de la estacion: ", nombreEstacion)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyName(nombreEstacion))
+		c.JSON(http.StatusOK, transporte.SelectEstacionbyName(nombreEstacion))
 		return
 	}
 	//Año de inauguracion de la linea
 	if anioEstacion != "" {
 		log.Println("Año de la estacion: ", anioEstacion)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyAnio(anioEstacion))
+		c.JSON(http.StatusOK, transporte.SelectEstacionbyAnio(anioEstacion))
 		return
 	}
 	//Año de inauguracion de la linea (Rango)
 	if anioAntes != "" || anioDespues != "" {
 		log.Println("Año de la estacion (rangos): ", anioAntes, anioDespues)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyAnioRango(anioAntes, anioDespues))
+		c.JSON(http.StatusOK, transporte.SelectEstacionbyAnioRango(anioAntes, anioDespues))
 		return
 	}
 	// Localizacion Estado Ciudad
 	if ciudadEstacion != "" {
 		log.Println("Estado - Ciudad: ", ciudadEstacion)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyCiudad(ciudadEstacion))
+		c.JSON(http.StatusOK, transporte.SelectEstacionbyCiudad(ciudadEstacion))
 		return
 	}
 	// Localizacion Alcaldia o municipio
 	if alacaldiaMunicipio != "" {
 		log.Println("Alcaldia o municipio: ", alacaldiaMunicipio)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyAlcaldia(alacaldiaMunicipio))
+		c.JSON(http.StatusOK, transporte.SelectEstacionbyAlcaldia(alacaldiaMunicipio))
 		return
 	}
 	// Numero de la linea
 	if idLinea != 0 {
 		log.Println("Linea ID: ", idLinea)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyLineaID(idLinea))
+		c.JSON(http.StatusOK, transporte.SelectEstacionbyLineaID(idLinea))
 		return
 	}
 	//Color Español - Ingles
@@ -102,17 +102,17 @@ func getEstacionRoute(c *gin.Context) {
 		if colorEstacionEsp != "" {
 			log.Println("Color español: ", colorEstacionEsp)
 			var idioma = "esp"
-			c.JSON(http.StatusOK, metro.SelectEstacionbyColor(colorEstacionEsp, idioma))
+			c.JSON(http.StatusOK, transporte.SelectEstacionbyColor(colorEstacionEsp, idioma))
 			return
 		}
 		if colorEstacionEn != "" {
 			log.Println("Color ingles: ", colorEstacionEn)
 			var idioma = "en"
-			c.JSON(http.StatusOK, metro.SelectEstacionbyColor(colorEstacionEn, idioma))
+			c.JSON(http.StatusOK, transporte.SelectEstacionbyColor(colorEstacionEn, idioma))
 			return
 		}
 	}
-	c.JSON(http.StatusOK, metro.SelectAllEstations())
+	c.JSON(http.StatusOK, transporte.SelectAllEstations())
 	return
 }
 
@@ -123,7 +123,7 @@ func postEstacionRoute(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	metro.CreateEstacion(newEstacion)
+	transporte.CreateEstacion(newEstacion)
 	c.JSON(http.StatusOK, newEstacion)
 }
 
@@ -133,7 +133,7 @@ func deleteEstacionRoute(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}
-	metro.DeleteEstacion(ids)
+	transporte.DeleteEstacion(ids)
 	c.JSON(http.StatusOK, "Estacion eliminada")
 }
 
@@ -144,6 +144,6 @@ func updateEstacionRoute(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	metro.UpdateEstacion(newEstacion)
+	transporte.UpdateEstacion(newEstacion)
 	c.JSON(http.StatusOK, newEstacion)
 }

@@ -3,6 +3,7 @@ package routes
 import (
 	"log"
 
+	MiddlewareMod "Apimetro/cmd/pkg/controller/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,22 +26,19 @@ func Run() {
 func getRoutes() {
 	// Ruta Base
 	api := router.Group("/movilidad")
-
-	// Subgrupos divididos por transporte
-	metro := api.Group("/metro")
-	metrobus := api.Group("/metrobus")
-	cablebus := api.Group("/cablebus")
 	// Subgrupos para mapas
 	mapas := api.Group("/mapas")
-
-	addLineRoute(metro)
-	addEstacionRoute(metro)
-	addDescriptionRoute(metro)
-
 	addGeoJsonRouteEstacion(mapas)
 	addGeoJsonRouteLine(mapas)
-	_, _ = metrobus, cablebus
-
+	// Arquitectura dinámica dependiendo del sistema de transporte
+	transporte := api.Group("/:sistema")
+	transporte.Use(MiddlewareMod.ValidarSistema())
+	{
+		addLineRoute(transporte)
+		addEstacionRoute(transporte)
+		addDescriptionLineRoute(transporte)
+		addDescripcionEstacionRoute(transporte)
+	}
 }
 
 func getInit(c *gin.Context) {

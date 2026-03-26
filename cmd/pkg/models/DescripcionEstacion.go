@@ -10,5 +10,5 @@ type DescripcionEstacion struct {
 	Estado_ciudad      string   `json:"estado_ciudad"`
 	Longitud           float64  `json:"longitud"`
 	Estacion           Estacion `gorm:"foreignKey:EstacionID;references:ID" json:"-"`
-	EstacionID         int16    `json:"estacion_id"`
+	EstacionID         uint     `json:"estacion_id"`
 }
