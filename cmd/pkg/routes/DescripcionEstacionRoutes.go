@@ -25,9 +25,10 @@ GET
 */
 func getDescripcionEstacionRoute(c *gin.Context) {
 	sistema := c.MustGet("sistemaValidado").(string)
+	filtros := make(map[string]interface{})
 
-	filtros := map[string]interface{}{
-		"sistema": sistema,
+	if sistema != "TODOS" {
+		filtros["sistema"] = sistema
 	}
 
 	if id := c.Query("id"); id != "" {

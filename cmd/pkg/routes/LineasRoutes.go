@@ -9,6 +9,7 @@ import (
 	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/unicode/norm"
 )
 
 func addLineRoute(rg *gin.RouterGroup) {
@@ -24,16 +25,26 @@ func addLineRoute(rg *gin.RouterGroup) {
 // GET /movilidad/metro/linea
 // ==========================================
 func getLineaRoute(c *gin.Context) {
-	filtros := make(map[string]interface{})
-	filtros["sistema"] = "METRO"
 
+	sistema := c.MustGet("sistemaValidado").(string)
+	filtros := make(map[string]interface{})
+
+	if sistema != "TODOS" {
+		filtros["sistema"] = sistema
+	}
 	// Capturar los Query Params
+	// Soporte para caracteres nuevos
+	if nombreRaw := c.Query("nombre"); nombreRaw != "" {
+		// Esto fuerza a que "n" + "~" se convierta en "ñ" real
+		filtros["nombre"] = norm.NFC.String(nombreRaw)
+	}
 	if nombre := c.Query("nombre"); nombre != "" {
 		filtros["nombre"] = nombre
 	}
 
 	if ramal := c.Query("nombre_ramal"); ramal != "" {
-		filtros["nombre_ramal"] = ramal
+		ramalNormalizado := norm.NFC.String(ramal)
+		filtros["nombre_ramal"] = ramalNormalizado
 	}
 
 	if numComercial := c.Query("num_comercial"); numComercial != "" {

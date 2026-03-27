@@ -9,12 +9,13 @@ import (
 
 // Diccionario estático de sistemas válidos
 var sistemasValidos = map[string]bool{
-	"METRO":       true,
-	"METROBUS":    true,
-	"CABLEBUS":    true,
-	"RTP":         true,
-	"TROLEBUS":    true,
-	"TREN LIGERO": true,
+	"METRO": true,
+	"MB":    true,
+	"CB":    true,
+	"RTP":   true,
+	"TROLE": true,
+	"TL":    true,
+	"TODOS": true,
 }
 
 func ValidarSistema() gin.HandlerFunc {

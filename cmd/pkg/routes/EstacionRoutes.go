@@ -1,16 +1,15 @@
 package routes
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	transporte "Apimetro/cmd/pkg/controller/transporte"
 	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/unicode/norm"
 )
 
 func addEstacionRoute(rg *gin.RouterGroup) {
@@ -47,103 +46,90 @@ Obtener datos de Estaciones
 //	@Failure		500			{object}	httputil.HTTPError
 //	@Router			/estacion [get]
 func getEstacionRoute(c *gin.Context) {
-	nombreEstacion := c.Query("nombre")
-	anioEstacion := c.Query("anio")
-	anioAntes := c.Query("anio_antes")
-	anioDespues := c.Query("anio_despues")
-	ciudadEstacion := c.Query("ciudad")
-	alacaldiaMunicipio := c.Query("alacaldia_municipio")
-	colorEstacionEsp := strings.ToUpper(c.Query("color_esp"))
-	colorEstacionEn := strings.ToUpper(c.Query("color_en"))
-	idLinea, err := strconv.Atoi(c.Query("linea_id"))
-	fmt.Println("Linea: ", idLinea)
-	if err != nil && idLinea != 0 {
-		c.JSON(http.StatusBadRequest, err)
-		return
+	sistema := c.MustGet("sistemaValidado").(string)
+	filtros := make(map[string]interface{})
+
+	if sistema != "TODOS" {
+		filtros["sistema"] = sistema
 	}
-	//nombre de la Estacion
-	if nombreEstacion != "" {
-		log.Println("Nombre de la estacion: ", nombreEstacion)
-		c.JSON(http.StatusOK, transporte.SelectEstacionbyName(nombreEstacion))
-		return
+	if id := c.Query("id"); id != "" {
+		filtros["id"] = id
 	}
-	//Año de inauguracion de la linea
-	if anioEstacion != "" {
-		log.Println("Año de la estacion: ", anioEstacion)
-		c.JSON(http.StatusOK, transporte.SelectEstacionbyAnio(anioEstacion))
-		return
+	if nombreRaw := c.Query("nombre"); nombreRaw != "" {
+		// Esto fuerza a que "n" + "~" se convierta en "ñ" real
+		filtros["nombre"] = norm.NFC.String(nombreRaw)
 	}
-	//Año de inauguracion de la linea (Rango)
-	if anioAntes != "" || anioDespues != "" {
-		log.Println("Año de la estacion (rangos): ", anioAntes, anioDespues)
-		c.JSON(http.StatusOK, transporte.SelectEstacionbyAnioRango(anioAntes, anioDespues))
-		return
+	if nombre := c.Query("nombre"); nombre != "" {
+		filtros["nombre"] = nombre
 	}
-	// Localizacion Estado Ciudad
-	if ciudadEstacion != "" {
-		log.Println("Estado - Ciudad: ", ciudadEstacion)
-		c.JSON(http.StatusOK, transporte.SelectEstacionbyCiudad(ciudadEstacion))
-		return
+	if lineaID := c.Query("linea_id"); lineaID != "" {
+		filtros["linea_id"] = lineaID
 	}
-	// Localizacion Alcaldia o municipio
-	if alacaldiaMunicipio != "" {
-		log.Println("Alcaldia o municipio: ", alacaldiaMunicipio)
-		c.JSON(http.StatusOK, transporte.SelectEstacionbyAlcaldia(alacaldiaMunicipio))
-		return
+	if alcaldia := c.Query("alcaldia_municipio"); alcaldia != "" {
+		filtros["alcaldia_municipio"] = alcaldia
 	}
-	// Numero de la linea
-	if idLinea != 0 {
-		log.Println("Linea ID: ", idLinea)
-		c.JSON(http.StatusOK, transporte.SelectEstacionbyLineaID(idLinea))
-		return
+	if numComercial := c.Query("num_comercial"); numComercial != "" {
+		filtros["num_comercial"] = numComercial
 	}
-	//Color Español - Ingles
-	if colorEstacionEsp != "" || colorEstacionEn != "" {
-		if colorEstacionEsp != "" {
-			log.Println("Color español: ", colorEstacionEsp)
-			var idioma = "esp"
-			c.JSON(http.StatusOK, transporte.SelectEstacionbyColor(colorEstacionEsp, idioma))
-			return
-		}
-		if colorEstacionEn != "" {
-			log.Println("Color ingles: ", colorEstacionEn)
-			var idioma = "en"
-			c.JSON(http.StatusOK, transporte.SelectEstacionbyColor(colorEstacionEn, idioma))
-			return
-		}
+	if colorEsp := c.Query("color_esp"); colorEsp != "" {
+		filtros["color_esp"] = colorEsp
 	}
-	c.JSON(http.StatusOK, transporte.SelectAllEstations())
-	return
+	if colorEn := c.Query("color_en"); colorEn != "" {
+		filtros["color_en"] = colorEn
+	}
+
+	log.Println("Buscando Estaciones con filtros:", filtros)
+	resultados := transporte.SearchEstaciones(filtros)
+	c.JSON(http.StatusOK, resultados)
 }
 
-// Crear una nueva estacion
+// ==========================================
+// POST /movilidad/:sistema/estacion
+// ==========================================
 func postEstacionRoute(c *gin.Context) {
 	var newEstacion models.Estacion
 	if err := c.BindJSON(&newEstacion); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON inválido", "detalle": err.Error()})
 		return
 	}
 	transporte.CreateEstacion(newEstacion)
-	c.JSON(http.StatusOK, newEstacion)
+	c.JSON(http.StatusCreated, gin.H{"mensaje": "Estación creada", "data": newEstacion})
 }
 
-// Eliminar una estacion
+// ==========================================
+// DELETE /movilidad/:sistema/estacion?id=1
+// ==========================================
 func deleteEstacionRoute(c *gin.Context) {
-	ids, err := strconv.Atoi(c.Query("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-	}
-	transporte.DeleteEstacion(ids)
-	c.JSON(http.StatusOK, "Estacion eliminada")
-}
-
-// Actualizar estaciones
-func updateEstacionRoute(c *gin.Context) {
-	var newEstacion models.Estacion
-	if err := c.BindJSON(&newEstacion); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	idStr := c.Query("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Se requiere un ID numérico válido en el query (?id=X)"})
 		return
 	}
-	transporte.UpdateEstacion(newEstacion)
-	c.JSON(http.StatusOK, newEstacion)
+
+	transporte.DeleteEstacion(id)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Estación eliminada con éxito"})
+}
+
+// ==========================================
+// PATCH /movilidad/:sistema/estacion?id=1
+// ==========================================
+func updateEstacionRoute(c *gin.Context) {
+	idStr := c.Query("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Se requiere un ID numérico válido en el query (?id=X)"})
+		return
+	}
+
+	var updateData models.Estacion
+	if err := c.BindJSON(&updateData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON inválido"})
+		return
+	}
+
+	updateData.ID = uint(id)
+	transporte.UpdateEstacion(updateData)
+
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Estación actualizada correctamente"})
 }

@@ -1,11 +1,12 @@
 package routes
 
 import (
-	GeoJson "Apimetro/cmd/pkg/controller/utils/GeoJson"
+	GeoJson "Apimetro/cmd/pkg/controller/transporte"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/unicode/norm"
 )
 
 func addGeoJsonRouteEstacion(rg *gin.RouterGroup) {
@@ -13,22 +14,36 @@ func addGeoJsonRouteEstacion(rg *gin.RouterGroup) {
 }
 
 func getGeoJsonRouteEstacion(c *gin.Context) {
-	sistema := c.Query("sistema")
+	filtros := make(map[string]interface{})
 
+	sistema := c.Query("sistema")
 	if sistema == "" {
 		sistema = "%"
 	}
+	filtros["sistema"] = sistema
 
-	log.Println("Consultado mapa GeoJson de ESTACIONES para el sistema: ", sistema)
+	if nc := c.Query("num_comercial"); nc != "" {
+		filtros["num_comercial"] = nc
+	}
+	if alc := c.Query("alcaldia_municipio"); alc != "" {
+		filtros["alcaldia_municipio"] = alc
+	}
+	if nr := c.Query("nombre_ramal"); nr != "" {
+		ramalNormalizado := norm.NFC.String(nr)
+		filtros["nombre_ramal"] = ramalNormalizado
+	}
 
-	featureCollection := GeoJson.SelectGeoJsonEstacionBysistema(sistema)
+	log.Println("Consultando mapa GeoJson de ESTACIONES con filtros:", filtros)
+
+	featureCollection := GeoJson.SelectGeoJsonEstacionConFiltros(filtros)
 
 	if len(featureCollection.Features) == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
-			"mensaje": "No se encontraron estaciones para el sistema proporcionado",
+			"mensaje": "No se encontraron estaciones para los filtros proporcionados",
 			"data":    featureCollection,
 		})
 		return
 	}
+
 	c.JSON(http.StatusOK, featureCollection)
 }
