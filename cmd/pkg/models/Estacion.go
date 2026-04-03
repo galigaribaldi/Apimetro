@@ -17,6 +17,9 @@ type Estacion struct {
 	Sistema             string  `json:"sistema"`
 	Existe              bool    `json:"existe"`
 	StopGTFS            string  `json:"stop_gtfs"`
-	//DescripcionEstacion   []DescripcionEstacion `json:"descripcion_estacion"`
-	//DescripcionEstacionID int16                 `gorm:"foreignKey:DescripcionEstacionID;references:ID" json:"-"`
+	EsCetram            bool    `json:"es_cetram"`
+	NombreCetram        *string `json:"nombre_cetram,omitempty"`
 }
+
+//DescripcionEstacion   []DescripcionEstacion `json:"descripcion_estacion"`
+//DescripcionEstacionID int16                 `gorm:"foreignKey:DescripcionEstacionID;references:ID" json:"-"`
