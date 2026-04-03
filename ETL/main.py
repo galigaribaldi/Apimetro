@@ -3,6 +3,7 @@ import time
 from DataCharge import DataLinea
 from DataCharge import DataRamal
 from DataCharge import DataEstacion
+from DataCharge import DataHistorico
 
 def main_etl():
     print("==================================================")
@@ -10,6 +11,7 @@ def main_etl():
     print("==================================================")
     
     try:
+        """
         # ----------------------------------------------------
         # 1. CARGA DE LÍNEAS (Solo metadatos, sin geometría)
         # ----------------------------------------------------
@@ -46,9 +48,24 @@ def main_etl():
         gdf_estacion_final = etl_estacion.processAndMerge(df_estacion_meta, gdf_stops)
         print(f"-> Se procesaron {len(gdf_estacion_final)} nodos/estaciones con geometría.")
         etl_estacion.chargeEstacionGeo(gdf_estacion_final)
+        """
+        # ----------------------------------------------------
+        # 4. CARGA DE HISTÓRICOS DE OPERACIÓN (Velocidad y Frecuencia)
+        # ----------------------------------------------------
+        print("\n--- 4. PROCESANDO HISTÓRICOS DE OPERACIÓN ---")
+        etl_historico = DataHistorico.HistoricoOperacionETL()
+        df_trips, df_stop_times, df_shapes = etl_historico.extractGTFS()
         
+        # Aquí se calculan las métricas y se genera el Excel automáticamente
+        df_historico_final = etl_historico.processOperation(df_trips, df_stop_times, df_shapes)
+        print(f"-> Se calcularon métricas para {len(df_historico_final)} ramales.")
+        
+        # COMENTAMOS LA INYECCIÓN A LA BASE DE DATOS PARA VALIDACIÓN PREVIA
+        etl_historico.chargeHistoricoDB(df_historico_final)
+        #print("-> [PAUSA DE VALIDACIÓN] Carga a BD omitida. Revisa el Excel generado.")
+
         print("\n==================================================")
-        print(" ¡INYECCIÓN DE DATOS FINALIZADA CON ÉXITO! 🥳 ")
+        print(" ¡PROCESO ETL FINALIZADO (Fase de Validación)! 🥳 ")
         print("==================================================")
 
     except Exception as e:
