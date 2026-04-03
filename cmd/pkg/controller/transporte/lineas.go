@@ -4,6 +4,7 @@ import (
 	con "Apimetro/cmd/pkg/controller"
 	models "Apimetro/cmd/pkg/models"
 	"log"
+	"strings"
 )
 
 /*
@@ -66,7 +67,21 @@ func SearchLineas(filtros map[string]interface{}) []models.Linea {
 	if tamKm, ok := filtros["tam_km"]; ok && tamKm != "" {
 		query = query.Where("lineas.tam_km >= ?", tamKm)
 	}
-
+	// Filtrar por sentido de la línea (IDA / REGRESO)
+	if sentido, ok := filtros["sentido"]; ok && sentido != "" {
+		sentidoVal := strings.ToUpper(sentido.(string))
+		if sentidoVal == "IDA" {
+			query = query.Joins("JOIN ramals ON ramals.linea_id = lineas.id").Where("ramals.ramal_num = ?", 1)
+		} else if sentidoVal == "REGRESO" {
+			query = query.Joins("JOIN ramals ON ramals.linea_id = lineas.id").Where("ramals.ramal_num = ?", 0)
+		}
+	}
+	// Filtrar líneas que contienen al menos una estación CETRAM
+	if esCetram, ok := filtros["es_cetram"]; ok && esCetram != "" {
+		query = query.Joins("JOIN estacions ON estacions.linea_id = lineas.id").
+			Where("estacions.es_cetram = ?", esCetram).
+			Distinct()
+	}
 	/// Query Final
 	if err := query.Find(&lineas).Error; err != nil {
 		log.Println("Error en la busqueda dinámica de líneas: ", err)

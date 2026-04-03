@@ -85,7 +85,9 @@ func SearchEstaciones(filtros map[string]interface{}) []models.Estacion {
 	if colorEn, ok := filtros["color_en"]; ok && colorEn != "" {
 		query = query.Where("lineas.color_en ILIKE ?", "%"+colorEn.(string)+"%")
 	}
-
+	if esCetram, ok := filtros["es_cetram"]; ok && esCetram != "" {
+		query = query.Where("estacions.es_cetram = ?", esCetram)
+	}
 	// Query Final
 	if err := query.Find(&estaciones).Error; err != nil {
 		log.Println("Error en la búsqueda dinámica de estaciones: ", err)

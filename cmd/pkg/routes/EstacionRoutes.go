@@ -77,6 +77,9 @@ func getEstacionRoute(c *gin.Context) {
 	if colorEn := c.Query("color_en"); colorEn != "" {
 		filtros["color_en"] = colorEn
 	}
+	if esCetram := c.Query("es_cetram"); esCetram != "" {
+		filtros["es_cetram"] = esCetram
+	}
 
 	log.Println("Buscando Estaciones con filtros:", filtros)
 	resultados := transporte.SearchEstaciones(filtros)

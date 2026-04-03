@@ -30,6 +30,7 @@ func getRoutes() {
 	mapas := api.Group("/mapas")
 	addGeoJsonRouteEstacion(mapas)
 	addGeoJsonRouteLine(mapas)
+	addGeoJsonRoutePoligono(mapas)
 	// Arquitectura dinámica dependiendo del sistema de transporte
 	transporte := api.Group("/:sistema")
 	transporte.Use(MiddlewareMod.ValidarSistema())

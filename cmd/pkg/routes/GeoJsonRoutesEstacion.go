@@ -1,7 +1,7 @@
 package routes
 
 import (
-	GeoJson "Apimetro/cmd/pkg/controller/transporte"
+	GeoJson "Apimetro/cmd/pkg/controller/geojson"
 	"log"
 	"net/http"
 
@@ -31,6 +31,20 @@ func getGeoJsonRouteEstacion(c *gin.Context) {
 	if nr := c.Query("nombre_ramal"); nr != "" {
 		ramalNormalizado := norm.NFC.String(nr)
 		filtros["nombre_ramal"] = ramalNormalizado
+	}
+	if jt := c.Query("jerarquia_transporte"); jt != "" {
+		filtros["jerarquia_transporte"] = jt
+	}
+	if dv := c.Query("derecho_de_via"); dv != "" {
+		filtros["derecho_de_via"] = dv
+	}
+
+	if esCetram := c.Query("es_cetram"); esCetram != "" {
+		filtros["es_cetram"] = esCetram
+	}
+	if nomCetram := c.Query("nombre_cetram"); nomCetram != "" {
+		nomCetramNormalizado := norm.NFC.String(nomCetram)
+		filtros["nombre_cetram"] = nomCetramNormalizado
 	}
 
 	log.Println("Consultando mapa GeoJson de ESTACIONES con filtros:", filtros)

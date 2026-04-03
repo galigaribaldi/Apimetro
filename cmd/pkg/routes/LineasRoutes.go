@@ -58,6 +58,14 @@ func getLineaRoute(c *gin.Context) {
 	if tamKm := c.Query("tam_km"); tamKm != "" {
 		filtros["tam_km"] = tamKm
 	}
+	// Filtrar por si la línea tiene estaciones tipo CETRAM
+	if esCetram := c.Query("es_cetram"); esCetram != "" {
+		filtros["es_cetram"] = esCetram
+	}
+	// Filtrar por sentido
+	if sentido := c.Query("sentido"); sentido != "" {
+		filtros["sentido"] = sentido
+	}
 
 	if existeStr := c.Query("existe"); existeStr != "" {
 		existe, err := strconv.ParseBool(existeStr)

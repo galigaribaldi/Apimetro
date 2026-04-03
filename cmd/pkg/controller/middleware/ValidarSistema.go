@@ -9,13 +9,17 @@ import (
 
 // Diccionario estático de sistemas válidos
 var sistemasValidos = map[string]bool{
-	"METRO": true,
-	"MB":    true,
-	"CB":    true,
-	"RTP":   true,
-	"TROLE": true,
-	"TL":    true,
-	"TODOS": true,
+	"METRO":       true,
+	"MB":          true,
+	"CBB":         true,
+	"RTP":         true,
+	"TROLE":       true,
+	"TL":          true,
+	"TODOS":       true,
+	"MEXIBÚS":     true,
+	"MEXICABLE":   true,
+	"INTERURBANO": true,
+	"SUB":         true,
 }
 
 func ValidarSistema() gin.HandlerFunc {
@@ -25,7 +29,7 @@ func ValidarSistema() gin.HandlerFunc {
 		if !sistemasValidos[sistemaUpper] {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error":   "Sistema de transporte no Encontrado",
-				"mensaje": "El sistema'" + sistemaParam + "' no",
+				"mensaje": "El sistema'" + sistemaParam + "' no existe",
 			})
 			return
 		}

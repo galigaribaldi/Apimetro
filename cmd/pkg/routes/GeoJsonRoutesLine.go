@@ -1,7 +1,7 @@
 package routes
 
 import (
-	GeoJson "Apimetro/cmd/pkg/controller/transporte"
+	GeoJson "Apimetro/cmd/pkg/controller/geojson"
 	"log"
 	"net/http"
 
@@ -23,17 +23,27 @@ func getGeoJsonRouteLinea(c *gin.Context) {
 	}
 	filtros["sistema"] = sistema
 
-	// 3. Capturamos el resto de los filtros
 	if nc := c.Query("num_comercial"); nc != "" {
 		filtros["num_comercial"] = nc
 	}
-	// Soporte de nuevas letras
 	if nombreRaw := c.Query("nombre_ramal"); nombreRaw != "" {
 		log.Println("Ramal crudo de la URL:", c.Request.URL.RawQuery)
 		filtros["nombre_ramal"] = norm.NFC.String(nombreRaw)
 	}
-
-	// Convertimos el string "true"/"false" a un booleano real en Go
+	if jt := c.Query("jerarquia_transporte"); jt != "" {
+		filtros["jerarquia_transporte"] = jt
+	}
+	// Filtrar trazos que pasen por un CETRAM
+	if esCetram := c.Query("es_cetram"); esCetram != "" {
+		filtros["es_cetram"] = esCetram
+	}
+	// Filtrar por sentido en GeoJson
+	if sentido := c.Query("sentido"); sentido != "" {
+		filtros["sentido"] = sentido
+	}
+	if dv := c.Query("derecho_de_via"); dv != "" {
+		filtros["derecho_de_via"] = dv
+	}
 	if existe := c.Query("existe"); existe != "" {
 		switch existe {
 		case "true":
