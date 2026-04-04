@@ -40,7 +40,7 @@ FROM
     AND cols.column_name = fk.column_name
     AND cols.table_schema = fk.table_schema
 WHERE
-    cols.table_name = 'lineas'
+    cols.table_name = 'historico_operacion'
     AND cols.table_schema = 'public'
 ORDER BY cols.ordinal_position;
 --------------------

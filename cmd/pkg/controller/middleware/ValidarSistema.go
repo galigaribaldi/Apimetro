@@ -19,6 +19,7 @@ var sistemasValidos = map[string]bool{
 	"MEXIBÚS":     true,
 	"MEXICABLE":   true,
 	"INTERURBANO": true,
+	"CC":          true,
 	"SUB":         true,
 }
 
