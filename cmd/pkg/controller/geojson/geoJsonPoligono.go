@@ -17,7 +17,17 @@ func SelectGeoJsonPoligono(entidad string, nivel string, nombre string) modelsGe
 
 	// Filtros por parámetros
 	if entidad != "" {
-		query = query.Where("entidad ILIKE ?", "%"+entidad+"%")
+		entidades := strings.Split(entidad, ",")
+
+		primerEntidad := strings.TrimSpace(entidades[0])
+		subQueryEntidad := con.DB.Where("entidad ILIKE ?", "%"+primerEntidad+"%")
+
+		for i := 1; i < len(entidades); i++ {
+			entidadLimpia := strings.TrimSpace(entidades[i])
+			subQueryEntidad = subQueryEntidad.Or("entidad ILIKE ?", "%"+entidadLimpia+"%")
+		}
+
+		query = query.Where(subQueryEntidad)
 	}
 	if nivel != "" {
 		query = query.Where("nivel = ?", nivel)
