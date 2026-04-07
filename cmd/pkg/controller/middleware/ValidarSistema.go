@@ -23,6 +23,10 @@ var sistemasValidos = map[string]bool{
 	"SUB":         true,
 }
 
+// ValidarSistema es un middleware que verifica si el sistema de transporte proporcionado
+// en la ruta es válido. Si no lo es, devuelve un status 404 con un objeto JSON que contiene
+// el error y el mensaje de error. Si es válido, agrega una variable "sistemaValidado"
+// al contexto con el valor del sistema en mayúsculas.
 func ValidarSistema() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sistemaParam := c.Param("sistema")

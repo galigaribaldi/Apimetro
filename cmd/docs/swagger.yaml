@@ -1,4 +1,4 @@
-basePath: /stc
+basePath: /movilidad
 definitions:
   httputil.HTTPError:
     properties:
@@ -33,57 +33,172 @@ definitions:
   models.Estacion:
     properties:
       alcaldia_municipio:
+        example: Miguel Hidalgo
         type: string
       anio:
+        example: "1980"
         type: string
       cve_est:
+        example: TAC
         type: string
+      es_cetram:
+        example: false
+        type: boolean
       estacion_id:
+        example: 1
         type: integer
       estacion_id_oficial:
+        example: 1001
         type: integer
       estado_ciudad:
+        example: Ciudad de México
         type: string
       existe:
+        example: true
         type: boolean
       latitud:
+        example: 19.403
         type: number
       linea_id:
+        example: 1
         type: integer
       longitud:
+        example: -99.188
         type: number
       nombre:
+        example: Tacubaya
+        type: string
+      nombre_cetram:
+        example: Tacubaya CETRAM
         type: string
       num_estacion:
+        example: 1
         type: integer
       sistema:
+        example: METRO
+        type: string
+      stop_gtfs:
+        example: STC_001
         type: string
       tipo:
+        example: Terminal
+        type: string
+    type: object
+  models.Feature:
+    properties:
+      geometry:
+        allOf:
+        - $ref: '#/definitions/models.Geometry'
+        description: Geometría de tipo Point
+      properties:
+        additionalProperties: true
+        description: Atributos dinámicos
+        type: object
+      type:
+        description: '"Feature"'
+        example: Feature
+        type: string
+    type: object
+  models.FeatureCollection:
+    properties:
+      features:
+        description: Lista de features (líneas o estaciones)
+        items:
+          $ref: '#/definitions/models.Feature'
+        type: array
+      type:
+        description: '"FeatureCollection"'
+        example: FeatureCollection
+        type: string
+    type: object
+  models.Geometry:
+    properties:
+      coordinates:
+        description: interface{} permite múltiples niveles de arreglos
+      type:
+        description: '"Point"'
+        example: Point
         type: string
     type: object
   models.Linea:
     properties:
       anio_inauguracion:
+        example: 1969
         type: integer
+      capacidad_vehiculo:
+        example: 1000
+        type: integer
+      clasificacion:
+        example: existente
+        type: string
       color_en:
+        example: Pink
         type: string
       color_esp:
+        example: Rosa
+        type: string
+      derecho_de_via:
+        example: Superficie
         type: string
       descripcion_linea:
         items:
           $ref: '#/definitions/models.DescripcionLinea'
         type: array
       existe:
+        example: true
         type: boolean
+      geom:
+        example: MULTILINESTRING(...)
+        type: string
+      jerarquia_transporte:
+        example: Línea principal
+        type: string
       linea_base_ramal:
+        example: 1
         type: integer
       linea_id:
+        example: 1
         type: integer
       nombre:
+        example: Línea 1
+        type: string
+      num_comercial:
+        example: "1"
+        type: string
+      ramal_id:
+        example: 1
+        type: integer
+      ramales:
+        items:
+          $ref: '#/definitions/models.Ramal'
+        type: array
+      route_gtfs:
+        example: L1
+        type: string
+      sistema:
+        example: METRO
+        type: string
+      tam_km:
+        example: 18.8
+        type: number
+    type: object
+  models.Ramal:
+    properties:
+      anio_creacion:
+        type: integer
+      estado:
+        type: string
+      geom:
+        type: string
+      linea_id:
+        type: integer
+      nombre_ramal:
         type: string
       ramal_id:
         type: integer
-      sistema:
+      ramal_num:
+        type: integer
+      shape_gtfs:
         type: string
       tam_km:
         type: number
@@ -104,35 +219,89 @@ info:
   title: Apimetro
   version: "1.0"
 paths:
-  /estacion:
-    get:
+  /{sistema}/estacion:
+    delete:
       consumes:
       - application/json
-      description: 'Obtener datos a través de los siguientes parámetros: Numero de
-        Linea (linea_id), color en español(color_esp), color en inglés(color_eng)'
+      description: Eliminar una estación por su ID
       parameters:
-      - description: Search by nombre
-        format: nombre
-        in: query
-        name: nombre
+      - description: Sistema de transporte
+        in: path
+        name: sistema
+        required: true
         type: string
-      - description: Search by anio
-        format: anio
+      - description: ID de la estación a eliminar
         in: query
-        name: anio
-        type: string
-      - description: Search by Color Ingles
-        format: color_en
-        in: query
-        name: color_en
-        type: string
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Estacion'
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Eliminar Estacion
+      tags:
+      - Estacion
+    get:
+      consumes:
+      - application/json
+      description: Obtener datos a través de filtros como nombre, línea, municipio,
+        colores y CETRAM
+      parameters:
+      - description: Sistema de transporte
+        in: path
+        name: sistema
+        required: true
+        type: string
+      - description: ID interno de estación
+        in: query
+        name: id
+        type: integer
+      - description: Nombre de la estación
+        in: query
+        name: nombre
+        type: string
+      - description: ID de la línea
+        in: query
+        name: linea_id
+        type: integer
+      - description: Alcaldía o municipio
+        in: query
+        name: alcaldia_municipio
+        type: string
+      - description: Número comercial de la línea
+        in: query
+        name: num_comercial
+        type: string
+      - description: Color de línea en español
+        in: query
+        name: color_esp
+        type: string
+      - description: Color de línea en inglés
+        in: query
+        name: color_en
+        type: string
+      - description: Filtra estaciones CETRAM
+        in: query
+        name: es_cetram
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Estacion'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -148,27 +317,150 @@ paths:
       summary: Datos de Estacion
       tags:
       - Estacion
-  /linea:
+    patch:
+      consumes:
+      - application/json
+      description: Actualizar los datos de una estación por su ID
+      parameters:
+      - description: Sistema de transporte
+        in: path
+        name: sistema
+        required: true
+        type: string
+      - description: ID de la estación a actualizar
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Datos actualizados de la estación
+        in: body
+        name: estacion
+        required: true
+        schema:
+          $ref: '#/definitions/models.Estacion'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Actualizar Estacion
+      tags:
+      - Estacion
+    post:
+      consumes:
+      - application/json
+      description: Crear una nueva estación en el sistema de transporte
+      parameters:
+      - description: Sistema de transporte
+        in: path
+        name: sistema
+        required: true
+        type: string
+      - description: Datos de la estación a crear
+        in: body
+        name: estacion
+        required: true
+        schema:
+          $ref: '#/definitions/models.Estacion'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Crear Estacion
+      tags:
+      - Estacion
+  /{sistema}/linea:
+    delete:
+      consumes:
+      - application/json
+      description: Eliminar una línea de transporte por su ID (incluye eliminación
+        en cascada de ramales y descripciones)
+      parameters:
+      - description: Sistema de transporte
+        in: path
+        name: sistema
+        required: true
+        type: string
+      - description: ID de la línea a eliminar
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Eliminar Linea
+      tags:
+      - Linea
     get:
       consumes:
       - application/json
-      description: 'Obtener datos a través de los siguientes parámetros: Numero de
-        Linea (linea_id), color en español(color_esp), color en inglés(color_eng)'
+      description: Obtener datos de líneas de transporte con filtros avanzados
       parameters:
-      - description: Search by linea_id
-        format: linea_id
-        in: query
-        name: linea_id
+      - description: Sistema de transporte
+        in: path
+        name: sistema
+        required: true
         type: string
-      - description: Search by Color Español
-        format: color_esp
+      - description: Search by nombre
         in: query
-        name: color_esp
+        name: nombre
         type: string
-      - description: Search by Color Ingles
-        format: color_eng
+      - description: Search by num_comercial
         in: query
-        name: color_eng
+        name: num_comercial
+        type: string
+      - description: Search by clasificacion
+        in: query
+        name: clasificacion
+        type: string
+      - description: Search by tam_km
+        in: query
+        name: tam_km
+        type: string
+      - description: Search by existe
+        in: query
+        name: existe
+        type: boolean
+      - description: Search by es_cetram
+        in: query
+        name: es_cetram
+        type: string
+      - description: Search by sentido
+        in: query
+        name: sentido
+        type: string
+      - description: Search by nombre_ramal
+        in: query
+        name: nombre_ramal
         type: string
       produces:
       - application/json
@@ -176,7 +468,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Linea'
+            items:
+              $ref: '#/definitions/models.Linea'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -192,6 +486,227 @@ paths:
       summary: Datos de Linea
       tags:
       - Linea
+    patch:
+      consumes:
+      - application/json
+      description: Actualizar los datos de una línea de transporte por su ID
+      parameters:
+      - description: Sistema de transporte
+        in: path
+        name: sistema
+        required: true
+        type: string
+      - description: ID de la línea a actualizar
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Datos actualizados de la línea
+        in: body
+        name: linea
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Actualizar Linea
+      tags:
+      - Linea
+    post:
+      consumes:
+      - application/json
+      description: Crear una nueva línea de transporte
+      parameters:
+      - description: Sistema de transporte
+        in: path
+        name: sistema
+        required: true
+        type: string
+      - description: Datos de la línea a crear
+        in: body
+        name: linea
+        required: true
+        schema:
+          $ref: '#/definitions/models.Linea'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Linea'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Crear Linea
+      tags:
+      - Linea
+  /mapas/geojsonEstacion:
+    get:
+      consumes:
+      - application/json
+      description: Obtener estaciones en formato GeoJSON con filtros avanzados
+      parameters:
+      - description: Filter by sistema
+        in: query
+        name: sistema
+        type: string
+      - description: Filter by num_comercial
+        in: query
+        name: num_comercial
+        type: string
+      - description: Filter by alcaldia_municipio
+        in: query
+        name: alcaldia_municipio
+        type: string
+      - description: Filter by nombre_ramal
+        in: query
+        name: nombre_ramal
+        type: string
+      - description: Filter by jerarquia_transporte
+        in: query
+        name: jerarquia_transporte
+        type: string
+      - description: Filter by derecho_de_via
+        in: query
+        name: derecho_de_via
+        type: string
+      - description: Filter by es_cetram
+        in: query
+        name: es_cetram
+        type: string
+      - description: Filter by nombre_cetram
+        in: query
+        name: nombre_cetram
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.FeatureCollection'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: GeoJSON Estaciones
+      tags:
+      - GeoJSON
+  /mapas/geojsonLinea:
+    get:
+      consumes:
+      - application/json
+      description: Obtener líneas de transporte en formato GeoJSON con métricas operativas
+      parameters:
+      - description: Filter by sistema
+        in: query
+        name: sistema
+        type: string
+      - description: Filter by num_comercial
+        in: query
+        name: num_comercial
+        type: string
+      - description: Filter by nombre_ramal
+        in: query
+        name: nombre_ramal
+        type: string
+      - description: Filter by jerarquia_transporte
+        in: query
+        name: jerarquia_transporte
+        type: string
+      - description: Filter by derecho_de_via
+        in: query
+        name: derecho_de_via
+        type: string
+      - description: Filter by es_cetram
+        in: query
+        name: es_cetram
+        type: string
+      - description: Filter by sentido
+        in: query
+        name: sentido
+        type: string
+      - description: Filter by existe (true/false)
+        in: query
+        name: existe
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.FeatureCollection'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: GeoJSON Lineas
+      tags:
+      - GeoJSON
+  /mapas/geojsonPoligono:
+    get:
+      consumes:
+      - application/json
+      description: Obtener límites administrativos en formato GeoJSON
+      parameters:
+      - description: Filter by entidad
+        in: query
+        name: entidad
+        type: string
+      - description: Filter by nivel
+        in: query
+        name: nivel
+        type: string
+      - description: Filter by nombre
+        in: query
+        name: nombre
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.FeatureCollection'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: GeoJSON Poligonos
+      tags:
+      - GeoJSON
 securityDefinitions:
   BasicAuth:
     type: basic

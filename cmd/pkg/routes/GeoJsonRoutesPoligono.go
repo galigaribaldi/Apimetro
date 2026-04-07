@@ -13,7 +13,19 @@ func addGeoJsonRoutePoligono(rg *gin.RouterGroup) {
 	rg.GET("/geojsonPoligono", getGeoJsonRoutePoligono)
 }
 
-// getGeoJsonRoutePoligono maneja la petición HTTP, extrae los filtros y devuelve el GeoJSON
+// getGeoJsonRoutePoligono   	GET Route
+//
+//	@Summary		GeoJSON Poligonos
+//	@Description	Obtener límites administrativos en formato GeoJSON
+//	@Tags			GeoJSON
+//	@Accept			json
+//	@Produce		json
+//	@Param			entidad	query		string	false	"Filter by entidad"
+//	@Param			nivel	query		string	false	"Filter by nivel"
+//	@Param			nombre	query		string	false	"Filter by nombre"
+//	@Success		200		{object}	models.FeatureCollection
+//	@Failure		500		{object}	map[string]interface{}
+//	@Router			/mapas/geojsonPoligono [get]
 func getGeoJsonRoutePoligono(c *gin.Context) {
 	entidad := c.Query("entidad")
 	nivel := c.Query("nivel")

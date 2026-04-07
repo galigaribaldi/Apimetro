@@ -7,23 +7,15 @@ import (
 	"log"
 )
 
-/*
--------
-POST En Descripcion Línea
--------
-*/
-
+// CreateDescripcionLinea inserta una nueva descripción de línea en la base de datos.
 func CreateDescripcionLinea(descripcionLinea models.DescripcionLinea) {
 	if err := con.DB.Create(&descripcionLinea).Error; err != nil {
 		log.Println("Error en la creacion de Descripcion de Linea", err)
 	}
 }
 
-/*
--------
-GET en Descripcion Linea
--------
-*/
+// SearchDescripcionesLinea realiza una búsqueda dinámica de descripciones de línea.
+// Admite filtros por ID, terminal_original, linea_base, num_comercial y sistema.
 func SearchDescripcionesLinea(filtros map[string]interface{}) []models.DescripcionLinea {
 	var descripciones []models.DescripcionLinea
 	query := con.DB.Model(&models.DescripcionLinea{})
@@ -71,22 +63,14 @@ func SearchDescripcionesLinea(filtros map[string]interface{}) []models.Descripci
 	return descripciones
 }
 
-/*
--------
-UPDATE
--------
-*/
+// UpdateDescripcionLinea actualiza una descripción de línea existente por su ID.
 func UpdateDescripcionLinea(descripcion models.DescripcionLinea) {
 	if err := con.DB.Model(&descripcion).Where("id = ?", descripcion.ID).Updates(descripcion).Error; err != nil {
 		log.Println("Error actualizando la descripción de la línea:", err)
 	}
 }
 
-/*
--------
-DELETE
--------
-*/
+// DeleteDescripcionLinea elimina una descripción de línea por su ID.
 func DeleteDescripcionLinea(id int) {
 	if err := con.DB.Delete(&models.DescripcionLinea{}, id).Error; err != nil {
 		log.Println("Error eliminando la descripción de la línea con ID", id, ":", err)

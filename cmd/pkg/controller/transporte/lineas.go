@@ -7,11 +7,6 @@ import (
 	"strings"
 )
 
-/*
-------
-GET
-------
-*/
 func SelectAllLines() []models.Linea {
 	var lineas []models.Linea
 	con.DB.Preload("Descripcion_linea").Preload("Ramales").Find(&lineas)
@@ -90,22 +85,14 @@ func SearchLineas(filtros map[string]interface{}) []models.Linea {
 	return lineas
 }
 
-/*
-------
-POST
-------
-*/
+// CreateLinea inserta una nueva línea de transporte en la base de datos.
 func CreateLinea(linea models.Linea) error {
 	result := con.DB.Create(&linea)
 	log.Println("POST")
 	return result.Error
 }
 
-/*
-------
-DELETE
-------
-*/
+// DeleteLinea elimina una línea y sus dependencias (ramales y descripciones) por su ID.
 func DeleteLinea(id int) error {
 
 	con.DB.Where("linea_id = ?", id).Delete(&models.Ramal{})
@@ -117,11 +104,7 @@ func DeleteLinea(id int) error {
 	return result.Error
 }
 
-/*
-------
-UPDATE
-------
-*/
+// UpdateLinea actualiza los campos de una línea existente por su ID.
 func UpdateLinea(id int, dataActualizada map[string]interface{}) error {
 	result := con.DB.Model(&models.Linea{}).
 		Where("id = ?", id).

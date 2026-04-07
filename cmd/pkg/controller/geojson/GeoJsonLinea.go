@@ -75,7 +75,7 @@ func SelectGeoJsonLineaConFiltros(filtros map[string]interface{}) modelsGeojson.
 	}
 	// Filtrar el trazo de la línea si pasa por estaciones CETRAM
 	if esCetram, ok := filtros["es_cetram"]; ok && esCetram != "" {
-		query = query.Joins("JOIN estacions ON estacions.linea_id = lineas.id").
+		query = query.Joins("LEFT JOIN estacions ON estacions.linea_id = lineas.id").
 			Where("estacions.es_cetram = ?", esCetram)
 	}
 	// Filtrar por sentido (IDA o REGRESO)
@@ -101,6 +101,11 @@ func SelectGeoJsonLineaConFiltros(filtros map[string]interface{}) modelsGeojson.
 
 		query = query.Where(strings.Join(condiciones, " OR "), valores...)
 	}
+
+	// TODO: Implementar filtro cetram_real (búsqueda espacial 250m)
+	// if cetramReal, ok := filtros["cetram_real"]; ok && cetramReal != "" {
+	//     // Implementar consulta espacial para encontrar líneas dentro de 250m de un cetram
+	// }
 
 	query = query.Group("lineas.nombre, lineas.sistema, lineas.color_esp, lineas.tam_km, ramals.nombre_ramal")
 

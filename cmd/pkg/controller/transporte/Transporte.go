@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// Inicializa el módulo de Transporte, conectando a la base de datos y migrando las tablas correspondientes.
 func init() {
 	log.Println("Inicializando BD y módulo de Transporte")
 	con.ConnectDataBase()

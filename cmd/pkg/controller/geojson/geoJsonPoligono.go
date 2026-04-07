@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+// SelectGeoJsonPoligono orquesta la extracción de geometrías y métricas operativas de los límites administrativos
+// Se pueden filtrar por entidad, nivel y nombre
 func SelectGeoJsonPoligono(entidad string, nivel string, nombre string) modelsGeojson.FeatureCollection {
 	var resultados []utilsGeoJson.ResultGeoJsonPoligono
 

@@ -12,6 +12,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+/*************  ✨ Windsurf Command ⭐  *************/
+// addDescriptionLineRoute configura las rutas para la API de descripciones de línea, teniendo en cuenta
+// la arquitectura dinámica dependiendo del sistema de transporte
+//
+//	@Summary		Descripción de Línea
+//	@Description		Obtener, crear, actualizar y eliminar descripciones de línea
+//	@Tags			Descripción de Línea
+/*******  68ce6771-2981-42ef-acc5-81ecb5553556  *******/
 func addDescriptionLineRoute(rg *gin.RouterGroup) {
 
 	rg.GET("/descripcion-linea", getDescripcionLineaRoute)
@@ -20,11 +28,23 @@ func addDescriptionLineRoute(rg *gin.RouterGroup) {
 	rg.PUT("/descripcion-linea/:id", putDescripcionLineaRoute)
 }
 
-/*
---------
-GET METHODS
---------
-*/
+// getDescripcionLineaRoute   	GET Route
+//
+//	@Summary		Datos de Descripcion Linea
+//	@Description	Obtener descripciones de líneas con filtros
+//	@Tags			DescripcionLinea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema		path		string	true	"Sistema de transporte"
+//	@Param			id				query		int		false	"ID de la descripción"
+//	@Param			terminal_original	query		string	false	"Search by terminal_original"
+//	@Param			linea_base			query		string	false	"Search by linea_base"
+//	@Param			num_comercial		query		string	false	"Search by num_comercial"
+//	@Success		200					{array}	models.DescripcionLinea
+//	@Failure		400					{object}	httputil.HTTPError
+//	@Failure		404					{object}	httputil.HTTPError
+//	@Failure		500					{object}	httputil.HTTPError
+//	@Router			/{sistema}/descripcion-linea [get]
 func getDescripcionLineaRoute(c *gin.Context) {
 	sistema := c.MustGet("sistemaValidado").(string)
 	filtros := make(map[string]interface{})
@@ -52,11 +72,18 @@ func getDescripcionLineaRoute(c *gin.Context) {
 	c.JSON(http.StatusOK, resultados)
 }
 
-/*
---------
-POST METHODS
---------
-*/
+// postDescripcionLineaRoute   	POST Route
+//
+//	@Summary		Crear Descripcion Linea
+//	@Description	Crear una nueva descripción de línea
+//	@Tags			DescripcionLinea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			descripcion	body		models.DescripcionLinea	true	"Datos de la descripción de línea"
+//	@Success		201			{object}	map[string]interface{}
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Router			/{sistema}/descripcion-linea [post]
 func postDescripcionLineaRoute(c *gin.Context) {
 	var newDescripcion models.DescripcionLinea
 	if err := c.BindJSON(&newDescripcion); err != nil {
@@ -76,12 +103,18 @@ func postDescripcionLineaRoute(c *gin.Context) {
 		})
 }
 
-/*
---------
-DELETE METHODS
---------
-*/
-
+// deleteDescripcionLineaRoute   	DELETE Route
+//
+//	@Summary		Eliminar Descripcion Linea
+//	@Description	Eliminar una descripción de línea por ID
+//	@Tags			DescripcionLinea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			id	path		int	true	"ID de la descripción de línea a eliminar"
+//	@Success		200	{object} map[string]interface{}
+//	@Failure		400	{object}	httputil.HTTPError
+//	@Router			/{sistema}/descripcion-linea/{id} [delete]
 func deleteDescripcionLineaRoute(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -95,11 +128,19 @@ func deleteDescripcionLineaRoute(c *gin.Context) {
 
 }
 
-/*
---------
-PUT METHODS
---------
-*/
+// putDescripcionLineaRoute   	PUT Route
+//
+//	@Summary		Actualizar Descripcion Linea
+//	@Description	Actualizar una descripción de línea por ID
+//	@Tags			DescripcionLinea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			id			path		int				true	"ID de la descripción de línea"
+//	@Param			descripcion	body		models.DescripcionLinea	true	"Datos actualizados"
+//	@Success		200			{object}	map[string]interface{}
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Router			/{sistema}/descripcion-linea/{id} [put]
 func putDescripcionLineaRoute(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

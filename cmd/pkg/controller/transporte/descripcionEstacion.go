@@ -7,23 +7,15 @@ import (
 	"log"
 )
 
-/*
--------
-POST En Descripcion Estacion
--------
-*/
-
+// CreateDescripcionEstacion inserta una nueva descripción de estación en la base de datos.
 func CreateDescripcionEstacion(descripcionEstacion models.DescripcionEstacion) {
 	if err := con.DB.Create(&descripcionEstacion).Error; err != nil {
 		log.Println("Error en la creación de Descripción de Estación", err)
 	}
 }
 
-/*
--------
-GET
------
-*/
+// SearchDescripcionesEstacion realiza una búsqueda dinámica de descripciones de estaciones.
+// Admite filtros por ID, nombre, alcaldía/municipio, num_comercial y sistema.
 func SearchDescripcionesEstacion(filtros map[string]interface{}) []models.DescripcionEstacion {
 	var descripciones []models.DescripcionEstacion
 	query := con.DB.Model(&models.DescripcionEstacion{})
@@ -73,22 +65,14 @@ func SearchDescripcionesEstacion(filtros map[string]interface{}) []models.Descri
 	return descripciones
 }
 
-/*
--------
-UPDATE
--------
-*/
+// UpdateDescripcionEstacion actualiza una descripción de estación existente por su ID.
 func UpdateDescripcionEstacion(descripcion models.DescripcionEstacion) {
 	if err := con.DB.Model(&descripcion).Where("id = ?", descripcion.ID).Updates(descripcion).Error; err != nil {
 		log.Println("Error actualizando la descripción de la estación:", err)
 	}
 }
 
-/*
--------
-DELETE
--------
-*/
+// DeleteDescripcionEstacion elimina una descripción de estación por su ID.
 func DeleteDescripcionEstacion(id int) {
 	if err := con.DB.Delete(&models.DescripcionEstacion{}, id).Error; err != nil {
 		log.Println("Error eliminando la descripción de la estación con ID", id, ":", err)

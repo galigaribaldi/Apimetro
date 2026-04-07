@@ -7,24 +7,13 @@ import (
 	"log"
 )
 
-/*
-------
-POST
-------
-*/
-//Crear estaciones
+// CreateEstacion inserts a new station into the database
 func CreateEstacion(estacion models.Estacion) {
 	con.DB.Create(&estacion)
 }
 
-/*
-------
-GET (con diferentes filtros)
-------
-*/
-
-// Seleccionar Estaciones por color de la Línea
-
+// SearchEstaciones performs dynamic search on stations with JOIN to lines table
+// Supports filters: sistema, id, nombre, linea_id, alcaldia_municipio, num_comercial, color_esp, color_en, es_cetram
 func SearchEstaciones(filtros map[string]interface{}) []models.Estacion {
 	var estaciones []models.Estacion
 	query := con.DB.Model(&models.Estacion{})
@@ -96,11 +85,6 @@ func SearchEstaciones(filtros map[string]interface{}) []models.Estacion {
 	return estaciones
 }
 
-/*
-------
-DELETE
-------
-*/
 func DeleteEstacion(id int) {
 	var estacion models.Estacion
 	if result := con.DB.Delete(&estacion, id); result.Error != nil {
@@ -109,11 +93,6 @@ func DeleteEstacion(id int) {
 	}
 }
 
-/*
-------
-UPDATE
-------
-*/
 func UpdateEstacion(estacion models.Estacion) {
 	if err := con.DB.Model(&estacion).Updates(estacion).Error; err != nil {
 		log.Println("Error actualizando estación:", err)

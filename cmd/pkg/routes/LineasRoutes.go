@@ -12,6 +12,14 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
+/*************  ✨ Windsurf Command ⭐  *************/
+// addLineRoute configura las rutas para la API, teniendo en cuenta
+// la arquitectura dinámica dependiendo del sistema de transporte
+//
+//	@Summary		Líneas
+//	@Description		Obtener, crear, actualizar y eliminar líneas
+//	@Tags			Línea
+/*******  ba17b442-520c-45a0-9645-a8abf95914e6  *******/
 func addLineRoute(rg *gin.RouterGroup) {
 
 	//Lineas
@@ -22,8 +30,28 @@ func addLineRoute(rg *gin.RouterGroup) {
 }
 
 // ==========================================
-// GET /movilidad/metro/linea
+// GET /movilidad/{sistema}/linea
 // ==========================================
+// getLineaRoute   	GET Route
+//
+//	@Summary		Datos de Linea
+//	@Description	Obtener datos de líneas de transporte con filtros avanzados
+//	@Tags			Linea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema			path		string	true	"Sistema de transporte"
+//	@Param			id				query		int		false	"ID interno de línea"
+//	@Param			nombre			query		string	false	"Nombre de la línea"
+//	@Param			num_comercial	query		string	false	"Número comercial"
+//	@Param			nombre_ramal	query		string	false	"Nombre del ramal"
+//	@Param			clasificacion	query		string	false	"Clasificación operativa"
+//	@Param			tam_km			query		string	false	"Longitud en kilómetros"
+//	@Param			existe			query		bool	false	"Filtrar líneas operativas"
+//	@Success		200				{array}	models.Linea
+//	@Failure		400				{object}	httputil.HTTPError
+//	@Failure		404				{object}	httputil.HTTPError
+//	@Failure		500				{object}	httputil.HTTPError
+//	@Router			/{sistema}/linea [get]
 func getLineaRoute(c *gin.Context) {
 
 	sistema := c.MustGet("sistemaValidado").(string)
@@ -79,8 +107,21 @@ func getLineaRoute(c *gin.Context) {
 }
 
 // ==========================================
-// POST /movilidad/metro/linea
+// POST /movilidad/{sistema}/linea
 // ==========================================
+// postLineaRoute   	POST Route
+//
+//	@Summary		Crear Linea
+//	@Description	Crear una nueva línea de transporte
+//	@Tags			Linea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			linea	body		models.Linea	true	"Datos de la línea a crear"
+//	@Success		201			{object}	models.Linea
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Failure		500			{object}	httputil.HTTPError
+//	@Router			/{sistema}/linea [post]
 func postLineaRoute(c *gin.Context) {
 	var newLinea models.Linea
 
@@ -112,8 +153,21 @@ func postLineaRoute(c *gin.Context) {
 }
 
 // ==========================================
-// DELETE /movilidad/metro/linea?id=1
+// DELETE /movilidad/{sistema}/linea?id=1
 // ==========================================
+// deleteLineaRoute   	DELETE Route
+//
+//	@Summary		Eliminar Linea
+//	@Description	Eliminar una línea de transporte por su ID (incluye eliminación en cascada de ramales y descripciones)
+//	@Tags			Linea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			id	query		int	true	"ID de la línea a eliminar"
+//	@Success		200	{object}	map[string]interface{}
+//	@Failure		400	{object}	httputil.HTTPError
+//	@Failure		500	{object}	httputil.HTTPError
+//	@Router			/{sistema}/linea [delete]
 func deleteLineaRoute(c *gin.Context) {
 	idStr := c.Query("id")
 	id, err := strconv.Atoi(idStr)
@@ -139,9 +193,22 @@ func deleteLineaRoute(c *gin.Context) {
 }
 
 // ==========================================
-// PATCH /movilidad/metro/lineas?id=1
+// PATCH /movilidad/{sistema}/linea?id=1
 // ==========================================
-
+// updateLineaRoute   	PATCH Route
+//
+//	@Summary		Actualizar Linea
+//	@Description	Actualizar los datos de una línea de transporte por su ID
+//	@Tags			Linea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			id		query		int				true	"ID de la línea a actualizar"
+//	@Param			linea	body		map[string]interface{}	true	"Datos actualizados de la línea"
+//	@Success		200			{object}	map[string]interface{}
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Failure		500			{object}	httputil.HTTPError
+//	@Router			/{sistema}/linea [patch]
 func updateLineaRoute(c *gin.Context) {
 	idStr := c.Query("id")
 	id, err := strconv.Atoi(idStr)

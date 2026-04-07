@@ -15,6 +15,9 @@ var (
 	router = gin.Default()
 )
 
+// Run inicia la API y configura las rutas para ella.
+// La API se configura con las rutas para la API de mapas y la ruta base.
+// Luego se inicia el servidor en el puerto 8080 y se configura la ruta para obtener la documentación de la API.
 func Run() {
 	getRoutes()
 	router.GET("/", getInit)
@@ -23,6 +26,8 @@ func Run() {
 
 }
 
+// getRoutes configura las rutas para la API, teniendo en cuenta
+// la arquitectura dinámica dependiendo del sistema de transporte
 func getRoutes() {
 	// Ruta Base
 	api := router.Group("/movilidad")
@@ -42,6 +47,7 @@ func getRoutes() {
 	}
 }
 
+// getInit obtiene el estado actual de la API y devuelve un mensaje de prueba.
 func getInit(c *gin.Context) {
 	log.Println("APImetro (Servidor de Movilidad CDMX) Vivo!")
 	c.JSON(http.StatusOK,

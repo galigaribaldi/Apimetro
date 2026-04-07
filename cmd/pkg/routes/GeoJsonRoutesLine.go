@@ -9,10 +9,31 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
+// addGeoJsonRouteLine configura la ruta para obtener líneas de transporte en formato GeoJSON con métricas operativas
 func addGeoJsonRouteLine(rg *gin.RouterGroup) {
 	rg.GET("/geojsonLinea", getGeoJsonRouteLinea)
 }
 
+// getGeoJsonRouteLinea   	GET Route
+//
+//	@Summary		GeoJSON Lineas
+//	@Description	Obtener líneas de transporte en formato GeoJSON con métricas operativas
+//	@Tags			GeoJSON
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema				query		string	false	"Filter by sistema"
+//	@Param			num_comercial		query		string	false	"Filter by num_comercial"
+//	@Param			nombre_ramal		query		string	false	"Filter by nombre_ramal"
+//	@Param			jerarquia_transporte	query		string	false	"Filter by jerarquia_transporte"
+//	@Param			derecho_de_via		query		string	false	"Filter by derecho_de_via"
+//	@Param			es_cetram			query		string	false	"Filter by es_cetram"
+//	@Param			sentido				query		string	false	"Filter by sentido"
+//	@Param			cetram_real			query		string	false	"Filter by cetram_real (250m radius)"
+//	@Param			existe				query		string	false	"Filter by existe (true/false)"
+//	@Success		200					{object}	models.FeatureCollection
+//	@Failure		404					{object}	map[string]interface{}
+//	@Failure		500					{object}	map[string]interface{}
+//	@Router			/mapas/geojsonLinea [get]
 func getGeoJsonRouteLinea(c *gin.Context) {
 	filtros := make(map[string]interface{})
 
@@ -43,6 +64,10 @@ func getGeoJsonRouteLinea(c *gin.Context) {
 	}
 	if dv := c.Query("derecho_de_via"); dv != "" {
 		filtros["derecho_de_via"] = dv
+	}
+	if cetramReal := c.Query("cetram_real"); cetramReal != "" {
+		cetramRealNormalizado := norm.NFC.String(cetramReal)
+		filtros["cetram_real"] = cetramRealNormalizado
 	}
 	if existe := c.Query("existe"); existe != "" {
 		switch existe {

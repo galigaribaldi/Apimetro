@@ -11,6 +11,7 @@ import (
 
 var DB *gorm.DB
 
+// ConnectDataBase se encarga de conectarse a la base de datos PostgreSQL y realizar la migración de las tablas.
 func ConnectDataBase() {
 	log.Println(os.Getenv("DATABASE_URL"))
 	dbURL := "postgresql://prueba:postgres@localhost:5432/db_apimetro"
