@@ -1,75 +1,87 @@
 package routes
 
 import (
+	GeoJson "Apimetro/cmd/pkg/controller/geojson"
 	"log"
 	"net/http"
-	"strconv"
-
-	metro "Apimetro/cmd/pkg/controller/metro"
-	utilsFormatterEstacion "Apimetro/cmd/pkg/controller/utils/Estacion"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/unicode/norm"
 )
 
 func addGeoJsonRouteEstacion(rg *gin.RouterGroup) {
-	//GeoJson
 	rg.GET("/geojsonEstacion", getGeoJsonRouteEstacion)
-	/*
-		rg.POST()
-		rg.DELETE()
-		rg.PATCH()
-	*/
 }
 
+// getGeoJsonRouteEstacion   	GET Route
+//
+//	@Summary		GeoJSON Estaciones
+//	@Description	Obtener estaciones en formato GeoJSON con filtros avanzados
+//	@Tags			GeoJSON
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema				query		string	false	"Filter by sistema"
+//	@Param			num_comercial		query		string	false	"Filter by num_comercial"
+//	@Param			alcaldia_municipio	query		string	false	"Filter by alcaldia_municipio"
+//	@Param			nombre_ramal		query		string	false	"Filter by nombre_ramal"
+//	@Param			jerarquia_transporte	query		string	false	"Filter by jerarquia_transporte"
+//	@Param			derecho_de_via		query		string	false	"Filter by derecho_de_via"
+//	@Param			es_cetram			query		string	false	"Filter by es_cetram"
+//	@Param			nombre_cetram		query		string	false	"Filter by nombre_cetram"
+//	@Param			cetram_real			query		string	false	"Filter by cetram_real (250m radius)"
+//	@Success		200					{object}	models.FeatureCollection
+//	@Failure		404					{object}	map[string]interface{}
+//	@Failure		500					{object}	map[string]interface{}
+//	@Router			/mapas/geojsonEstacion [get]
 func getGeoJsonRouteEstacion(c *gin.Context) {
-	//Obtener datos por el query
-	idLinea, err := strconv.Atoi(c.Query("linea_id"))
-	nombreEstacion := c.Query("nombre")
-	ciudadEstacion := c.Query("ciudad")
-	alacaldiaMunicipio := c.Query("alacaldia_municipio")
+	filtros := make(map[string]interface{})
 
-	log.Println("Linea: ", idLinea)
-	if err != nil && idLinea != 0 {
-		c.JSON(http.StatusBadRequest, err)
+	sistema := c.Query("sistema")
+	if sistema == "" {
+		sistema = "%"
+	}
+	filtros["sistema"] = sistema
+
+	if nc := c.Query("num_comercial"); nc != "" {
+		filtros["num_comercial"] = nc
+	}
+	if alc := c.Query("alcaldia_municipio"); alc != "" {
+		filtros["alcaldia_municipio"] = alc
+	}
+	if nr := c.Query("nombre_ramal"); nr != "" {
+		ramalNormalizado := norm.NFC.String(nr)
+		filtros["nombre_ramal"] = ramalNormalizado
+	}
+	if jt := c.Query("jerarquia_transporte"); jt != "" {
+		filtros["jerarquia_transporte"] = jt
+	}
+	if dv := c.Query("derecho_de_via"); dv != "" {
+		filtros["derecho_de_via"] = dv
+	}
+
+	if esCetram := c.Query("es_cetram"); esCetram != "" {
+		filtros["es_cetram"] = esCetram
+	}
+	if nomCetram := c.Query("nombre_cetram"); nomCetram != "" {
+		nomCetramNormalizado := norm.NFC.String(nomCetram)
+		filtros["nombre_cetram"] = nomCetramNormalizado
+	}
+	if cetramReal := c.Query("cetram_real"); cetramReal != "" {
+		cetramRealNormalizado := norm.NFC.String(cetramReal)
+		filtros["cetram_real"] = cetramRealNormalizado
+	}
+
+	log.Println("Consultando mapa GeoJson de ESTACIONES con filtros:", filtros)
+
+	featureCollection := GeoJson.SelectGeoJsonEstacionConFiltros(filtros)
+
+	if len(featureCollection.Features) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"mensaje": "No se encontraron estaciones para los filtros proporcionados",
+			"data":    featureCollection,
+		})
 		return
 	}
-	//Obtener datos por Linea ID
-	if idLinea != 0 {
-		log.Println("Linea ID: ", idLinea)
-		dataidLineaEstacion := metro.SelectEstacionbyLineaID(idLinea)
-		data := utilsFormatterEstacion.ConvertEstacionToJson(dataidLineaEstacion)
-		c.JSON(http.StatusOK, data)
-		return
-	}
-	//Obtener datos por nombre de la estacion
-	if nombreEstacion != "" {
-		log.Println("Nombre de la estacion: ", nombreEstacion)
-		dataNombreEstacion := metro.SelectEstacionbyName(nombreEstacion)
-		data := utilsFormatterEstacion.ConvertEstacionToJson(dataNombreEstacion)
-		c.JSON(http.StatusOK, data)
-		return
-	}
-	// Localizacion Estado Ciudad
-	if ciudadEstacion != "" {
-		log.Println("Estado - Ciudad: ", ciudadEstacion)
-		dataciudadEstacion := metro.SelectEstacionbyCiudad(ciudadEstacion)
-		data := utilsFormatterEstacion.ConvertEstacionToJson(dataciudadEstacion)
-		c.JSON(http.StatusOK, data)
-		return
-	}
-	// Localizacion Alcaldia o municipio
-	if alacaldiaMunicipio != "" {
-		log.Println("Alcaldia o municipio: ", alacaldiaMunicipio)
-		dataalacaldiaMunicipio := metro.SelectEstacionbyAlcaldia(alacaldiaMunicipio)
-		data := utilsFormatterEstacion.ConvertEstacionToJson((dataalacaldiaMunicipio))
-		c.JSON(http.StatusOK, data)
-		return
-	}
-	//Obtener datos de la base ((TODOS))
-	dataAllEstacion := metro.SelectAllEstations()
-	log.Println(dataAllEstacion)
-	//Formatear datos para hacerlo en un arreglo
-	data := utilsFormatterEstacion.ConvertEstacionToJson(dataAllEstacion)
-	c.JSON(http.StatusOK, data)
-	return
+
+	c.JSON(http.StatusOK, featureCollection)
 }

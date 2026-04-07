@@ -1,9 +1,9 @@
 package main
 
 import (
+	_ "Apimetro/cmd/docs"
 	routes "Apimetro/cmd/pkg/routes"
 	"log"
-	_ "Apimetro/cmd/docs"
 )
 
 //	@title			Apimetro
@@ -17,12 +17,12 @@ import (
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
 //	@host		localhost:8080
-//	@BasePath	/stc
+//	@BasePath	/movilidad
 
 //	@securityDefinitions.basic	BasicAuth
 
-//	@externalDocs.description	Github
-//	@externalDocs.url			https://github.com/galigaribaldi/Apimetro
+// @externalDocs.description	Github
+// @externalDocs.url			https://github.com/galigaribaldi/Apimetro
 func main() {
 	routes.Run()
 	log.Println("Alive!")

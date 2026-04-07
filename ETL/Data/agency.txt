@@ -1,0 +1,11 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang
+INTERURBANO,Tren El Insurgente,https://trenelinsurgente.mx/,America/Mexico_City,ES
+PUMABUS,Pumabús,https://www.dgsgm.unam.mx/pumabus,America/Mexico_City,ES
+CC,Corredores Concesionados,https://datos.cdmx.gob.mx/dataset/?q=corredores+concesionados,America/Mexico_City,ES
+METRO,Sistema de Transporte Colectivo Metro,https://www.metro.cdmx.gob.mx/,America/Mexico_City,ES
+MB,Metrobús,https://www.metrobus.cdmx.gob.mx,America/Mexico_City,ES
+TL,Servicio de Tren Ligero,https://www.ste.cdmx.gob.mx/tren-ligero,America/Mexico_City,ES
+SUB,Ferrocarriles Suburbanos,http://www.fsuburbanos.com/,America/Mexico_City,ES
+TROLE,Trolebús,https://www.ste.cdmx.gob.mx/,America/Mexico_City,ES
+RTP,Red de Transporte de Pasajeros,https://www.rtp.cdmx.gob.mx,America/Mexico_City,ES
+CBB,Cablebus,https://www.ste.cdmx.gob.mx/cablebus,America/Mexico_City,ES

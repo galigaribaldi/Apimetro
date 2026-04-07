@@ -22,9 +22,230 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/estacion": {
+        "/mapas/geojsonEstacion": {
             "get": {
-                "description": "Obtener datos a través de los siguientes parámetros: Numero de Linea (linea_id), color en español(color_esp), color en inglés(color_eng)",
+                "description": "Obtener estaciones en formato GeoJSON con filtros avanzados",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "GeoJSON"
+                ],
+                "summary": "GeoJSON Estaciones",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by sistema",
+                        "name": "sistema",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by num_comercial",
+                        "name": "num_comercial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by alcaldia_municipio",
+                        "name": "alcaldia_municipio",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by nombre_ramal",
+                        "name": "nombre_ramal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by jerarquia_transporte",
+                        "name": "jerarquia_transporte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by derecho_de_via",
+                        "name": "derecho_de_via",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by es_cetram",
+                        "name": "es_cetram",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by nombre_cetram",
+                        "name": "nombre_cetram",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.FeatureCollection"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/mapas/geojsonLinea": {
+            "get": {
+                "description": "Obtener líneas de transporte en formato GeoJSON con métricas operativas",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "GeoJSON"
+                ],
+                "summary": "GeoJSON Lineas",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by sistema",
+                        "name": "sistema",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by num_comercial",
+                        "name": "num_comercial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by nombre_ramal",
+                        "name": "nombre_ramal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by jerarquia_transporte",
+                        "name": "jerarquia_transporte",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by derecho_de_via",
+                        "name": "derecho_de_via",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by es_cetram",
+                        "name": "es_cetram",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by sentido",
+                        "name": "sentido",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by existe (true/false)",
+                        "name": "existe",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.FeatureCollection"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/mapas/geojsonPoligono": {
+            "get": {
+                "description": "Obtener límites administrativos en formato GeoJSON",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "GeoJSON"
+                ],
+                "summary": "GeoJSON Poligonos",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by entidad",
+                        "name": "entidad",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by nivel",
+                        "name": "nivel",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by nombre",
+                        "name": "nombre",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.FeatureCollection"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/{sistema}/estacion": {
+            "get": {
+                "description": "Obtener datos a través de filtros como nombre, línea, municipio, colores y CETRAM",
                 "consumes": [
                     "application/json"
                 ],
@@ -38,23 +259,57 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "format": "nombre",
-                        "description": "Search by nombre",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID interno de estación",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nombre de la estación",
                         "name": "nombre",
                         "in": "query"
                     },
                     {
-                        "type": "string",
-                        "format": "anio",
-                        "description": "Search by anio",
-                        "name": "anio",
+                        "type": "integer",
+                        "description": "ID de la línea",
+                        "name": "linea_id",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "format": "color_en",
-                        "description": "Search by Color Ingles",
+                        "description": "Alcaldía o municipio",
+                        "name": "alcaldia_municipio",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Número comercial de la línea",
+                        "name": "num_comercial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Color de línea en español",
+                        "name": "color_esp",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Color de línea en inglés",
                         "name": "color_en",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filtra estaciones CETRAM",
+                        "name": "es_cetram",
                         "in": "query"
                     }
                 ],
@@ -62,7 +317,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Estacion"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Estacion"
+                            }
                         }
                     },
                     "400": {
@@ -84,11 +342,154 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Crear una nueva estación en el sistema de transporte",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Estacion"
+                ],
+                "summary": "Crear Estacion",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos de la estación a crear",
+                        "name": "estacion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Estacion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Eliminar una estación por su ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Estacion"
+                ],
+                "summary": "Eliminar Estacion",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la estación a eliminar",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Actualizar los datos de una estación por su ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Estacion"
+                ],
+                "summary": "Actualizar Estacion",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la estación a actualizar",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos actualizados de la estación",
+                        "name": "estacion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Estacion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
             }
         },
-        "/linea": {
+        "/{sistema}/linea": {
             "get": {
-                "description": "Obtener datos a través de los siguientes parámetros: Numero de Linea (linea_id), color en español(color_esp), color en inglés(color_eng)",
+                "description": "Obtener datos de líneas de transporte con filtros avanzados",
                 "consumes": [
                     "application/json"
                 ],
@@ -102,23 +503,57 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "format": "linea_id",
-                        "description": "Search by linea_id",
-                        "name": "linea_id",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search by nombre",
+                        "name": "nombre",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "format": "color_esp",
-                        "description": "Search by Color Español",
-                        "name": "color_esp",
+                        "description": "Search by num_comercial",
+                        "name": "num_comercial",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "format": "color_eng",
-                        "description": "Search by Color Ingles",
-                        "name": "color_eng",
+                        "description": "Search by clasificacion",
+                        "name": "clasificacion",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search by tam_km",
+                        "name": "tam_km",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Search by existe",
+                        "name": "existe",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search by es_cetram",
+                        "name": "es_cetram",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search by sentido",
+                        "name": "sentido",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search by nombre_ramal",
+                        "name": "nombre_ramal",
                         "in": "query"
                     }
                 ],
@@ -126,7 +561,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Linea"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Linea"
+                            }
                         }
                     },
                     "400": {
@@ -137,6 +575,167 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Crear una nueva línea de transporte",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Linea"
+                ],
+                "summary": "Crear Linea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos de la línea a crear",
+                        "name": "linea",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Linea"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Linea"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Eliminar una línea de transporte por su ID (incluye eliminación en cascada de ramales y descripciones)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Linea"
+                ],
+                "summary": "Eliminar Linea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la línea a eliminar",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Actualizar los datos de una línea de transporte por su ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Linea"
+                ],
+                "summary": "Actualizar Linea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la línea a actualizar",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos actualizados de la línea",
+                        "name": "linea",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
@@ -201,46 +800,125 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "alcaldia_municipio": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Miguel Hidalgo"
                 },
                 "anio": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1980"
                 },
                 "cve_est": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "TAC"
+                },
+                "es_cetram": {
+                    "type": "boolean",
+                    "example": false
                 },
                 "estacion_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "estacion_id_oficial": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1001
                 },
                 "estado_ciudad": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Ciudad de México"
                 },
                 "existe": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 },
                 "latitud": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 19.403
                 },
                 "linea_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "longitud": {
-                    "type": "number"
+                    "type": "number",
+                    "example": -99.188
                 },
                 "nombre": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Tacubaya"
+                },
+                "nombre_cetram": {
+                    "type": "string",
+                    "example": "Tacubaya CETRAM"
                 },
                 "num_estacion": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "sistema": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "METRO"
+                },
+                "stop_gtfs": {
+                    "type": "string",
+                    "example": "STC_001"
                 },
                 "tipo": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Terminal"
+                }
+            }
+        },
+        "models.Feature": {
+            "type": "object",
+            "properties": {
+                "geometry": {
+                    "description": "Geometría de tipo Point",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Geometry"
+                        }
+                    ]
+                },
+                "properties": {
+                    "description": "Atributos dinámicos",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "type": {
+                    "description": "\"Feature\"",
+                    "type": "string",
+                    "example": "Feature"
+                }
+            }
+        },
+        "models.FeatureCollection": {
+            "type": "object",
+            "properties": {
+                "features": {
+                    "description": "Lista de features (líneas o estaciones)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Feature"
+                    }
+                },
+                "type": {
+                    "description": "\"FeatureCollection\"",
+                    "type": "string",
+                    "example": "FeatureCollection"
+                }
+            }
+        },
+        "models.Geometry": {
+            "type": "object",
+            "properties": {
+                "coordinates": {
+                    "description": "interface{} permite múltiples niveles de arreglos"
+                },
+                "type": {
+                    "description": "\"Point\"",
+                    "type": "string",
+                    "example": "Point"
                 }
             }
         },
@@ -248,13 +926,28 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "anio_inauguracion": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1969
+                },
+                "capacidad_vehiculo": {
+                    "type": "integer",
+                    "example": 1000
+                },
+                "clasificacion": {
+                    "type": "string",
+                    "example": "existente"
                 },
                 "color_en": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Pink"
                 },
                 "color_esp": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Rosa"
+                },
+                "derecho_de_via": {
+                    "type": "string",
+                    "example": "Superficie"
                 },
                 "descripcion_linea": {
                     "type": "array",
@@ -263,21 +956,82 @@ const docTemplate = `{
                     }
                 },
                 "existe": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
+                },
+                "geom": {
+                    "type": "string",
+                    "example": "MULTILINESTRING(...)"
+                },
+                "jerarquia_transporte": {
+                    "type": "string",
+                    "example": "Línea principal"
                 },
                 "linea_base_ramal": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "linea_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nombre": {
+                    "type": "string",
+                    "example": "Línea 1"
+                },
+                "num_comercial": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "ramal_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "ramales": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Ramal"
+                    }
+                },
+                "route_gtfs": {
+                    "type": "string",
+                    "example": "L1"
+                },
+                "sistema": {
+                    "type": "string",
+                    "example": "METRO"
+                },
+                "tam_km": {
+                    "type": "number",
+                    "example": 18.8
+                }
+            }
+        },
+        "models.Ramal": {
+            "type": "object",
+            "properties": {
+                "anio_creacion": {
                     "type": "integer"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "geom": {
+                    "type": "string"
                 },
                 "linea_id": {
                     "type": "integer"
                 },
-                "nombre": {
+                "nombre_ramal": {
                     "type": "string"
                 },
                 "ramal_id": {
                     "type": "integer"
                 },
-                "sistema": {
+                "ramal_num": {
+                    "type": "integer"
+                },
+                "shape_gtfs": {
                     "type": "string"
                 },
                 "tam_km": {
@@ -301,7 +1055,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/stc",
+	BasePath:         "/movilidad",
 	Schemes:          []string{},
 	Title:            "Apimetro",
 	Description:      "API sobre el Sistema de Transporte Colectivo (STC) de la Ciudad de México",

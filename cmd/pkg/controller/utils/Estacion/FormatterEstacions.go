@@ -15,14 +15,14 @@ func ConvertEstacionToJson(estaciones []models.Estacion) responsegeojson.Feature
 				Type:        "Point",
 				Coordinates: []float64{est.Longitud, est.Latitud},
 			},
-			Properties: responsegeojson.Properties{
-				EstacionID:        int(est.ID),
-				Nombre:            est.Nombre,
-				Tipo:              est.Tipo,
-				AlcaldiaMunicipio: est.Alcaldia_municipio,
-				Anio:              est.Anio,
-				Sistema:           est.Sistema,
-				Existe:            est.Existe,
+			Properties: map[string]interface{}{
+				"estacion_id":        int(est.ID),
+				"nombre":             est.Nombre,
+				"tipo":               est.Tipo,
+				"alcaldia_municipio": est.Alcaldia_municipio,
+				"anio":               est.Anio,
+				"sistema":            est.Sistema,
+				"existe":             est.Existe,
 			},
 		})
 	}

@@ -16,9 +16,10 @@ def getLinea(idLine=None, colorEsp=None):
         response = requests.request("GET", Developer.HOST + "/stc/linea", headers=headers)
     return response.json()
     
-def postLinea(lineaId=None, nombre = None,sistema=None, anioInauguracion=None, colorEn=None, colorEsp=None, tamKm =None, existe=None, ramal_id=None, linea_base=None):
+def postLinea(lineaId=None, route_gtfs=None, nombre = None,sistema=None, anioInauguracion=None, colorEn=None, colorEsp=None, tamKm =None, existe=None, ramal_id=None, linea_base=None):
     data_POST = {    
         "linea_id": lineaId,
+        "route_gtfs": route_gtfs,
         "nombre": nombre,
         "sistema": sistema,
         "anio_inauguracion": anioInauguracion,

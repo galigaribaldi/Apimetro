@@ -1,0 +1,510 @@
+{
+  "info": {
+    "_postman_id": "a0bb33ad-1659-43ad-be4d-152d104df550",
+    "name": "APImetro CDMX (Movilidad) - Full CRUD & GeoJSON",
+    "description": "Colección completa documentada. Incluye módulos de Datos Tabulares (CRUD completo: GET, POST, PATCH, DELETE) y el módulo espacial (GeoJSON). Usa la variable `{{sistema}}` para ruteo dinámico.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "17481279"
+  },
+  "item": [
+    {
+      "name": "1. Líneas",
+      "item": [
+        {
+          "name": "Obtener Líneas (GET)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{sistema}}/linea?existe=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{sistema}}",
+                "linea"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "301",
+                  "description": "Filtro por ID interno",
+                  "disabled": true
+                },
+                {
+                  "key": "nombre",
+                  "value": "Metro Línea 1",
+                  "description": "Filtra por nombre",
+                  "disabled": true
+                },
+                {
+                  "key": "num_comercial",
+                  "value": "L12",
+                  "description": "Filtro oficial (ej. L12, 1, 2, B)",
+                  "disabled": true
+                },
+                {
+                  "key": "nombre_ramal",
+                  "value": "Tláhuac",
+                  "description": "Filtro por ramal específico",
+                  "disabled": true
+                },
+                {
+                  "key": "claisificacion",
+                  "value": "existente",
+                  "description": "Clasificación operativa",
+                  "disabled": true
+                },
+                {
+                  "key": "tam_km",
+                  "value": "10.5",
+                  "description": "Líneas con longitud mayor o igual a X km",
+                  "disabled": true
+                },
+                {
+                  "key": "existe",
+                  "value": "true",
+                  "description": "Retorna líneas operativas actualmente"
+                }
+              ]
+            },
+            "description": "Obtiene los datos operativos y características principales de las líneas de transporte."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Línea (POST)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Metro Línea L13\",\n    \"num_comercial\": \"L13\",\n    \"sistema\": \"METRO\",\n    \"color_esp\": \"Gris\",\n    \"color_en\": \"Gray\",\n    \"tam_km\": 15.5,\n    \"existe\": true,\n    \"clasificacion\": \"proyecto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/{{sistema}}/linea",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{sistema}}",
+                "linea"
+              ]
+            },
+            "description": "Crea un nuevo registro en la tabla `lineas`."
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Línea (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Metro Línea L13 Actualizada\",\n    \"tam_km\": 18.2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/{{sistema}}/linea?id=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{sistema}}",
+                "linea"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID de la línea a modificar"
+                }
+              ]
+            },
+            "description": "Actualiza campos específicos de una línea usando su ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Línea (DELETE)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{sistema}}/linea?id=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{sistema}}",
+                "linea"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "ID numérico de la línea a eliminar"
+                }
+              ]
+            },
+            "description": "Elimina una línea y sus ramales dependientes (borrado en cascada configurado en BD)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Estaciones",
+      "item": [
+        {
+          "name": "Obtener Estaciones (GET)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{sistema}}/estacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{sistema}}",
+                "estacion"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "11974",
+                  "description": "ID único",
+                  "disabled": true
+                },
+                {
+                  "key": "linea_id",
+                  "value": "191",
+                  "description": "ID de la línea madre",
+                  "disabled": true
+                },
+                {
+                  "key": "nombre",
+                  "value": "Chapultepec",
+                  "description": "Nombre (soporta ILIKE)",
+                  "disabled": true
+                },
+                {
+                  "key": "alcaldia_municipio",
+                  "value": "Cuauhtémoc",
+                  "disabled": true
+                },
+                {
+                  "key": "color_esp",
+                  "value": "Rosa",
+                  "description": "Color de línea en español",
+                  "disabled": true
+                },
+                {
+                  "key": "color_en",
+                  "value": "Pink",
+                  "description": "Color de línea en inglés",
+                  "disabled": true
+                },
+                {
+                  "key": "anio",
+                  "value": "1969",
+                  "description": "Año de inauguración",
+                  "disabled": true
+                },
+                {
+                  "key": "es_cetram",
+                  "value": "true",
+                  "description": "Trae solo nodos CETRAM",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Trae un listado tabular con la información administrativa de las estaciones."
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Estación (POST)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Estación Nueva\",\n    \"tipo\": \"Subterráneo\",\n    \"alcaldia_municipio\": \"Coyoacán\",\n    \"estado_ciudad\": \"Ciudad de México\",\n    \"linea_id\": 191,\n    \"sistema\": \"METRO\",\n    \"existe\": true,\n    \"es_cetram\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/{{sistema}}/estacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{sistema}}",
+                "estacion"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Estación (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"es_cetram\": true,\n    \"nombre_cetram\": \"Nuevo Nodo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/{{sistema}}/estacion?id=11974",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{sistema}}",
+                "estacion"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "11974"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Estación (DELETE)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/{{sistema}}/estacion?id=11974",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "{{sistema}}",
+                "estacion"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "11974"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Mapas (GeoJSON)",
+      "item": [
+        {
+          "name": "GeoJSON Líneas (Trazos)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mapas/geojsonLinea?sistema=METRO",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mapas",
+                "geojsonLinea"
+              ],
+              "query": [
+                {
+                  "key": "sistema",
+                  "value": "METRO",
+                  "description": "Permite múltiples sistemas separados por comas"
+                },
+                {
+                  "key": "num_comercial",
+                  "value": "L12",
+                  "disabled": true
+                },
+                {
+                  "key": "nombre_ramal",
+                  "value": "Tláhuac",
+                  "disabled": true
+                },
+                {
+                  "key": "jerarquia_transporte",
+                  "value": "masivo_pesado",
+                  "disabled": true
+                },
+                {
+                  "key": "derecho_de_via",
+                  "value": "exclusivo",
+                  "disabled": true
+                },
+                {
+                  "key": "sentido",
+                  "value": "IDA",
+                  "description": "Filtro IDA o REGRESO",
+                  "disabled": true
+                },
+                {
+                  "key": "cetram_real",
+                  "value": "Pantitlán",
+                  "description": "Filtro espacial (250m)",
+                  "disabled": true
+                },
+                {
+                  "key": "existe",
+                  "value": "true",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retorna FeatureCollection (MultiLineString) para trazos de Mapbox."
+          },
+          "response": []
+        },
+        {
+          "name": "GeoJSON Estaciones (Puntos)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mapas/geojsonEstacion?sistema=METRO",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mapas",
+                "geojsonEstacion"
+              ],
+              "query": [
+                {
+                  "key": "sistema",
+                  "value": "METRO",
+                  "description": "Permite múltiples separados por comas"
+                },
+                {
+                  "key": "num_comercial",
+                  "value": "L12",
+                  "disabled": true
+                },
+                {
+                  "key": "alcaldia_municipio",
+                  "value": "Iztapalapa",
+                  "disabled": true
+                },
+                {
+                  "key": "nombre_ramal",
+                  "value": "Tláhuac",
+                  "disabled": true
+                },
+                {
+                  "key": "jerarquia_transporte",
+                  "value": "masivo_pesado",
+                  "disabled": true
+                },
+                {
+                  "key": "derecho_de_via",
+                  "value": "exclusivo",
+                  "disabled": true
+                },
+                {
+                  "key": "es_cetram",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "nombre_cetram",
+                  "value": "Chapultepec",
+                  "disabled": true
+                },
+                {
+                  "key": "cetram_real",
+                  "value": "Tacubaya",
+                  "description": "Filtro espacial (250m)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retorna FeatureCollection (Point) para puntos de estación."
+          },
+          "response": []
+        },
+        {
+          "name": "GeoJSON Polígonos (Áreas)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/mapas/geojsonPoligono?nivel=ESTADO",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "mapas",
+                "geojsonPoligono"
+              ],
+              "query": [
+                {
+                  "key": "nombre",
+                  "value": "Milpa Alta",
+                  "disabled": true
+                },
+                {
+                  "key": "entidad",
+                  "value": "Ciudad de México",
+                  "disabled": true
+                },
+                {
+                  "key": "nivel",
+                  "value": "ESTADO"
+                },
+                {
+                  "key": "existe",
+                  "value": "true",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retorna fronteras y límites geográficos en formato FeatureCollection (MultiPolygon)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/movilidad"
+    },
+    {
+      "key": "sistema",
+      "value": "metro",
+      "description": "Sistemas válidos: metro, metrobus, rtp, cablebus, trenligero, trolebus, concesionado, mexibus, mexicable"
+    }
+  ]
+}

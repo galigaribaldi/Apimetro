@@ -4,115 +4,242 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
-	metro "Apimetro/cmd/pkg/controller/metro"
+	transporte "Apimetro/cmd/pkg/controller/transporte"
 	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/unicode/norm"
 )
 
+// addLineRoute configura las rutas para la API, teniendo en cuenta
+// la arquitectura dinámica dependiendo del sistema de transporte
+//
+//	@Summary		Líneas
+//	@Description		Obtener, crear, actualizar y eliminar líneas
+//	@Tags			Línea
 func addLineRoute(rg *gin.RouterGroup) {
 
 	//Lineas
 	rg.GET("/linea", getLineaRoute)
 	rg.POST("/linea", postLineaRoute)
 	rg.DELETE("/linea", deleteLineaRoute)
-	rg.PATCH("linea", updateLineaRoute)
+	rg.PATCH("/linea", updateLineaRoute)
 }
 
-
-/*
-------
-Lineas
-------
-
-Obtener datos de Lineas
-*/
-
-//  getLineaRoute   GET linea
+// ==========================================
+// GET /movilidad/{sistema}/linea
+// ==========================================
+// getLineaRoute   	GET Route
+//
 //	@Summary		Datos de Linea
-//	@Description	Obtener datos a través de los siguientes parámetros: Numero de Linea (linea_id), color en español(color_esp), color en inglés(color_eng)
+//	@Description	Obtener datos de líneas de transporte con filtros avanzados
 //	@Tags			Linea
 //	@Accept			json
 //	@Produce		json
-//	@Param			linea_id	query		string	false	"Search by linea_id"		Format(linea_id)
-//	@Param			color_esp	query		string	false	"Search by Color Español"	Format(color_esp)
-//	@Param			color_eng	query		string	false	"Search by Color Ingles"	Format(color_eng)
-//	@Success		200			{object}	models.Linea
-//	@Failure		400			{object}	httputil.HTTPError
-//	@Failure		404			{object}	httputil.HTTPError
-//	@Failure		500			{object}	httputil.HTTPError
-//	@Router			/linea [get]
+//	@Param			sistema			path		string	true	"Sistema de transporte"
+//	@Param			id				query		int		false	"ID interno de línea"
+//	@Param			nombre			query		string	false	"Nombre de la línea"
+//	@Param			num_comercial	query		string	false	"Número comercial"
+//	@Param			nombre_ramal	query		string	false	"Nombre del ramal"
+//	@Param			clasificacion	query		string	false	"Clasificación operativa"
+//	@Param			tam_km			query		string	false	"Longitud en kilómetros"
+//	@Param			existe			query		bool	false	"Filtrar líneas operativas"
+//	@Success		200				{array}	models.Linea
+//	@Failure		400				{object}	httputil.HTTPError
+//	@Failure		404				{object}	httputil.HTTPError
+//	@Failure		500				{object}	httputil.HTTPError
+//	@Router			/{sistema}/linea [get]
 func getLineaRoute(c *gin.Context) {
-	colorLine := strings.ToUpper(c.Query("color_esp"))
-	colorLineEng := strings.ToLower(c.Query("color_eng"))
-	idLine, err := strconv.Atoi(c.Query("linea_id"))
-	terminalOriginal := c.Query("terminal_original")
-	if err != nil && idLine != 0 {
-		c.JSON(http.StatusBadRequest, err)
-		return
+
+	sistema := c.MustGet("sistemaValidado").(string)
+	filtros := make(map[string]interface{})
+
+	if sistema != "TODOS" {
+		filtros["sistema"] = sistema
 	}
-	///ID
-	if idLine != 0 {
-		log.Println("ID Line", idLine)
-		c.JSON(http.StatusOK, metro.SelectLinesById(idLine))
-		return
+	// Capturar los Query Params
+	// Soporte para caracteres nuevos
+	if nombreRaw := c.Query("nombre"); nombreRaw != "" {
+		// Esto fuerza a que "n" + "~" se convierta en "ñ" real
+		filtros["nombre"] = norm.NFC.String(nombreRaw)
 	}
-	///Color Español
-	if colorLine != "" {
-		log.Println("Color Español", colorLine)
-		log.Println(metro.SelectLineByColor(colorLine))
-		c.JSON(http.StatusOK, metro.SelectLineByColor(colorLine))
-		return
+	if nombre := c.Query("nombre"); nombre != "" {
+		filtros["nombre"] = nombre
 	}
-	///Color Ingles
-	if colorLineEng != "" {
-		log.Println("Color ingles", colorLineEng)
-		log.Println(metro.SelectLineByColorEng(colorLineEng))
-		c.JSON(http.StatusOK, metro.SelectLineByColorEng(colorLineEng))
-		return
+
+	if ramal := c.Query("nombre_ramal"); ramal != "" {
+		ramalNormalizado := norm.NFC.String(ramal)
+		filtros["nombre_ramal"] = ramalNormalizado
 	}
-	// Terminal original
-	if terminalOriginal != "" {
-		log.Println("Terminal Original: ", terminalOriginal)
-		c.JSON(http.StatusOK, metro.SelectLineabyTerminalOriginal(terminalOriginal))
-		return
+
+	if numComercial := c.Query("num_comercial"); numComercial != "" {
+		filtros["num_comercial"] = numComercial
 	}
-	log.Println(metro.SelectAllLines())
-	c.JSON(http.StatusOK, metro.SelectAllLines())
-	return
+
+	if clasificacion := c.Query("clasificacion"); clasificacion != "" {
+		filtros["clasificacion"] = clasificacion
+	}
+
+	if tamKm := c.Query("tam_km"); tamKm != "" {
+		filtros["tam_km"] = tamKm
+	}
+	// Filtrar por si la línea tiene estaciones tipo CETRAM
+	if esCetram := c.Query("es_cetram"); esCetram != "" {
+		filtros["es_cetram"] = esCetram
+	}
+	// Filtrar por sentido
+	if sentido := c.Query("sentido"); sentido != "" {
+		filtros["sentido"] = sentido
+	}
+
+	if existeStr := c.Query("existe"); existeStr != "" {
+		existe, err := strconv.ParseBool(existeStr)
+		if err == nil {
+			filtros["existe"] = existe
+		}
+	}
+	log.Println("🔍 Filtros detectados en la petición:", filtros)
+	lineas := transporte.SearchLineas(filtros)
+	c.JSON(http.StatusOK, lineas)
 }
 
-// Crear una nueva Linea
+// ==========================================
+// POST /movilidad/{sistema}/linea
+// ==========================================
+// postLineaRoute   	POST Route
+//
+//	@Summary		Crear Linea
+//	@Description	Crear una nueva línea de transporte
+//	@Tags			Linea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			linea	body		models.Linea	true	"Datos de la línea a crear"
+//	@Success		201			{object}	models.Linea
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Failure		500			{object}	httputil.HTTPError
+//	@Router			/{sistema}/linea [post]
 func postLineaRoute(c *gin.Context) {
 	var newLinea models.Linea
+
 	if err := c.BindJSON(&newLinea); err != nil {
-		log.Println(&newLinea)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest,
+			gin.H{
+				"error":   "JSON inválido",
+				"detalle": err.Error(),
+			})
 		return
 	}
-	metro.CreateLinea(newLinea)
-	c.JSON(http.StatusOK, newLinea)
+
+	if newLinea.Sistema == "" {
+		newLinea.Sistema = "METRO"
+	}
+
+	if err := transporte.CreateLinea(newLinea); err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				"error":   "No se pudo crear la línea",
+				"detalle": err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusCreated, newLinea)
+
 }
 
-// Eliminar una linea
+// ==========================================
+// DELETE /movilidad/{sistema}/linea?id=1
+// ==========================================
+// deleteLineaRoute   	DELETE Route
+//
+//	@Summary		Eliminar Linea
+//	@Description	Eliminar una línea de transporte por su ID (incluye eliminación en cascada de ramales y descripciones)
+//	@Tags			Linea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			id	query		int	true	"ID de la línea a eliminar"
+//	@Success		200	{object}	map[string]interface{}
+//	@Failure		400	{object}	httputil.HTTPError
+//	@Failure		500	{object}	httputil.HTTPError
+//	@Router			/{sistema}/linea [delete]
 func deleteLineaRoute(c *gin.Context) {
-	ids, err := strconv.Atoi(c.Query("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-	}
-	metro.DeleteLinea(ids)
-	c.JSON(http.StatusOK, "Estacion eliminada")
-}
+	idStr := c.Query("id")
+	id, err := strconv.Atoi(idStr)
 
-// Actualizar una Linea
-func updateLineaRoute(c *gin.Context) {
-	var newLinea models.Linea
-	if err := c.BindJSON(&newLinea); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err != nil || id == 0 {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "Se requiere un ID numérico válido (ej. ?id=1)",
+			})
 		return
 	}
-	metro.UpdateLinea(newLinea)
-	c.JSON(http.StatusOK, newLinea)
+
+	if err := transporte.DeleteLinea(id); err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				"error": "No se pudo eliminar la línea",
+			})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Línea y dependencias eliminadas correctamente"})
+}
+
+// ==========================================
+// PATCH /movilidad/{sistema}/linea?id=1
+// ==========================================
+// updateLineaRoute   	PATCH Route
+//
+//	@Summary		Actualizar Linea
+//	@Description	Actualizar los datos de una línea de transporte por su ID
+//	@Tags			Linea
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			id		query		int				true	"ID de la línea a actualizar"
+//	@Param			linea	body		map[string]interface{}	true	"Datos actualizados de la línea"
+//	@Success		200			{object}	map[string]interface{}
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Failure		500			{object}	httputil.HTTPError
+//	@Router			/{sistema}/linea [patch]
+func updateLineaRoute(c *gin.Context) {
+	idStr := c.Query("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil || id == 0 {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "Se requiere un ID numérico válido (ej. ?id=1)",
+			},
+		)
+		return
+	}
+
+	var dataActualizada map[string]interface{}
+	if err := c.BindJSON(&dataActualizada); err != nil {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"error": "JSON inválido",
+			},
+		)
+	}
+
+	delete(dataActualizada, "linea_id")
+
+	if err := transporte.UpdateLinea(id, dataActualizada); err != nil {
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				"error": "No se pudo actualizar la línea",
+			})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Línea actualizada correctamente"})
 }

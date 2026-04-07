@@ -1,16 +1,15 @@
 package routes
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
-	metro "Apimetro/cmd/pkg/controller/metro"
+	transporte "Apimetro/cmd/pkg/controller/transporte"
 	"Apimetro/cmd/pkg/models"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/unicode/norm"
 )
 
 func addEstacionRoute(rg *gin.RouterGroup) {
@@ -23,127 +22,152 @@ func addEstacionRoute(rg *gin.RouterGroup) {
 
 }
 
-/*
-------
-Estaciones
-------
-
-Obtener datos de Estaciones
-*/
-
 // getEstacionRoute   	GET Route
 //
 //	@Summary		Datos de Estacion
-//	@Description	Obtener datos a través de los siguientes parámetros: Numero de Linea (linea_id), color en español(color_esp), color en inglés(color_eng)
+//	@Description	Obtener datos a través de filtros como nombre, línea, municipio, colores y CETRAM
 //	@Tags			Estacion
 //	@Accept			json
 //	@Produce		json
-//	@Param			nombre		query		string	false	"Search by nombre"			Format(nombre)
-//	@Param			anio		query		string	false	"Search by anio"			Format(anio)
-//	@Param			color_en	query		string	false	"Search by Color Ingles"	Format(color_en)
-//	@Success		200			{object}	models.Estacion
+//	@Param			sistema		path		string	true	"Sistema de transporte"
+//	@Param			id		query		int		false	"ID interno de estación"
+//	@Param			nombre		query		string	false	"Nombre de la estación"
+//	@Param			linea_id	query		int		false	"ID de la línea"
+//	@Param			alcaldia_municipio	query	string	false	"Alcaldía o municipio"
+//	@Param			color_esp	query		string	false	"Color de línea en español"
+//	@Param			color_en	query		string	false	"Color de línea en inglés"
+//	@Param			anio		query		int		false	"Año de inauguración"
+//	@Param			es_cetram	query		bool		false	"Filtra estaciones CETRAM"
+//	@Success		200			{array}	models.Estacion
 //	@Failure		400			{object}	httputil.HTTPError
 //	@Failure		404			{object}	httputil.HTTPError
 //	@Failure		500			{object}	httputil.HTTPError
-//	@Router			/estacion [get]
+//	@Router			/{sistema}/estacion [get]
 func getEstacionRoute(c *gin.Context) {
-	nombreEstacion := c.Query("nombre")
-	anioEstacion := c.Query("anio")
-	anioAntes := c.Query("anio_antes")
-	anioDespues := c.Query("anio_despues")
-	ciudadEstacion := c.Query("ciudad")
-	alacaldiaMunicipio := c.Query("alacaldia_municipio")
-	colorEstacionEsp := strings.ToUpper(c.Query("color_esp"))
-	colorEstacionEn := strings.ToUpper(c.Query("color_en"))
-	idLinea, err := strconv.Atoi(c.Query("linea_id"))
-	fmt.Println("Linea: ", idLinea)
-	if err != nil && idLinea != 0 {
-		c.JSON(http.StatusBadRequest, err)
-		return
+	sistema := c.MustGet("sistemaValidado").(string)
+	filtros := make(map[string]interface{})
+
+	if sistema != "TODOS" {
+		filtros["sistema"] = sistema
 	}
-	//nombre de la Estacion
-	if nombreEstacion != "" {
-		log.Println("Nombre de la estacion: ", nombreEstacion)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyName(nombreEstacion))
-		return
+	if id := c.Query("id"); id != "" {
+		filtros["id"] = id
 	}
-	//Año de inauguracion de la linea
-	if anioEstacion != "" {
-		log.Println("Año de la estacion: ", anioEstacion)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyAnio(anioEstacion))
-		return
+	if nombreRaw := c.Query("nombre"); nombreRaw != "" {
+		// Esto fuerza a que "n" + "~" se convierta en "ñ" real
+		filtros["nombre"] = norm.NFC.String(nombreRaw)
 	}
-	//Año de inauguracion de la linea (Rango)
-	if anioAntes != "" || anioDespues != "" {
-		log.Println("Año de la estacion (rangos): ", anioAntes, anioDespues)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyAnioRango(anioAntes, anioDespues))
-		return
+	if lineaID := c.Query("linea_id"); lineaID != "" {
+		filtros["linea_id"] = lineaID
 	}
-	// Localizacion Estado Ciudad
-	if ciudadEstacion != "" {
-		log.Println("Estado - Ciudad: ", ciudadEstacion)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyCiudad(ciudadEstacion))
-		return
+	if alcaldia := c.Query("alcaldia_municipio"); alcaldia != "" {
+		filtros["alcaldia_municipio"] = alcaldia
 	}
-	// Localizacion Alcaldia o municipio
-	if alacaldiaMunicipio != "" {
-		log.Println("Alcaldia o municipio: ", alacaldiaMunicipio)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyAlcaldia(alacaldiaMunicipio))
-		return
+	if numComercial := c.Query("num_comercial"); numComercial != "" {
+		filtros["num_comercial"] = numComercial
 	}
-	// Numero de la linea
-	if idLinea != 0 {
-		log.Println("Linea ID: ", idLinea)
-		c.JSON(http.StatusOK, metro.SelectEstacionbyLineaID(idLinea))
-		return
+	if colorEsp := c.Query("color_esp"); colorEsp != "" {
+		filtros["color_esp"] = colorEsp
 	}
-	//Color Español - Ingles
-	if colorEstacionEsp != "" || colorEstacionEn != "" {
-		if colorEstacionEsp != "" {
-			log.Println("Color español: ", colorEstacionEsp)
-			var idioma = "esp"
-			c.JSON(http.StatusOK, metro.SelectEstacionbyColor(colorEstacionEsp, idioma))
-			return
-		}
-		if colorEstacionEn != "" {
-			log.Println("Color ingles: ", colorEstacionEn)
-			var idioma = "en"
-			c.JSON(http.StatusOK, metro.SelectEstacionbyColor(colorEstacionEn, idioma))
-			return
-		}
+	if colorEn := c.Query("color_en"); colorEn != "" {
+		filtros["color_en"] = colorEn
 	}
-	c.JSON(http.StatusOK, metro.SelectAllEstations())
-	return
+	if anio := c.Query("anio"); anio != "" {
+		filtros["anio"] = anio
+	}
+	if esCetram := c.Query("es_cetram"); esCetram != "" {
+		filtros["es_cetram"] = esCetram
+	}
+
+	log.Println("Buscando Estaciones con filtros:", filtros)
+	resultados := transporte.SearchEstaciones(filtros)
+	c.JSON(http.StatusOK, resultados)
 }
 
-// Crear una nueva estacion
+// ==========================================
+// POST /movilidad/:sistema/estacion
+// ==========================================
+// postEstacionRoute   	POST Route
+//
+//	@Summary		Crear Estacion
+//	@Description	Crear una nueva estación en el sistema de transporte
+//	@Tags			Estacion
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			estacion	body		models.Estacion	true	"Datos de la estación a crear"
+//	@Success		201			{object}	map[string]interface{}
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Router			/{sistema}/estacion [post]
 func postEstacionRoute(c *gin.Context) {
 	var newEstacion models.Estacion
 	if err := c.BindJSON(&newEstacion); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON inválido", "detalle": err.Error()})
 		return
 	}
-	metro.CreateEstacion(newEstacion)
-	c.JSON(http.StatusOK, newEstacion)
+	transporte.CreateEstacion(newEstacion)
+	c.JSON(http.StatusCreated, gin.H{"mensaje": "Estación creada", "data": newEstacion})
 }
 
-// Eliminar una estacion
+// ==========================================
+// DELETE /movilidad/:sistema/estacion?id=1
+// ==========================================
+// deleteEstacionRoute   	DELETE Route
+//
+//	@Summary		Eliminar Estacion
+//	@Description	Eliminar una estación por su ID
+//	@Tags			Estacion
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			id	query		int	true	"ID de la estación a eliminar"
+//	@Success		200			{object}	map[string]interface{}
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Router			/{sistema}/estacion [delete]
 func deleteEstacionRoute(c *gin.Context) {
-	ids, err := strconv.Atoi(c.Query("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
-	}
-	metro.DeleteEstacion(ids)
-	c.JSON(http.StatusOK, "Estacion eliminada")
-}
-
-// Actualizar estaciones
-func updateEstacionRoute(c *gin.Context) {
-	var newEstacion models.Estacion
-	if err := c.BindJSON(&newEstacion); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	idStr := c.Query("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Se requiere un ID numérico válido en el query (?id=X)"})
 		return
 	}
-	metro.UpdateEstacion(newEstacion)
-	c.JSON(http.StatusOK, newEstacion)
+
+	transporte.DeleteEstacion(id)
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Estación eliminada con éxito"})
+}
+
+// ==========================================
+// PATCH /movilidad/:sistema/estacion?id=1
+// ==========================================
+// updateEstacionRoute   	PATCH Route
+//
+//	@Summary		Actualizar Estacion
+//	@Description	Actualizar los datos de una estación por su ID
+//	@Tags			Estacion
+//	@Accept			json
+//	@Produce		json
+//	@Param			sistema	path		string	true	"Sistema de transporte"
+//	@Param			id		query		int				true	"ID de la estación a actualizar"
+//	@Param			estacion	body		models.Estacion	true	"Datos actualizados de la estación"
+//	@Success		200			{object}	map[string]interface{}
+//	@Failure		400			{object}	httputil.HTTPError
+//	@Router			/{sistema}/estacion [patch]
+func updateEstacionRoute(c *gin.Context) {
+	idStr := c.Query("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Se requiere un ID numérico válido en el query (?id=X)"})
+		return
+	}
+
+	var updateData models.Estacion
+	if err := c.BindJSON(&updateData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "JSON inválido"})
+		return
+	}
+
+	updateData.ID = uint(id)
+	transporte.UpdateEstacion(updateData)
+
+	c.JSON(http.StatusOK, gin.H{"mensaje": "Estación actualizada correctamente"})
 }
