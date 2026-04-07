@@ -12,14 +12,12 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
-/*************  ✨ Windsurf Command ⭐  *************/
 // addLineRoute configura las rutas para la API, teniendo en cuenta
 // la arquitectura dinámica dependiendo del sistema de transporte
 //
 //	@Summary		Líneas
 //	@Description		Obtener, crear, actualizar y eliminar líneas
 //	@Tags			Línea
-/*******  ba17b442-520c-45a0-9645-a8abf95914e6  *******/
 func addLineRoute(rg *gin.RouterGroup) {
 
 	//Lineas

@@ -63,6 +63,9 @@ func getEstacionRoute(c *gin.Context) {
 	if alcaldia := c.Query("alcaldia_municipio"); alcaldia != "" {
 		filtros["alcaldia_municipio"] = alcaldia
 	}
+	if numComercial := c.Query("num_comercial"); numComercial != "" {
+		filtros["num_comercial"] = numComercial
+	}
 	if colorEsp := c.Query("color_esp"); colorEsp != "" {
 		filtros["color_esp"] = colorEsp
 	}

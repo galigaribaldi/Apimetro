@@ -75,7 +75,7 @@ func SelectGeoJsonEstacionConFiltros(filtros map[string]interface{}) modelsGeojs
 			valores = append(valores, "%"+strings.TrimSpace(ramal)+"%") // TrimSpace quita espacios accidentales
 		}
 
-		query = query.Joins("LEFT JOIN ramals ON lineas.id = ramals.linea_id").
+		query = query.Joins("INNER JOIN ramals ON lineas.id = ramals.linea_id").
 			Where(strings.Join(condiciones, " OR "), valores...)
 		log.Println("Filtro nombre_ramal aplicado:", condiciones, valores)
 	}

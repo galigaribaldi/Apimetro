@@ -75,7 +75,7 @@ func SelectGeoJsonLineaConFiltros(filtros map[string]interface{}) modelsGeojson.
 	}
 	// Filtrar el trazo de la línea si pasa por estaciones CETRAM
 	if esCetram, ok := filtros["es_cetram"]; ok && esCetram != "" {
-		query = query.Joins("LEFT JOIN estacions ON estacions.linea_id = lineas.id").
+		query = query.Joins("JOIN estacions ON estacions.linea_id = lineas.id").
 			Where("estacions.es_cetram = ?", esCetram)
 	}
 	// Filtrar por sentido (IDA o REGRESO)
