@@ -185,3 +185,7 @@ cython_debug/
 
 # VSCODE
 .vscode/settings.json
+
+## Claude Settings
+CLAUDE.md
+.claude

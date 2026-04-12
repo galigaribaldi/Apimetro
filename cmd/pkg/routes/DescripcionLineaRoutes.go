@@ -30,20 +30,23 @@ func addDescriptionLineRoute(rg *gin.RouterGroup) {
 
 // getDescripcionLineaRoute   	GET Route
 //
-//	@Summary		Datos de Descripcion Linea
-//	@Description	Obtener descripciones de líneas con filtros
+//	@Summary		Consultar Descripciones de Línea
+//	@Description	Retorna registros descriptivos e históricos de líneas de transporte.
+//	@Description	Incluye información sobre terminales originales, tipo de línea, dirección, ampliaciones y descripción textual.
+//	@Description	Útil para construir fichas informativas o mostrar la historia de una línea.
+//	@Description	Si el sistema es TODOS, devuelve descripciones de todos los sistemas.
 //	@Tags			DescripcionLinea
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema		path		string	true	"Sistema de transporte"
-//	@Param			id				query		int		false	"ID de la descripción"
-//	@Param			terminal_original	query		string	false	"Search by terminal_original"
-//	@Param			linea_base			query		string	false	"Search by linea_base"
-//	@Param			num_comercial		query		string	false	"Search by num_comercial"
-//	@Success		200					{array}	models.DescripcionLinea
-//	@Failure		400					{object}	httputil.HTTPError
-//	@Failure		404					{object}	httputil.HTTPError
-//	@Failure		500					{object}	httputil.HTTPError
+//	@Param			sistema				path	string	true	"Sistema de transporte. Valores: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC, TODOS"
+//	@Param			id					query	int		false	"ID interno del registro de descripción"
+//	@Param			terminal_original	query	string	false	"Nombre de la terminal original de la línea (ej: 'Observatorio', 'Pantitlán')"
+//	@Param			linea_base			query	string	false	"ID de la línea base a la que corresponde esta descripción (ej: '1')"
+//	@Param			num_comercial		query	string	false	"Número o clave comercial de la línea (ej: '1', 'A', 'B')"
+//	@Success		200					{array}		models.DescripcionLinea		"Lista de descripciones de línea"
+//	@Failure		400					{object}	map[string]interface{}		"Parámetros inválidos"
+//	@Failure		404					{object}	map[string]interface{}		"No se encontraron registros"
+//	@Failure		500					{object}	map[string]interface{}		"Error interno del servidor"
 //	@Router			/{sistema}/descripcion-linea [get]
 func getDescripcionLineaRoute(c *gin.Context) {
 	sistema := c.MustGet("sistemaValidado").(string)
@@ -74,15 +77,16 @@ func getDescripcionLineaRoute(c *gin.Context) {
 
 // postDescripcionLineaRoute   	POST Route
 //
-//	@Summary		Crear Descripcion Linea
-//	@Description	Crear una nueva descripción de línea
+//	@Summary		Crear Descripción de Línea
+//	@Description	Registra una nueva descripción histórica o informativa para una línea de transporte.
+//	@Description	Debe asociarse a una línea existente mediante el campo `linea_base`.
 //	@Tags			DescripcionLinea
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema	path		string	true	"Sistema de transporte"
-//	@Param			descripcion	body		models.DescripcionLinea	true	"Datos de la descripción de línea"
-//	@Success		201			{object}	map[string]interface{}
-//	@Failure		400			{object}	httputil.HTTPError
+//	@Param			sistema		path	string					true	"Sistema de transporte"
+//	@Param			descripcion	body	models.DescripcionLinea	true	"Objeto DescripcionLinea con los datos a registrar"
+//	@Success		201			{object}	map[string]interface{}	"Descripción de línea creada con éxito"
+//	@Failure		400			{object}	map[string]interface{}	"JSON inválido o campos requeridos faltantes"
 //	@Router			/{sistema}/descripcion-linea [post]
 func postDescripcionLineaRoute(c *gin.Context) {
 	var newDescripcion models.DescripcionLinea
@@ -105,15 +109,15 @@ func postDescripcionLineaRoute(c *gin.Context) {
 
 // deleteDescripcionLineaRoute   	DELETE Route
 //
-//	@Summary		Eliminar Descripcion Linea
-//	@Description	Eliminar una descripción de línea por ID
+//	@Summary		Eliminar Descripción de Línea
+//	@Description	Elimina un registro de descripción de línea por su ID. Esta operación es irreversible.
 //	@Tags			DescripcionLinea
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema	path		string	true	"Sistema de transporte"
-//	@Param			id	path		int	true	"ID de la descripción de línea a eliminar"
-//	@Success		200	{object} map[string]interface{}
-//	@Failure		400	{object}	httputil.HTTPError
+//	@Param			sistema	path	string	true	"Sistema de transporte"
+//	@Param			id		path	int		true	"ID del registro de descripción a eliminar"
+//	@Success		200		{object}	map[string]interface{}	"Descripción eliminada con éxito"
+//	@Failure		400		{object}	map[string]interface{}	"ID inválido"
 //	@Router			/{sistema}/descripcion-linea/{id} [delete]
 func deleteDescripcionLineaRoute(c *gin.Context) {
 	idParam := c.Param("id")
@@ -130,16 +134,17 @@ func deleteDescripcionLineaRoute(c *gin.Context) {
 
 // putDescripcionLineaRoute   	PUT Route
 //
-//	@Summary		Actualizar Descripcion Linea
-//	@Description	Actualizar una descripción de línea por ID
+//	@Summary		Actualizar Descripción de Línea
+//	@Description	Reemplaza completamente el registro de descripción de línea con el ID indicado.
+//	@Description	A diferencia de PATCH, PUT requiere enviar el objeto completo.
 //	@Tags			DescripcionLinea
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema	path		string	true	"Sistema de transporte"
-//	@Param			id			path		int				true	"ID de la descripción de línea"
-//	@Param			descripcion	body		models.DescripcionLinea	true	"Datos actualizados"
-//	@Success		200			{object}	map[string]interface{}
-//	@Failure		400			{object}	httputil.HTTPError
+//	@Param			sistema		path	string					true	"Sistema de transporte"
+//	@Param			id			path	int						true	"ID del registro a actualizar"
+//	@Param			descripcion	body	models.DescripcionLinea	true	"Objeto DescripcionLinea con los datos actualizados"
+//	@Success		200			{object}	map[string]interface{}	"Descripción actualizada con éxito"
+//	@Failure		400			{object}	map[string]interface{}	"ID inválido o JSON mal formado"
 //	@Router			/{sistema}/descripcion-linea/{id} [put]
 func putDescripcionLineaRoute(c *gin.Context) {
 	idParam := c.Param("id")

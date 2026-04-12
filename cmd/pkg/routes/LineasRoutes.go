@@ -32,23 +32,28 @@ func addLineRoute(rg *gin.RouterGroup) {
 // ==========================================
 // getLineaRoute   	GET Route
 //
-//	@Summary		Datos de Linea
-//	@Description	Obtener datos de líneas de transporte con filtros avanzados
+//	@Summary		Consultar Líneas de Transporte
+//	@Description	Retorna datos descriptivos (JSON) de líneas de transporte del sistema indicado en la ruta.
+//	@Description	Si el sistema es TODOS, devuelve líneas de todos los sistemas disponibles.
+//	@Description	Los filtros de texto usan búsqueda parcial insensible a mayúsculas (ILIKE) y soportan caracteres especiales.
+//	@Description	Los resultados incluyen relaciones anidadas: ramales y descripciones de línea.
 //	@Tags			Linea
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema			path		string	true	"Sistema de transporte"
-//	@Param			id				query		int		false	"ID interno de línea"
-//	@Param			nombre			query		string	false	"Nombre de la línea"
-//	@Param			num_comercial	query		string	false	"Número comercial"
-//	@Param			nombre_ramal	query		string	false	"Nombre del ramal"
-//	@Param			clasificacion	query		string	false	"Clasificación operativa"
-//	@Param			tam_km			query		string	false	"Longitud en kilómetros"
-//	@Param			existe			query		bool	false	"Filtrar líneas operativas"
-//	@Success		200				{array}	models.Linea
-//	@Failure		400				{object}	httputil.HTTPError
-//	@Failure		404				{object}	httputil.HTTPError
-//	@Failure		500				{object}	httputil.HTTPError
+//	@Param			sistema			path	string	true	"Sistema de transporte. Valores: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC, TODOS"
+//	@Param			id				query	int		false	"ID interno de la línea en la base de datos"
+//	@Param			nombre			query	string	false	"Nombre descriptivo de la línea (ej: 'Línea 1', 'Línea A'). Búsqueda parcial."
+//	@Param			num_comercial	query	string	false	"Número o clave comercial visible al usuario (ej: '1', 'A', 'MB1')"
+//	@Param			nombre_ramal	query	string	false	"Nombre del ramal o variante de ruta (ej: 'Ramal Politécnico')"
+//	@Param			clasificacion	query	string	false	"Clasificación operativa. Valores: existente, eliminada, futura"
+//	@Param			tam_km			query	string	false	"Longitud total de la línea en kilómetros (ej: '18.8')"
+//	@Param			existe			query	bool	false	"true = líneas en operación activa, false = líneas discontinuadas"
+//	@Param			es_cetram		query	string	false	"Filtra líneas con estaciones tipo CETRAM. Valores: true, false"
+//	@Param			sentido			query	string	false	"Dirección del trazo. Valores: 1 (ida), 0 (regreso)"
+//	@Success		200				{array}		models.Linea			"Lista de líneas que coinciden con los filtros"
+//	@Failure		400				{object}	map[string]interface{}	"Parámetros inválidos en la solicitud"
+//	@Failure		404				{object}	map[string]interface{}	"No se encontraron líneas con los filtros dados"
+//	@Failure		500				{object}	map[string]interface{}	"Error interno del servidor"
 //	@Router			/{sistema}/linea [get]
 func getLineaRoute(c *gin.Context) {
 
@@ -109,16 +114,18 @@ func getLineaRoute(c *gin.Context) {
 // ==========================================
 // postLineaRoute   	POST Route
 //
-//	@Summary		Crear Linea
-//	@Description	Crear una nueva línea de transporte
+//	@Summary		Crear Línea de Transporte
+//	@Description	Crea un nuevo registro de línea de transporte en el sistema.
+//	@Description	Si no se especifica `sistema` en el body, se asigna 'METRO' por defecto.
+//	@Description	La geometría (`geom`) debe enviarse en formato WKT (Well-Known Text) si se incluye.
 //	@Tags			Linea
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema	path		string	true	"Sistema de transporte"
-//	@Param			linea	body		models.Linea	true	"Datos de la línea a crear"
-//	@Success		201			{object}	models.Linea
-//	@Failure		400			{object}	httputil.HTTPError
-//	@Failure		500			{object}	httputil.HTTPError
+//	@Param			sistema	path	string		true	"Sistema de transporte"
+//	@Param			linea	body	models.Linea	true	"Objeto Linea con los datos a registrar. Campos requeridos: nombre, sistema."
+//	@Success		201		{object}	models.Linea			"Línea creada exitosamente"
+//	@Failure		400		{object}	map[string]interface{}	"JSON inválido o campos requeridos faltantes"
+//	@Failure		500		{object}	map[string]interface{}	"Error interno al guardar en la base de datos"
 //	@Router			/{sistema}/linea [post]
 func postLineaRoute(c *gin.Context) {
 	var newLinea models.Linea
@@ -155,16 +162,18 @@ func postLineaRoute(c *gin.Context) {
 // ==========================================
 // deleteLineaRoute   	DELETE Route
 //
-//	@Summary		Eliminar Linea
-//	@Description	Eliminar una línea de transporte por su ID (incluye eliminación en cascada de ramales y descripciones)
+//	@Summary		Eliminar Línea de Transporte
+//	@Description	Elimina una línea por su ID interno. La operación es en cascada: también elimina
+//	@Description	los Ramales y las DescripcionLinea asociados a esa línea.
+//	@Description	Esta operación es irreversible.
 //	@Tags			Linea
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema	path		string	true	"Sistema de transporte"
-//	@Param			id	query		int	true	"ID de la línea a eliminar"
-//	@Success		200	{object}	map[string]interface{}
-//	@Failure		400	{object}	httputil.HTTPError
-//	@Failure		500	{object}	httputil.HTTPError
+//	@Param			sistema	path	string	true	"Sistema de transporte"
+//	@Param			id		query	int		true	"ID interno de la línea a eliminar (ej: ?id=5)"
+//	@Success		200		{object}	map[string]interface{}	"Línea y dependencias eliminadas correctamente"
+//	@Failure		400		{object}	map[string]interface{}	"ID inválido o faltante"
+//	@Failure		500		{object}	map[string]interface{}	"Error interno al eliminar de la base de datos"
 //	@Router			/{sistema}/linea [delete]
 func deleteLineaRoute(c *gin.Context) {
 	idStr := c.Query("id")
@@ -195,17 +204,19 @@ func deleteLineaRoute(c *gin.Context) {
 // ==========================================
 // updateLineaRoute   	PATCH Route
 //
-//	@Summary		Actualizar Linea
-//	@Description	Actualizar los datos de una línea de transporte por su ID
+//	@Summary		Actualizar Línea de Transporte
+//	@Description	Actualiza parcialmente los datos de una línea por su ID interno.
+//	@Description	Solo se actualizan los campos enviados en el body (PATCH semántico).
+//	@Description	El campo `linea_id` es ignorado aunque se envíe en el body (protección de integridad).
 //	@Tags			Linea
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema	path		string	true	"Sistema de transporte"
-//	@Param			id		query		int				true	"ID de la línea a actualizar"
-//	@Param			linea	body		map[string]interface{}	true	"Datos actualizados de la línea"
-//	@Success		200			{object}	map[string]interface{}
-//	@Failure		400			{object}	httputil.HTTPError
-//	@Failure		500			{object}	httputil.HTTPError
+//	@Param			sistema	path	string					true	"Sistema de transporte"
+//	@Param			id		query	int						true	"ID interno de la línea a actualizar (ej: ?id=5)"
+//	@Param			linea	body	map[string]interface{}	true	"Campos a actualizar. Ej: {\"nombre\": \"Línea 1 Actualizada\", \"existe\": true}"
+//	@Success		200		{object}	map[string]interface{}	"Línea actualizada correctamente"
+//	@Failure		400		{object}	map[string]interface{}	"ID inválido o JSON mal formado"
+//	@Failure		500		{object}	map[string]interface{}	"Error interno al actualizar en la base de datos"
 //	@Router			/{sistema}/linea [patch]
 func updateLineaRoute(c *gin.Context) {
 	idStr := c.Query("id")

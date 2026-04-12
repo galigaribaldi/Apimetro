@@ -16,23 +16,27 @@ func addGeoJsonRouteLine(rg *gin.RouterGroup) {
 
 // getGeoJsonRouteLinea   	GET Route
 //
-//	@Summary		GeoJSON Lineas
-//	@Description	Obtener líneas de transporte en formato GeoJSON con métricas operativas
+//	@Summary		GeoJSON de Líneas de Transporte
+//	@Description	Retorna trazos de líneas de transporte en formato GeoJSON (FeatureCollection).
+//	@Description	Cada Feature contiene la geometría del trazo (`LineString` o `MultiLineString`) y un objeto
+//	@Description	`properties` con métricas operativas: velocidad promedio (km/h), frecuencia (min),
+//	@Description	capacidad del vehículo, distancia en metros, derecho de vía y jerarquía de transporte.
+//	@Description	Los trazos se obtienen de la tabla Ramales, enriquecidos con datos de HistoricoOperacion.
+//	@Description	Si no se especifica `sistema`, se devuelven trazos de todos los sistemas.
 //	@Tags			GeoJSON
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema				query		string	false	"Filter by sistema"
-//	@Param			num_comercial		query		string	false	"Filter by num_comercial"
-//	@Param			nombre_ramal		query		string	false	"Filter by nombre_ramal"
-//	@Param			jerarquia_transporte	query		string	false	"Filter by jerarquia_transporte"
-//	@Param			derecho_de_via		query		string	false	"Filter by derecho_de_via"
-//	@Param			es_cetram			query		string	false	"Filter by es_cetram"
-//	@Param			sentido				query		string	false	"Filter by sentido"
-//	@Param			cetram_real			query		string	false	"Filter by cetram_real (250m radius)"
-//	@Param			existe				query		string	false	"Filter by existe (true/false)"
-//	@Success		200					{object}	models.FeatureCollection
-//	@Failure		404					{object}	map[string]interface{}
-//	@Failure		500					{object}	map[string]interface{}
+//	@Param			sistema					query	string	false	"Sistema de transporte. Ej: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC. Vacío = todos."
+//	@Param			num_comercial			query	string	false	"Número o clave comercial de la línea (ej: '1', 'A', 'MB1')"
+//	@Param			nombre_ramal			query	string	false	"Nombre del ramal o variante de ruta (ej: 'IDA', 'REGRESO', 'Ramal Politécnico')"
+//	@Param			jerarquia_transporte	query	string	false	"Jerarquía del sistema. Ej: 'Línea principal', 'Ramal'"
+//	@Param			derecho_de_via			query	string	false	"Tipo de infraestructura. Valores: Superficie, Elevado, Subterráneo"
+//	@Param			es_cetram				query	string	false	"Filtra trazos que pasan por un CETRAM. Valores: true, false"
+//	@Param			sentido					query	string	false	"Dirección del trazo. Valores: 1 (ida / hacia terminal), 0 (regreso / hacia origen)"
+//	@Param			existe					query	string	false	"Filtra por líneas actualmente operativas. Valores: true (en operación), false (discontinuadas)"
+//	@Success		200						{object}	models.FeatureCollection	"FeatureCollection con trazos de líneas y métricas operativas"
+//	@Failure		404						{object}	map[string]interface{}		"No se encontraron trazos con los filtros proporcionados"
+//	@Failure		500						{object}	map[string]interface{}		"Error interno del servidor al ejecutar la consulta espacial"
 //	@Router			/mapas/geojsonLinea [get]
 func getGeoJsonRouteLinea(c *gin.Context) {
 	filtros := make(map[string]interface{})
