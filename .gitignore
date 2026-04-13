@@ -199,3 +199,6 @@ CLAUDE.md
 ## Binarios y temporales de Go/Air
 bin/
 tmp/
+bin/apimetro
+tmp/main
+db/init/seed.sql
