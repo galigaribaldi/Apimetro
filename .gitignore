@@ -189,3 +189,13 @@ cython_debug/
 ## Claude Settings
 CLAUDE.md
 .claude
+
+## Archivos de entorno (contienen credenciales)
+.env
+.env.dev
+.env.qa
+.env.main
+
+## Binarios y temporales de Go/Air
+bin/
+tmp/

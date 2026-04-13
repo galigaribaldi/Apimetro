@@ -1,0 +1,178 @@
+#version: '3.8'
+
+# =====================================================
+# Apimetro — Docker Compose Multi-Entorno
+#
+# Uso:
+#   make docker-dev    →  levanta DEV  (API :8080, DB :5433)
+#   make docker-qa     →  levanta QA   (API :8081, DB :5434)
+#   make docker-main   →  levanta MAIN (API :8082, DB :5435)
+#
+# Puerto 5432 del host queda libre para PostgreSQL local nativo.
+# Cada entorno tiene su propio volumen de datos independiente.
+# =====================================================
+
+services:
+
+  # ==========================================
+  # DEV — desarrollo local con hot-reload
+  # ==========================================
+  db_dev:
+    profiles: [ "dev" ]
+    image: postgis/postgis:15-3.4
+    container_name: apimetro_db_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      API_DB_PASSWORD: ${API_DB_PASSWORD} # Leído por roles.sh
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d # init.sql + roles.sh
+    networks:
+      - apimetro_net_dev
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api_dev:
+    profiles: [ "dev" ]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apimetro_api_dev
+    restart: unless-stopped
+    environment:
+      DB_HOST: db_dev
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${API_DB_USER}
+      DB_PASSWORD: ${API_DB_PASSWORD}
+      GIN_MODE: ${GIN_MODE}
+    ports:
+      - "${API_PORT}:8080"
+    depends_on:
+      db_dev:
+        condition: service_healthy
+    networks:
+      - apimetro_net_dev
+
+  # ==========================================
+  # QA — pruebas de integración y regresión
+  # ==========================================
+  db_qa:
+    profiles: [ "qa" ]
+    image: postgis/postgis:15-3.4
+    container_name: apimetro_db_qa
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      API_DB_PASSWORD: ${API_DB_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata_qa:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - apimetro_net_qa
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api_qa:
+    profiles: [ "qa" ]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apimetro_api_qa
+    restart: unless-stopped
+    environment:
+      DB_HOST: db_qa
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${API_DB_USER}
+      DB_PASSWORD: ${API_DB_PASSWORD}
+      GIN_MODE: ${GIN_MODE}
+    ports:
+      - "${API_PORT}:8080"
+    depends_on:
+      db_qa:
+        condition: service_healthy
+    networks:
+      - apimetro_net_qa
+
+  # ==========================================
+  # MAIN — producción
+  # ==========================================
+  db_main:
+    profiles: [ "main" ]
+    image: postgis/postgis:15-3.4
+    container_name: apimetro_db_main
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      API_DB_PASSWORD: ${API_DB_PASSWORD}
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata_main:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - apimetro_net_main
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api_main:
+    profiles: [ "main" ]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apimetro_api_main
+    restart: always
+    environment:
+      DB_HOST: db_main
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${API_DB_USER}
+      DB_PASSWORD: ${API_DB_PASSWORD}
+      GIN_MODE: ${GIN_MODE}
+    ports:
+      - "${API_PORT}:8080"
+    depends_on:
+      db_main:
+        condition: service_healthy
+    networks:
+      - apimetro_net_main
+
+# =====================================================
+# VOLÚMENES — uno por entorno, completamente aislados
+# =====================================================
+volumes:
+  pgdata_dev:
+  pgdata_qa:
+  pgdata_main:
+
+    # =====================================================
+    # REDES — una por entorno para aislamiento total
+    # =====================================================
+networks:
+  apimetro_net_dev:
+    driver: bridge
+  apimetro_net_qa:
+    driver: bridge
+  apimetro_net_main:
+    driver: bridge

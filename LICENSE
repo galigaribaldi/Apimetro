@@ -1,21 +1,84 @@
-MIT License
+Business Source License 1.1
 
-Copyright (c) 2023 Galileo garibaldi
+Parameters
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Licensor:             Hernán Galileo Cabrera Garibaldi <galigaribaldi0@gmail.com>
+Licensed Work:        Apimetro
+                      The Licensed Work is (c) 2024 Hernán Galileo Cabrera Garibaldi
+Additional Use Grant: You may make use of the Licensed Work, provided that your
+                      use does not include offering the Licensed Work or a derivative
+                      of it as a hosted, embedded, or managed service to third parties
+                      in exchange for a fee or other commercial consideration.
+                      Non-commercial use — including personal projects, academic
+                      research, education, journalism, and public sector / government
+                      applications — is permitted free of charge.
+Change Date:          2029-04-12
+Change License:       Apache License, Version 2.0
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+For inquiries about commercial licensing arrangements, please contact:
+galigaribaldi0@gmail.com
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+-------------------------------------------------------------------------------
+
+Notice
+
+The Business Source License (this document, or the "License") is not an Open
+Source license. However, the Licensed Work will eventually be made available
+under an Open Source License, as stated in this License.
+
+License text copyright (c) 2017 MariaDB Corporation Ab, All Rights Reserved.
+"Business Source License" is a trademark of MariaDB Corporation Ab.
+
+-------------------------------------------------------------------------------
+
+Terms
+
+The Licensor hereby grants you the right to copy, modify, create derivative
+works, redistribute, and make non-production use of the Licensed Work. The
+Licensor may make an Additional Use Grant, above, permitting limited
+production use.
+
+Effective on the Change Date, or the fourth anniversary of the first publicly
+available distribution of a specific version of the Licensed Work under this
+License, whichever comes first, the Licensor hereby grants you rights under
+the terms of the Change License, and the rights granted in the paragraph
+above terminate.
+
+If your use of the Licensed Work does not comply with the requirements
+currently in effect as described in this License, you must purchase a
+commercial license from the Licensor, its affiliated entities, or authorized
+resellers, or you must refrain from using the Licensed Work.
+
+All copies of the original and modified Licensed Work, and derivative works
+of the Licensed Work, are subject to this License. This License applies
+separately for each version of the Licensed Work and the Change Date may vary
+for each version of the Licensed Work released by Licensor.
+
+You must conspicuously display this License on each original or modified copy
+of the Licensed Work. If you receive a copy of the Licensed Work in which the
+License has not been conspicuously displayed, you may not remove it or alter
+it, but you may add a conspicuously displayed copy.
+
+Irrespective of any other provision of this License, any license grants with
+respect to any portion of the Licensed Work that are provided under different
+terms than this License will be governed by those other terms, and you must
+remove that portion of the Licensed Work before redistributing it.
+
+The Licensor hereby grants you rights under the terms of the Change License
+for the Licensed Work from the Change Date forward.
+
+Covenants of Licensor
+
+In consideration of the right to use this License's text and the "Business
+Source License" name and trademark, Licensor covenants to MariaDB, and to all
+recipients of the Licensed Work to be provided by Licensor:
+
+1. To specify as the Change License the Apache License, Version 2.0, or a
+   license that is compatible with it.
+
+2. To specify an Additional Use Grant permitting non-commercial use free of
+   charge, as described above.
+
+3. To specify the Change Date as 2029-04-12.
+
+4. Not to modify this License in any other way.
