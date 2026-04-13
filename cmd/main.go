@@ -6,9 +6,14 @@ import (
 	"log"
 )
 
-//	@title			Apimetro
+//	@title			Apimetro — API de Movilidad CDMX
 //	@version		1.0
-//	@description	API sobre el Sistema de Transporte Colectivo (STC) de la Ciudad de México
+//	@description	API de datos geoespaciales sobre el sistema de transporte público de la Ciudad de México y Área Metropolitana.
+//	@description	Ofrece dos tipos de respuesta: descriptiva (JSON) con datos operativos de líneas y estaciones,
+//	@description	y geográfica (GeoJSON) con geometrías listas para renderizar en mapas interactivos.
+//	@description	Cubre los sistemas: METRO, Metrobús (MB), Cablebús (CBB), RTP, Trolebús (TROLE),
+//	@description	Tren Ligero (TL), Mexicable, Mexibús, Interurbano, Cable Car (CC) y CETRAM.
+//	@description	Base path: /movilidad — Documentación: /swagger/
 
 //	@contact.name	galigaribaldi (Galileo Cabrera Garibaldi)
 //	@contact.email	galigaribaldi0@gmail.com

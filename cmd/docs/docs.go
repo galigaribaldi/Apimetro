@@ -24,7 +24,7 @@ const docTemplate = `{
     "paths": {
         "/mapas/geojsonEstacion": {
             "get": {
-                "description": "Obtener estaciones en formato GeoJSON con filtros avanzados",
+                "description": "Retorna estaciones de transporte público en formato GeoJSON (FeatureCollection).\nCada Feature contiene una geometría tipo ` + "`" + `Point` + "`" + ` (longitud/latitud) y un objeto ` + "`" + `properties` + "`" + `\ncon atributos como nombre, sistema, alcaldía, número comercial, año y datos de CETRAM.\nSi no se especifica ` + "`" + `sistema` + "`" + `, se devuelven estaciones de todos los sistemas.\nLos textos con caracteres especiales (ñ, tildes) se normalizan automáticamente.",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,75 +34,82 @@ const docTemplate = `{
                 "tags": [
                     "GeoJSON"
                 ],
-                "summary": "GeoJSON Estaciones",
+                "summary": "GeoJSON de Estaciones",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Filter by sistema",
+                        "description": "Sistema de transporte. Ej: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC. Vacío = todos.",
                         "name": "sistema",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by num_comercial",
+                        "description": "Número o clave comercial de la línea (ej: '1', 'A', 'MB1')",
                         "name": "num_comercial",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by alcaldia_municipio",
+                        "description": "Alcaldía (CDMX) o municipio del Área Metropolitana donde se ubica la estación (ej: 'Cuauhtémoc')",
                         "name": "alcaldia_municipio",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by nombre_ramal",
+                        "description": "Nombre del ramal o variante de ruta al que pertenece la estación (ej: 'Ramal Politécnico')",
                         "name": "nombre_ramal",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by jerarquia_transporte",
+                        "description": "Jerarquía del sistema. Ej: 'Línea principal', 'Ramal'",
                         "name": "jerarquia_transporte",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by derecho_de_via",
+                        "description": "Tipo de infraestructura vial. Valores: Superficie, Elevado, Subterráneo",
                         "name": "derecho_de_via",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by es_cetram",
+                        "description": "Filtra estaciones que son o colindan con un CETRAM (Centro de Transferencia Modal). Valores: true, false",
                         "name": "es_cetram",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by nombre_cetram",
+                        "description": "Nombre del CETRAM (ej: 'Indios Verdes', 'Tacubaya'). Aplica solo si es_cetram=true",
                         "name": "nombre_cetram",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nombre de un CETRAM para buscar estaciones en un radio de 250 metros a su alrededor",
+                        "name": "cetram_real",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "FeatureCollection con estaciones encontradas",
                         "schema": {
                             "$ref": "#/definitions/models.FeatureCollection"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "No se encontraron estaciones con los filtros proporcionados",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error interno del servidor al ejecutar la consulta espacial",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -110,7 +117,7 @@ const docTemplate = `{
         },
         "/mapas/geojsonLinea": {
             "get": {
-                "description": "Obtener líneas de transporte en formato GeoJSON con métricas operativas",
+                "description": "Retorna trazos de líneas de transporte en formato GeoJSON (FeatureCollection).\nCada Feature contiene la geometría del trazo (` + "`" + `LineString` + "`" + ` o ` + "`" + `MultiLineString` + "`" + `) y un objeto\n` + "`" + `properties` + "`" + ` con métricas operativas: velocidad promedio (km/h), frecuencia (min),\ncapacidad del vehículo, distancia en metros, derecho de vía y jerarquía de transporte.\nLos trazos se obtienen de la tabla Ramales, enriquecidos con datos de HistoricoOperacion.\nSi no se especifica ` + "`" + `sistema` + "`" + `, se devuelven trazos de todos los sistemas.",
                 "consumes": [
                     "application/json"
                 ],
@@ -120,75 +127,76 @@ const docTemplate = `{
                 "tags": [
                     "GeoJSON"
                 ],
-                "summary": "GeoJSON Lineas",
+                "summary": "GeoJSON de Líneas de Transporte",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Filter by sistema",
+                        "description": "Sistema de transporte. Ej: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC. Vacío = todos.",
                         "name": "sistema",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by num_comercial",
+                        "description": "Número o clave comercial de la línea (ej: '1', 'A', 'MB1')",
                         "name": "num_comercial",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by nombre_ramal",
+                        "description": "Nombre del ramal o variante de ruta (ej: 'IDA', 'REGRESO', 'Ramal Politécnico')",
                         "name": "nombre_ramal",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by jerarquia_transporte",
+                        "description": "Jerarquía del sistema. Ej: 'Línea principal', 'Ramal'",
                         "name": "jerarquia_transporte",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by derecho_de_via",
+                        "description": "Tipo de infraestructura. Valores: Superficie, Elevado, Subterráneo",
                         "name": "derecho_de_via",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by es_cetram",
+                        "description": "Filtra trazos que pasan por un CETRAM. Valores: true, false",
                         "name": "es_cetram",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by sentido",
+                        "description": "Dirección del trazo. Valores: 1 (ida / hacia terminal), 0 (regreso / hacia origen)",
                         "name": "sentido",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by existe (true/false)",
+                        "description": "Filtra por líneas actualmente operativas. Valores: true (en operación), false (discontinuadas)",
                         "name": "existe",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "FeatureCollection con trazos de líneas y métricas operativas",
                         "schema": {
                             "$ref": "#/definitions/models.FeatureCollection"
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "No se encontraron trazos con los filtros proporcionados",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error interno del servidor al ejecutar la consulta espacial",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -196,7 +204,7 @@ const docTemplate = `{
         },
         "/mapas/geojsonPoligono": {
             "get": {
-                "description": "Obtener límites administrativos en formato GeoJSON",
+                "description": "Retorna límites administrativos en formato GeoJSON (FeatureCollection).\nCubre alcaldías de la CDMX, municipios del Área Metropolitana y entidades federativas.\nLas geometrías son de tipo ` + "`" + `Polygon` + "`" + ` o ` + "`" + `MultiPolygon` + "`" + `, útiles para delimitar zonas en mapas.\nSi no se aplican filtros, devuelve todos los polígonos disponibles en la base de datos.",
                 "consumes": [
                     "application/json"
                 ],
@@ -206,46 +214,47 @@ const docTemplate = `{
                 "tags": [
                     "GeoJSON"
                 ],
-                "summary": "GeoJSON Poligonos",
+                "summary": "GeoJSON de Polígonos Administrativos",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Filter by entidad",
+                        "description": "Entidad federativa. Ej: 'CDMX', 'Estado de México', 'Hidalgo', 'Morelos'",
                         "name": "entidad",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by nivel",
+                        "description": "Nivel administrativo. Valores: alcaldia (circunscripciones de CDMX), municipio (Área Metropolitana), entidad (nivel estatal)",
                         "name": "nivel",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Filter by nombre",
+                        "description": "Nombre exacto del polígono (ej: 'Cuauhtémoc', 'Naucalpan de Juárez', 'Ecatepec de Morelos')",
                         "name": "nombre",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "FeatureCollection con polígonos administrativos",
                         "schema": {
                             "$ref": "#/definitions/models.FeatureCollection"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error interno del servidor al ejecutar la consulta espacial",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
             }
         },
-        "/{sistema}/estacion": {
+        "/{sistema}/descripcion-estacion": {
             "get": {
-                "description": "Obtener datos a través de filtros como nombre, línea, municipio, colores y CETRAM",
+                "description": "Retorna registros descriptivos e históricos de estaciones de transporte.\nComplementa los datos de la tabla principal de Estaciones con información histórica o alternativa.\nIncluye clave oficial (cve_est), tipo, alcaldía y año de apertura.\nSi el sistema es TODOS, devuelve descripciones de todos los sistemas.",
                 "consumes": [
                     "application/json"
                 ],
@@ -253,9 +262,136 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Estacion"
+                    "DescripcionEstacion"
                 ],
-                "summary": "Datos de Estacion",
+                "summary": "Consultar Descripciones de Estación",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte. Valores: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC, TODOS",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID interno del registro de descripción",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nombre de la estación (ej: 'Tacubaya'). Búsqueda parcial.",
+                        "name": "nombre",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Alcaldía o municipio donde se ubica (ej: 'Miguel Hidalgo', 'Ecatepec de Morelos')",
+                        "name": "alcaldia_municipio",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Número o clave comercial de la línea a la que pertenece (ej: '1')",
+                        "name": "num_comercial",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de descripciones de estación",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DescripcionEstacion"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Parámetros inválidos",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron registros",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Registra una nueva descripción histórica o informativa para una estación.\nDebe asociarse a una estación existente mediante el campo ` + "`" + `estacion_id` + "`" + `.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DescripcionEstacion"
+                ],
+                "summary": "Crear Descripción de Estación",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Objeto DescripcionEstacion con los datos a registrar",
+                        "name": "descripcion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DescripcionEstacion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Descripción de estación creada con éxito",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "JSON inválido o campos requeridos faltantes",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/{sistema}/descripcion-estacion/{id}": {
+            "put": {
+                "description": "Reemplaza completamente el registro de descripción de estación con el ID indicado.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DescripcionEstacion"
+                ],
+                "summary": "Actualizar Descripción de Estación",
                 "parameters": [
                     {
                         "type": "string",
@@ -266,56 +402,391 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "ID interno de estación",
+                        "description": "ID del registro a actualizar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Objeto DescripcionEstacion con los datos actualizados",
+                        "name": "descripcion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DescripcionEstacion"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Descripción de estación actualizada con éxito",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "ID inválido o JSON mal formado",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Elimina un registro de descripción de estación por su ID. Esta operación es irreversible.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DescripcionEstacion"
+                ],
+                "summary": "Eliminar Descripción de Estación",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID del registro de descripción a eliminar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Descripción de estación eliminada con éxito",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "ID inválido",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/{sistema}/descripcion-linea": {
+            "get": {
+                "description": "Retorna registros descriptivos e históricos de líneas de transporte.\nIncluye información sobre terminales originales, tipo de línea, dirección, ampliaciones y descripción textual.\nÚtil para construir fichas informativas o mostrar la historia de una línea.\nSi el sistema es TODOS, devuelve descripciones de todos los sistemas.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DescripcionLinea"
+                ],
+                "summary": "Consultar Descripciones de Línea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte. Valores: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC, TODOS",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID interno del registro de descripción",
                         "name": "id",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Nombre de la estación",
+                        "description": "Nombre de la terminal original de la línea (ej: 'Observatorio', 'Pantitlán')",
+                        "name": "terminal_original",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID de la línea base a la que corresponde esta descripción (ej: '1')",
+                        "name": "linea_base",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Número o clave comercial de la línea (ej: '1', 'A', 'B')",
+                        "name": "num_comercial",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de descripciones de línea",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DescripcionLinea"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Parámetros inválidos",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron registros",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Registra una nueva descripción histórica o informativa para una línea de transporte.\nDebe asociarse a una línea existente mediante el campo ` + "`" + `linea_base` + "`" + `.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DescripcionLinea"
+                ],
+                "summary": "Crear Descripción de Línea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Objeto DescripcionLinea con los datos a registrar",
+                        "name": "descripcion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DescripcionLinea"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Descripción de línea creada con éxito",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "JSON inválido o campos requeridos faltantes",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/{sistema}/descripcion-linea/{id}": {
+            "put": {
+                "description": "Reemplaza completamente el registro de descripción de línea con el ID indicado.\nA diferencia de PATCH, PUT requiere enviar el objeto completo.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DescripcionLinea"
+                ],
+                "summary": "Actualizar Descripción de Línea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID del registro a actualizar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Objeto DescripcionLinea con los datos actualizados",
+                        "name": "descripcion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DescripcionLinea"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Descripción actualizada con éxito",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "ID inválido o JSON mal formado",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Elimina un registro de descripción de línea por su ID. Esta operación es irreversible.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DescripcionLinea"
+                ],
+                "summary": "Eliminar Descripción de Línea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID del registro de descripción a eliminar",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Descripción eliminada con éxito",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "ID inválido",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/{sistema}/estacion": {
+            "get": {
+                "description": "Retorna datos descriptivos (JSON) de estaciones del sistema indicado en la ruta.\nSi el sistema es TODOS, devuelve estaciones de todos los sistemas disponibles.\nLos CETRAM (Centros de Transferencia Modal) son nodos multimodales donde convergen varios sistemas.\nLa búsqueda por nombre usa coincidencia parcial (ILIKE) y normaliza caracteres especiales (ñ, tildes).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Estacion"
+                ],
+                "summary": "Consultar Estaciones de Transporte",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Sistema de transporte. Valores: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC, TODOS",
+                        "name": "sistema",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID interno de la estación en la base de datos",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nombre de la estación (ej: 'Tacubaya'). Búsqueda parcial e insensible a mayúsculas.",
                         "name": "nombre",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "ID de la línea",
+                        "description": "ID interno de la línea a la que pertenece la estación",
                         "name": "linea_id",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Alcaldía o municipio",
+                        "description": "Alcaldía (CDMX) o municipio del Área Metropolitana (ej: 'Miguel Hidalgo', 'Naucalpan de Juárez')",
                         "name": "alcaldia_municipio",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Número comercial de la línea",
+                        "description": "Número o clave comercial de la línea (ej: '1', 'MB1')",
                         "name": "num_comercial",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Color de línea en español",
+                        "description": "Color identificador de la línea en español (ej: 'Rosa', 'Azul', 'Naranja')",
                         "name": "color_esp",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Color de línea en inglés",
+                        "description": "Color identificador de la línea en inglés (ej: 'Pink', 'Blue', 'Orange')",
                         "name": "color_en",
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "Año de inauguración de la estación (ej: 1969)",
+                        "name": "anio",
+                        "in": "query"
+                    },
+                    {
                         "type": "boolean",
-                        "description": "Filtra estaciones CETRAM",
+                        "description": "true para filtrar únicamente estaciones que son CETRAM",
                         "name": "es_cetram",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Lista de estaciones que coinciden con los filtros",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -324,27 +795,30 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Parámetros inválidos",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "No se encontraron estaciones",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error interno del servidor",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
             },
             "post": {
-                "description": "Crear una nueva estación en el sistema de transporte",
+                "description": "Registra una nueva estación en el sistema especificado.\nRequiere al menos ` + "`" + `nombre` + "`" + `, ` + "`" + `sistema` + "`" + ` y ` + "`" + `linea_id` + "`" + ` para asociarla a una línea existente.",
                 "consumes": [
                     "application/json"
                 ],
@@ -354,7 +828,7 @@ const docTemplate = `{
                 "tags": [
                     "Estacion"
                 ],
-                "summary": "Crear Estacion",
+                "summary": "Crear Estación de Transporte",
                 "parameters": [
                     {
                         "type": "string",
@@ -364,7 +838,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Datos de la estación a crear",
+                        "description": "Objeto Estacion con los datos a registrar",
                         "name": "estacion",
                         "in": "body",
                         "required": true,
@@ -375,22 +849,23 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Estación creada exitosamente",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "JSON inválido o campos requeridos faltantes",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
             },
             "delete": {
-                "description": "Eliminar una estación por su ID",
+                "description": "Elimina una estación por su ID interno. Esta operación es irreversible.",
                 "consumes": [
                     "application/json"
                 ],
@@ -400,7 +875,7 @@ const docTemplate = `{
                 "tags": [
                     "Estacion"
                 ],
-                "summary": "Eliminar Estacion",
+                "summary": "Eliminar Estación de Transporte",
                 "parameters": [
                     {
                         "type": "string",
@@ -411,7 +886,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "ID de la estación a eliminar",
+                        "description": "ID interno de la estación a eliminar (ej: ?id=10)",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -419,22 +894,23 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Estación eliminada con éxito",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "ID inválido o faltante",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
             },
             "patch": {
-                "description": "Actualizar los datos de una estación por su ID",
+                "description": "Actualiza los datos de una estación por su ID interno.\nSe reemplazan todos los campos enviados en el body (comportamiento de PATCH con objeto completo).",
                 "consumes": [
                     "application/json"
                 ],
@@ -444,7 +920,7 @@ const docTemplate = `{
                 "tags": [
                     "Estacion"
                 ],
-                "summary": "Actualizar Estacion",
+                "summary": "Actualizar Estación de Transporte",
                 "parameters": [
                     {
                         "type": "string",
@@ -455,13 +931,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "ID de la estación a actualizar",
+                        "description": "ID interno de la estación a actualizar (ej: ?id=10)",
                         "name": "id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "Datos actualizados de la estación",
+                        "description": "Objeto Estacion con los datos actualizados",
                         "name": "estacion",
                         "in": "body",
                         "required": true,
@@ -472,16 +948,17 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Estación actualizada correctamente",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "ID inválido o JSON mal formado",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -489,7 +966,7 @@ const docTemplate = `{
         },
         "/{sistema}/linea": {
             "get": {
-                "description": "Obtener datos de líneas de transporte con filtros avanzados",
+                "description": "Retorna datos descriptivos (JSON) de líneas de transporte del sistema indicado en la ruta.\nSi el sistema es TODOS, devuelve líneas de todos los sistemas disponibles.\nLos filtros de texto usan búsqueda parcial insensible a mayúsculas (ILIKE) y soportan caracteres especiales.\nLos resultados incluyen relaciones anidadas: ramales y descripciones de línea.",
                 "consumes": [
                     "application/json"
                 ],
@@ -499,67 +976,73 @@ const docTemplate = `{
                 "tags": [
                     "Linea"
                 ],
-                "summary": "Datos de Linea",
+                "summary": "Consultar Líneas de Transporte",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Sistema de transporte",
+                        "description": "Sistema de transporte. Valores: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC, TODOS",
                         "name": "sistema",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "ID interno de la línea en la base de datos",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
-                        "description": "Search by nombre",
+                        "description": "Nombre descriptivo de la línea (ej: 'Línea 1', 'Línea A'). Búsqueda parcial.",
                         "name": "nombre",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Search by num_comercial",
+                        "description": "Número o clave comercial visible al usuario (ej: '1', 'A', 'MB1')",
                         "name": "num_comercial",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Search by clasificacion",
+                        "description": "Nombre del ramal o variante de ruta (ej: 'Ramal Politécnico')",
+                        "name": "nombre_ramal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Clasificación operativa. Valores: existente, eliminada, futura",
                         "name": "clasificacion",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Search by tam_km",
+                        "description": "Longitud total de la línea en kilómetros (ej: '18.8')",
                         "name": "tam_km",
                         "in": "query"
                     },
                     {
                         "type": "boolean",
-                        "description": "Search by existe",
+                        "description": "true = líneas en operación activa, false = líneas discontinuadas",
                         "name": "existe",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Search by es_cetram",
+                        "description": "Filtra líneas con estaciones tipo CETRAM. Valores: true, false",
                         "name": "es_cetram",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Search by sentido",
+                        "description": "Dirección del trazo. Valores: 1 (ida), 0 (regreso)",
                         "name": "sentido",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Search by nombre_ramal",
-                        "name": "nombre_ramal",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Lista de líneas que coinciden con los filtros",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -568,27 +1051,30 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Parámetros inválidos en la solicitud",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "404": {
-                        "description": "Not Found",
+                        "description": "No se encontraron líneas con los filtros dados",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error interno del servidor",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
             },
             "post": {
-                "description": "Crear una nueva línea de transporte",
+                "description": "Crea un nuevo registro de línea de transporte en el sistema.\nSi no se especifica ` + "`" + `sistema` + "`" + ` en el body, se asigna 'METRO' por defecto.\nLa geometría (` + "`" + `geom` + "`" + `) debe enviarse en formato WKT (Well-Known Text) si se incluye.",
                 "consumes": [
                     "application/json"
                 ],
@@ -598,7 +1084,7 @@ const docTemplate = `{
                 "tags": [
                     "Linea"
                 ],
-                "summary": "Crear Linea",
+                "summary": "Crear Línea de Transporte",
                 "parameters": [
                     {
                         "type": "string",
@@ -608,7 +1094,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Datos de la línea a crear",
+                        "description": "Objeto Linea con los datos a registrar. Campos requeridos: nombre, sistema.",
                         "name": "linea",
                         "in": "body",
                         "required": true,
@@ -619,27 +1105,29 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Línea creada exitosamente",
                         "schema": {
                             "$ref": "#/definitions/models.Linea"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "JSON inválido o campos requeridos faltantes",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error interno al guardar en la base de datos",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
             },
             "delete": {
-                "description": "Eliminar una línea de transporte por su ID (incluye eliminación en cascada de ramales y descripciones)",
+                "description": "Elimina una línea por su ID interno. La operación es en cascada: también elimina\nlos Ramales y las DescripcionLinea asociados a esa línea.\nEsta operación es irreversible.",
                 "consumes": [
                     "application/json"
                 ],
@@ -649,7 +1137,7 @@ const docTemplate = `{
                 "tags": [
                     "Linea"
                 ],
-                "summary": "Eliminar Linea",
+                "summary": "Eliminar Línea de Transporte",
                 "parameters": [
                     {
                         "type": "string",
@@ -660,7 +1148,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "ID de la línea a eliminar",
+                        "description": "ID interno de la línea a eliminar (ej: ?id=5)",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -668,28 +1156,30 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Línea y dependencias eliminadas correctamente",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "ID inválido o faltante",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error interno al eliminar de la base de datos",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
             },
             "patch": {
-                "description": "Actualizar los datos de una línea de transporte por su ID",
+                "description": "Actualiza parcialmente los datos de una línea por su ID interno.\nSolo se actualizan los campos enviados en el body (PATCH semántico).\nEl campo ` + "`" + `linea_id` + "`" + ` es ignorado aunque se envíe en el body (protección de integridad).",
                 "consumes": [
                     "application/json"
                 ],
@@ -699,7 +1189,7 @@ const docTemplate = `{
                 "tags": [
                     "Linea"
                 ],
-                "summary": "Actualizar Linea",
+                "summary": "Actualizar Línea de Transporte",
                 "parameters": [
                     {
                         "type": "string",
@@ -710,13 +1200,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "ID de la línea a actualizar",
+                        "description": "ID interno de la línea a actualizar (ej: ?id=5)",
                         "name": "id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "Datos actualizados de la línea",
+                        "description": "Campos a actualizar. Ej: {\\",
                         "name": "linea",
                         "in": "body",
                         "required": true,
@@ -728,22 +1218,24 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Línea actualizada correctamente",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "ID inválido o JSON mal formado",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Error interno al actualizar en la base de datos",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     }
                 }
@@ -751,16 +1243,44 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "httputil.HTTPError": {
+        "models.DescripcionEstacion": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 400
-                },
-                "message": {
+                "alcaldia_municipio": {
                     "type": "string",
-                    "example": "status bad request"
+                    "example": "Miguel Hidalgo"
+                },
+                "anio": {
+                    "type": "string",
+                    "example": "1970"
+                },
+                "cve_est": {
+                    "type": "string",
+                    "example": "TAC"
+                },
+                "descripcion_estacion_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "estacion_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "estado_ciudad": {
+                    "type": "string",
+                    "example": "Ciudad de México"
+                },
+                "longitud": {
+                    "type": "number",
+                    "example": -99.188
+                },
+                "nombre": {
+                    "type": "string",
+                    "example": "Tacubaya"
+                },
+                "tipo": {
+                    "type": "string",
+                    "example": "Terminal"
                 }
             }
         },
@@ -768,31 +1288,40 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "anio_fin_ampliacion": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1986
                 },
                 "anio_inicio_ampliacion": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1984
                 },
                 "descripcion": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Línea que conecta Observatorio con Pantitlán cruzando el centro histórico"
                 },
                 "descripcion_linea_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "direccion": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Oriente-Poniente"
                 },
                 "inicio_original": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1969"
                 },
                 "linea_base": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "terminal_original": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Observatorio"
                 },
                 "tipo_linea": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Metropolitana"
                 }
             }
         },
@@ -1011,31 +1540,40 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "anio_creacion": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1969
                 },
                 "estado": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "activo"
                 },
                 "geom": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "MULTILINESTRING((-99.188 19.403, -99.190 19.405))"
                 },
                 "linea_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "nombre_ramal": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "IDA"
                 },
                 "ramal_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "ramal_num": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "shape_gtfs": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "STC_L1_IDA"
                 },
                 "tam_km": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 18.8
                 }
             }
         }
@@ -1057,8 +1595,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/movilidad",
 	Schemes:          []string{},
-	Title:            "Apimetro",
-	Description:      "API sobre el Sistema de Transporte Colectivo (STC) de la Ciudad de México",
+	Title:            "Apimetro — API de Movilidad CDMX",
+	Description:      "API de datos geoespaciales sobre el sistema de transporte público de la Ciudad de México y Área Metropolitana.\nOfrece dos tipos de respuesta: descriptiva (JSON) con datos operativos de líneas y estaciones,\ny geográfica (GeoJSON) con geometrías listas para renderizar en mapas interactivos.\nCubre los sistemas: METRO, Metrobús (MB), Cablebús (CBB), RTP, Trolebús (TROLE),\nTren Ligero (TL), Mexicable, Mexibús, Interurbano, Cable Car (CC) y CETRAM.\nBase path: /movilidad — Documentación: /swagger/",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

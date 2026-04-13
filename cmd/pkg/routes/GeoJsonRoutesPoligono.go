@@ -15,16 +15,19 @@ func addGeoJsonRoutePoligono(rg *gin.RouterGroup) {
 
 // getGeoJsonRoutePoligono   	GET Route
 //
-//	@Summary		GeoJSON Poligonos
-//	@Description	Obtener límites administrativos en formato GeoJSON
+//	@Summary		GeoJSON de Polígonos Administrativos
+//	@Description	Retorna límites administrativos en formato GeoJSON (FeatureCollection).
+//	@Description	Cubre alcaldías de la CDMX, municipios del Área Metropolitana y entidades federativas.
+//	@Description	Las geometrías son de tipo `Polygon` o `MultiPolygon`, útiles para delimitar zonas en mapas.
+//	@Description	Si no se aplican filtros, devuelve todos los polígonos disponibles en la base de datos.
 //	@Tags			GeoJSON
 //	@Accept			json
 //	@Produce		json
-//	@Param			entidad	query		string	false	"Filter by entidad"
-//	@Param			nivel	query		string	false	"Filter by nivel"
-//	@Param			nombre	query		string	false	"Filter by nombre"
-//	@Success		200		{object}	models.FeatureCollection
-//	@Failure		500		{object}	map[string]interface{}
+//	@Param			entidad	query	string	false	"Entidad federativa. Ej: 'CDMX', 'Estado de México', 'Hidalgo', 'Morelos'"
+//	@Param			nivel	query	string	false	"Nivel administrativo. Valores: alcaldia (circunscripciones de CDMX), municipio (Área Metropolitana), entidad (nivel estatal)"
+//	@Param			nombre	query	string	false	"Nombre exacto del polígono (ej: 'Cuauhtémoc', 'Naucalpan de Juárez', 'Ecatepec de Morelos')"
+//	@Success		200		{object}	models.FeatureCollection	"FeatureCollection con polígonos administrativos"
+//	@Failure		500		{object}	map[string]interface{}		"Error interno del servidor al ejecutar la consulta espacial"
 //	@Router			/mapas/geojsonPoligono [get]
 func getGeoJsonRoutePoligono(c *gin.Context) {
 	entidad := c.Query("entidad")

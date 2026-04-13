@@ -15,23 +15,27 @@ func addGeoJsonRouteEstacion(rg *gin.RouterGroup) {
 
 // getGeoJsonRouteEstacion   	GET Route
 //
-//	@Summary		GeoJSON Estaciones
-//	@Description	Obtener estaciones en formato GeoJSON con filtros avanzados
+//	@Summary		GeoJSON de Estaciones
+//	@Description	Retorna estaciones de transporte público en formato GeoJSON (FeatureCollection).
+//	@Description	Cada Feature contiene una geometría tipo `Point` (longitud/latitud) y un objeto `properties`
+//	@Description	con atributos como nombre, sistema, alcaldía, número comercial, año y datos de CETRAM.
+//	@Description	Si no se especifica `sistema`, se devuelven estaciones de todos los sistemas.
+//	@Description	Los textos con caracteres especiales (ñ, tildes) se normalizan automáticamente.
 //	@Tags			GeoJSON
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema				query		string	false	"Filter by sistema"
-//	@Param			num_comercial		query		string	false	"Filter by num_comercial"
-//	@Param			alcaldia_municipio	query		string	false	"Filter by alcaldia_municipio"
-//	@Param			nombre_ramal		query		string	false	"Filter by nombre_ramal"
-//	@Param			jerarquia_transporte	query		string	false	"Filter by jerarquia_transporte"
-//	@Param			derecho_de_via		query		string	false	"Filter by derecho_de_via"
-//	@Param			es_cetram			query		string	false	"Filter by es_cetram"
-//	@Param			nombre_cetram		query		string	false	"Filter by nombre_cetram"
-//	@Param			cetram_real			query		string	false	"Filter by cetram_real (250m radius)"
-//	@Success		200					{object}	models.FeatureCollection
-//	@Failure		404					{object}	map[string]interface{}
-//	@Failure		500					{object}	map[string]interface{}
+//	@Param			sistema					query	string	false	"Sistema de transporte. Ej: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC. Vacío = todos."
+//	@Param			num_comercial			query	string	false	"Número o clave comercial de la línea (ej: '1', 'A', 'MB1')"
+//	@Param			alcaldia_municipio		query	string	false	"Alcaldía (CDMX) o municipio del Área Metropolitana donde se ubica la estación (ej: 'Cuauhtémoc')"
+//	@Param			nombre_ramal			query	string	false	"Nombre del ramal o variante de ruta al que pertenece la estación (ej: 'Ramal Politécnico')"
+//	@Param			jerarquia_transporte	query	string	false	"Jerarquía del sistema. Ej: 'Línea principal', 'Ramal'"
+//	@Param			derecho_de_via			query	string	false	"Tipo de infraestructura vial. Valores: Superficie, Elevado, Subterráneo"
+//	@Param			es_cetram				query	string	false	"Filtra estaciones que son o colindan con un CETRAM (Centro de Transferencia Modal). Valores: true, false"
+//	@Param			nombre_cetram			query	string	false	"Nombre del CETRAM (ej: 'Indios Verdes', 'Tacubaya'). Aplica solo si es_cetram=true"
+//	@Param			cetram_real				query	string	false	"Nombre de un CETRAM para buscar estaciones en un radio de 250 metros a su alrededor"
+//	@Success		200						{object}	models.FeatureCollection	"FeatureCollection con estaciones encontradas"
+//	@Failure		404						{object}	map[string]interface{}		"No se encontraron estaciones con los filtros proporcionados"
+//	@Failure		500						{object}	map[string]interface{}		"Error interno del servidor al ejecutar la consulta espacial"
 //	@Router			/mapas/geojsonEstacion [get]
 func getGeoJsonRouteEstacion(c *gin.Context) {
 	filtros := make(map[string]interface{})

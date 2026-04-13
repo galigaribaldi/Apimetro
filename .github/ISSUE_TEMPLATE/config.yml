@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Licencia comercial
+    url: mailto:galigaribaldi0@gmail.com?subject=Licencia%20comercial%20Apimetro
+    about: Para uso comercial de Apimetro, escríbenos directamente. El uso personal, académico y del sector público es gratuito.
+
+  - name: Documentación de la API
+    url: http://localhost:8080/swagger/
+    about: Revisa la documentación interactiva de Swagger antes de reportar un comportamiento inesperado.

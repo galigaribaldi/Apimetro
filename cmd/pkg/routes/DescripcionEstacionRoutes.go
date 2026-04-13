@@ -26,20 +26,23 @@ func addDescripcionEstacionRoute(rg *gin.RouterGroup) {
 
 // getDescripcionEstacionRoute   	GET Route
 //
-//	@Summary		Datos de Descripcion Estacion
-//	@Description	Obtener descripciones de estaciones con filtros
+//	@Summary		Consultar Descripciones de Estación
+//	@Description	Retorna registros descriptivos e históricos de estaciones de transporte.
+//	@Description	Complementa los datos de la tabla principal de Estaciones con información histórica o alternativa.
+//	@Description	Incluye clave oficial (cve_est), tipo, alcaldía y año de apertura.
+//	@Description	Si el sistema es TODOS, devuelve descripciones de todos los sistemas.
 //	@Tags			DescripcionEstacion
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema		path		string	true	"Sistema de transporte"
-//	@Param			id				query		int		false	"ID de la descripción"
-//	@Param			nombre				query		string	false	"Search by nombre"
-//	@Param			alcaldia_municipio	query		string	false	"Search by alcaldia_municipio"
-//	@Param			num_comercial		query		string	false	"Search by num_comercial"
-//	@Success		200					{array}	models.DescripcionEstacion
-//	@Failure		400					{object}	httputil.HTTPError
-//	@Failure		404					{object}	httputil.HTTPError
-//	@Failure		500					{object}	httputil.HTTPError
+//	@Param			sistema				path	string	true	"Sistema de transporte. Valores: METRO, MB, CBB, RTP, TROLE, TL, MEXIBUS, MEXICABLE, INTERURBANO, CC, TODOS"
+//	@Param			id					query	int		false	"ID interno del registro de descripción"
+//	@Param			nombre				query	string	false	"Nombre de la estación (ej: 'Tacubaya'). Búsqueda parcial."
+//	@Param			alcaldia_municipio	query	string	false	"Alcaldía o municipio donde se ubica (ej: 'Miguel Hidalgo', 'Ecatepec de Morelos')"
+//	@Param			num_comercial		query	string	false	"Número o clave comercial de la línea a la que pertenece (ej: '1')"
+//	@Success		200					{array}		models.DescripcionEstacion	"Lista de descripciones de estación"
+//	@Failure		400					{object}	map[string]interface{}		"Parámetros inválidos"
+//	@Failure		404					{object}	map[string]interface{}		"No se encontraron registros"
+//	@Failure		500					{object}	map[string]interface{}		"Error interno del servidor"
 //	@Router			/{sistema}/descripcion-estacion [get]
 func getDescripcionEstacionRoute(c *gin.Context) {
 	sistema := c.MustGet("sistemaValidado").(string)
@@ -70,15 +73,16 @@ func getDescripcionEstacionRoute(c *gin.Context) {
 
 // postDescripcionEstacionRoute   	POST Route
 //
-//	@Summary		Crear Descripcion Estacion
-//	@Description	Crear una nueva descripción de estación
+//	@Summary		Crear Descripción de Estación
+//	@Description	Registra una nueva descripción histórica o informativa para una estación.
+//	@Description	Debe asociarse a una estación existente mediante el campo `estacion_id`.
 //	@Tags			DescripcionEstacion
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema	path		string	true	"Sistema de transporte"
-//	@Param			descripcion	body		models.DescripcionEstacion	true	"Datos de la descripción de estación"
-//	@Success		201				{object}	map[string]interface{}
-//	@Failure		400				{object}	httputil.HTTPError
+//	@Param			sistema		path	string						true	"Sistema de transporte"
+//	@Param			descripcion	body	models.DescripcionEstacion	true	"Objeto DescripcionEstacion con los datos a registrar"
+//	@Success		201			{object}	map[string]interface{}	"Descripción de estación creada con éxito"
+//	@Failure		400			{object}	map[string]interface{}	"JSON inválido o campos requeridos faltantes"
 //	@Router			/{sistema}/descripcion-estacion [post]
 func postDescripcionEstacionRoute(c *gin.Context) {
 	var newDescripcion models.DescripcionEstacion
@@ -92,16 +96,16 @@ func postDescripcionEstacionRoute(c *gin.Context) {
 
 // putDescripcionEstacionRoute   	PUT Route
 //
-//	@Summary		Actualizar Descripcion Estacion
-//	@Description	Actualizar una descripción de estación por ID
+//	@Summary		Actualizar Descripción de Estación
+//	@Description	Reemplaza completamente el registro de descripción de estación con el ID indicado.
 //	@Tags			DescripcionEstacion
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema	path		string	true	"Sistema de transporte"
-//	@Param			id			path		int				true	"ID de la descripción de estación"
-//	@Param			descripcion	body		models.DescripcionEstacion	true	"Datos actualizados"
-//	@Success		200			{object}	map[string]interface{}
-//	@Failure		400			{object}	httputil.HTTPError
+//	@Param			sistema		path	string						true	"Sistema de transporte"
+//	@Param			id			path	int							true	"ID del registro a actualizar"
+//	@Param			descripcion	body	models.DescripcionEstacion	true	"Objeto DescripcionEstacion con los datos actualizados"
+//	@Success		200			{object}	map[string]interface{}	"Descripción de estación actualizada con éxito"
+//	@Failure		400			{object}	map[string]interface{}	"ID inválido o JSON mal formado"
 //	@Router			/{sistema}/descripcion-estacion/{id} [put]
 func putDescripcionEstacionRoute(c *gin.Context) {
 	idParam := c.Param("id")
@@ -124,15 +128,15 @@ func putDescripcionEstacionRoute(c *gin.Context) {
 
 // deleteDescripcionEstacionRoute   	DELETE Route
 //
-//	@Summary		Eliminar Descripcion Estacion
-//	@Description	Eliminar una descripción de estación por ID
+//	@Summary		Eliminar Descripción de Estación
+//	@Description	Elimina un registro de descripción de estación por su ID. Esta operación es irreversible.
 //	@Tags			DescripcionEstacion
 //	@Accept			json
 //	@Produce		json
-//	@Param			sistema	path		string	true	"Sistema de transporte"
-//	@Param			id	path		int	true	"ID de la descripción de estación a eliminar"
-//	@Success		200	{object} map[string]interface{}
-//	@Failure		400	{object}	httputil.HTTPError
+//	@Param			sistema	path	string	true	"Sistema de transporte"
+//	@Param			id		path	int		true	"ID del registro de descripción a eliminar"
+//	@Success		200		{object}	map[string]interface{}	"Descripción de estación eliminada con éxito"
+//	@Failure		400		{object}	map[string]interface{}	"ID inválido"
 //	@Router			/{sistema}/descripcion-estacion/{id} [delete]
 func deleteDescripcionEstacionRoute(c *gin.Context) {
 	idParam := c.Param("id")

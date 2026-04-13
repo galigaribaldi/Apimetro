@@ -1,0 +1,346 @@
+=====================================================
+ Apimetro — Guía de Base de Datos y Comandos Make
+ Autor: Hernán Galileo Cabrera Garibaldi
+ Última actualización: 2026-04
+=====================================================
+
+Este archivo documenta todos los comandos del Makefile relacionados con la
+base de datos y los entornos Docker: qué hacen, cuándo usarlos y qué
+implicaciones tienen sobre los datos y el esquema.
+
+=====================================================
+ ARQUITECTURA DE ENTORNOS
+=====================================================
+
+El proyecto soporta tres entornos independientes. Cada uno tiene:
+  - Su propio volumen Docker (los datos NO se comparten entre entornos)
+  - Sus propias credenciales (.env.dev / .env.qa / .env.main)
+  - Su propia red Docker interna
+  - Puertos distintos para no colisionar con PostgreSQL local
+
+  ENTORNO   API (host)   DB (host)   GIN_MODE   AutoMigrate
+  -------   ----------   ---------   --------   -----------
+  DEV       :8080        :5433       debug      Solo si DB_HOST=localhost
+  QA        :8081        :5434       debug      Solo si DB_HOST=localhost
+  MAIN      :8082        :5435       release    Desactivado (usa init.sql)
+
+NOTA: El puerto 5432 del host queda libre para tu PostgreSQL local nativo.
+
+
+=====================================================
+ EXTENSIONES DE BASE DE DATOS
+=====================================================
+
+El archivo db/init/init.sql instala las siguientes extensiones al crear
+el contenedor por primera vez:
+
+  postgis            — Soporte de tipos geométricos (Point, LineString,
+                       MultiPolygon, etc.), funciones espaciales (ST_AsGeoJSON,
+                       ST_DWithin, ST_Intersects, ST_Length, ST_Union) e índices
+                       GiST para búsquedas espaciales eficientes.
+
+  postgis_topology   — Soporte de topología vectorial (requerida como dependencia
+                       de postgis y para análisis de conectividad futuros en el
+                       esquema plutarco).
+
+IMPORTANTE: Si agregas una nueva extensión a la DB local, ejecuta
+'make db-sync' y actualiza este archivo.
+
+
+=====================================================
+ ESQUEMAS
+=====================================================
+
+  public     — Esquema principal. Contiene todas las tablas de transporte
+               actualmente en uso por la API.
+
+  plutarco   — Esquema reservado para la integración futura de datos del
+               INEGI: AGEBs (Áreas Geoestadísticas Básicas) y Red Vial
+               (Calles). Ya existe en la DB pero sus tablas están vacías.
+               El rol apimetro_read tiene permisos SELECT sobre este esquema.
+
+
+=====================================================
+ TABLAS Y ORDEN DE INSERCIÓN (FK SAFETY)
+=====================================================
+
+El orden importa al insertar datos manualmente o al cargar seed.sql.
+Respetar este orden evita errores de violación de llave foránea.
+
+  ORDEN   TABLA                   DESCRIPCIÓN
+  -----   -----                   -----------
+  1       lineas                  Líneas de transporte. Sin dependencias FK.
+                                  317 registros. Tabla raíz del modelo.
+
+  2       ramals                  Variantes de ruta (IDA/REGRESO/ramales).
+                                  FK → lineas.id
+                                  693 registros. Contiene geometría
+                                  MultiLineString PostGIS (SRID 4326).
+
+  3       estacions               Estaciones y paradas.
+                                  FK → lineas.id
+                                  22,878 registros. Contiene geometría
+                                  Point PostGIS (SRID 4326).
+
+  4       descripcion_lineas      Datos históricos y descriptivos de líneas.
+                                  FK → lineas.id
+                                  0 registros actualmente.
+
+  5       descripcion_estacions   Datos históricos de estaciones.
+                                  FK → estacions.id
+                                  0 registros actualmente.
+
+  6       historico_operacion     Métricas operativas por ramal.
+                                  FK → lineas.id, ramals.id
+                                  690 registros.
+                                  ramal_id tiene restricción UNIQUE.
+
+  7       limites_territoriales   Polígonos administrativos (alcaldías CDMX
+                                  y municipios Área Metropolitana).
+                                  Sin FK. 553 registros. 16 MB de geometrías.
+
+  TABLAS QUE NO SE INCLUYEN EN DUMPS NI SEEDS:
+    - estaciones_backup, lineas_backup, ramales_backup → tablas de respaldo manual
+    - spatial_ref_sys → tabla interna de PostGIS, no manipular
+
+
+=====================================================
+ SEGURIDAD — ROL apimetro_read
+=====================================================
+
+La API de Go se conecta con el rol 'apimetro_read', que tiene ÚNICAMENTE
+permisos de SELECT sobre los esquemas public y plutarco. Este rol es creado
+automáticamente por db/init/roles.sh al inicializar el contenedor.
+
+  Permisos de apimetro_read:
+    - CONNECT a la base de datos
+    - USAGE en esquemas public y plutarco
+    - SELECT en todas las tablas actuales y futuras (via DEFAULT PRIVILEGES)
+    - SIN permisos de INSERT, UPDATE, DELETE ni DDL
+
+El usuario administrador (POSTGRES_USER en .env.*) es el único con permisos
+completos y solo lo usa Docker internamente para inicializar la DB.
+NUNCA expongas las credenciales del administrador en la API.
+
+
+=====================================================
+ COMANDOS MAKE — REFERENCIA COMPLETA
+=====================================================
+
+------------------------------------------------------
+ make docs
+------------------------------------------------------
+QUÉ HACE:
+  Ejecuta ~/go/bin/swag init para regenerar los archivos de documentación
+  Swagger en cmd/docs/ (docs.go, swagger.json, swagger.yaml).
+
+CUÁNDO USARLO:
+  - Después de modificar cualquier anotación @Summary, @Param, @Success, etc.
+    en los archivos de cmd/pkg/routes/
+  - Después de agregar o modificar structs en cmd/pkg/models/
+  - Se ejecuta automáticamente como prerequisito de dev, build y docker-*
+
+IMPLICACIONES:
+  - Sobreescribe cmd/docs/ completamente. No editar esos archivos a mano.
+  - No afecta la base de datos ni los contenedores.
+
+------------------------------------------------------
+ make dev
+------------------------------------------------------
+QUÉ HACE:
+  1. Ejecuta 'make docs' (actualiza Swagger)
+  2. Lanza ~/go/bin/air para correr la API con hot-reload
+
+CUÁNDO USARLO:
+  Desarrollo local SIN Docker. Requiere que PostgreSQL esté corriendo en
+  localhost:5432 con la base db_apimetro.
+
+IMPLICACIONES:
+  - La API corre en http://localhost:8080
+  - Ejecuta AutoMigrate de GORM (crea/altera tablas si hay cambios en modelos)
+  - Air reconstruye el binario automáticamente al detectar cambios en .go
+
+------------------------------------------------------
+ make build
+------------------------------------------------------
+QUÉ HACE:
+  1. Ejecuta 'make docs'
+  2. Compila el binario en bin/apimetro usando go build
+
+CUÁNDO USARLO:
+  Para compilar un binario local sin Docker (debugging, pruebas de release).
+
+IMPLICACIONES:
+  - No levanta ningún servidor ni contenedor.
+  - El binario resultante lee variables de entorno para la conexión a DB.
+
+------------------------------------------------------
+ make clean
+------------------------------------------------------
+QUÉ HACE:
+  Elimina: bin/, tmp/, cmd/docs/
+
+CUÁNDO USARLO:
+  Para limpiar artefactos de compilación y regenerar desde cero.
+
+IMPLICACIONES:
+  - NO afecta volúmenes Docker ni datos de la DB.
+  - Los docs se regenerarán en el siguiente 'make docs' o 'make dev'.
+
+------------------------------------------------------
+ make docker-dev
+------------------------------------------------------
+QUÉ HACE:
+  1. Ejecuta 'make docs'
+  2. chmod +x db/init/roles.sh
+  3. docker compose --profile dev --env-file .env.dev up --build
+
+CUÁNDO USARLO:
+  Para levantar el entorno de desarrollo completo en Docker.
+  Recomendado cuando no tienes PostgreSQL instalado localmente o quieres
+  un entorno idéntico al de producción.
+
+PUERTOS:
+  API  → http://localhost:8080
+  DB   → localhost:5433 (conectar con pgAdmin u otro cliente)
+
+IMPLICACIONES:
+  - Primera ejecución: Docker construye la imagen de la API y crea el
+    volumen pgdata_dev. PostgreSQL ejecuta init.sql y roles.sh
+    automáticamente (crea esquema y rol apimetro_read).
+  - Ejecuciones posteriores: el volumen ya existe, init.sql y roles.sh
+    NO se vuelven a ejecutar. Los datos persisten entre reinicios.
+  - La API NO ejecuta AutoMigrate porque DB_HOST=db_dev (no localhost).
+  - Para cargar datos después de la primera ejecución, usa el proceso
+    de inyección de seed.sql documentado al final de este archivo.
+
+------------------------------------------------------
+ make docker-qa
+------------------------------------------------------
+QUÉ HACE:
+  Igual que docker-dev pero con el perfil 'qa' y .env.qa
+
+PUERTOS:
+  API  → http://localhost:8081
+  DB   → localhost:5434
+
+IMPLICACIONES:
+  - Volumen independiente: pgdata_qa. No comparte datos con DEV ni MAIN.
+  - Ideal para correr pruebas de integración y regresión antes de promover
+    a producción.
+  - GIN_MODE=debug para ver logs detallados de las peticiones.
+
+------------------------------------------------------
+ make docker-main
+------------------------------------------------------
+QUÉ HACE:
+  Igual que docker-dev pero con el perfil 'main' y .env.main.
+  Los contenedores tienen restart: always (se reinician con el sistema).
+
+PUERTOS:
+  API  → http://localhost:8082
+  DB   → localhost:5435
+
+IMPLICACIONES:
+  - Volumen independiente: pgdata_main. NUNCA sobrescribir con datos de dev.
+  - GIN_MODE=release: no se imprimen logs de rutas ni requests en consola.
+  - CAMBIAR LAS CONTRASEÑAS en .env.main antes de usar en producción.
+    Los valores por defecto son placeholders explícitos.
+  - Los contenedores de MAIN tienen política restart:always (DEV y QA
+    usan unless-stopped).
+
+------------------------------------------------------
+ make docker-down-dev / docker-down-qa / docker-down-main
+------------------------------------------------------
+QUÉ HACE:
+  Detiene y elimina los contenedores del entorno especificado.
+
+IMPLICACIONES:
+  - Los VOLÚMENES de datos persisten (pgdata_dev, pgdata_qa, pgdata_main).
+  - Para eliminar también los volúmenes: agregar la flag --volumes al
+    comando docker compose correspondiente (operación destructiva).
+
+------------------------------------------------------
+ make db-sync
+------------------------------------------------------
+QUÉ HACE:
+  Ejecuta pg_dump --schema-only desde la DB local (puerto 5432, usuario
+  prueba) y sobreescribe db/init/init.sql con el esquema actualizado.
+  Excluye: estaciones_backup, lineas_backup, ramales_backup, spatial_ref_sys.
+
+CUÁNDO USARLO:
+  Cuando hagas cambios manuales en la DB local (agregar columnas, crear
+  nuevas tablas, modificar índices) y quieras que esos cambios queden
+  reflejados en el init.sql para futuros contenedores nuevos.
+
+IMPLICACIONES:
+  - SOBREESCRIBE db/init/init.sql sin confirmación.
+  - El archivo generado es solo DDL (sin datos). Para los datos usa
+    el proceso de seed.sql documentado abajo.
+  - REVISAR el archivo generado antes de hacer commit o usar con Docker,
+    ya que pg_dump puede incluir sentencias específicas de la versión local.
+  - Los contenedores existentes NO son afectados (el init.sql solo se
+    ejecuta cuando se crea un volumen nuevo desde cero).
+
+
+=====================================================
+ PROCESO DE CARGA DE DATOS (SEED)
+=====================================================
+
+El archivo db/init/seed.sql NO está incluido en el repositorio (está en
+.gitignore) porque contiene ~34 MB de datos de transporte.
+
+Para regenerarlo desde la DB local y cargarlo en un contenedor:
+
+PASO 1 — Generar seed.sql desde la DB local:
+
+  PGPASSWORD=postgres pg_dump \
+    --data-only --inserts --disable-triggers \
+    -t lineas -t ramals -t estacions \
+    -t descripcion_lineas -t descripcion_estacions \
+    -t historico_operacion -t limites_territoriales \
+    -h localhost -p 5432 -U prueba db_apimetro \
+    > db/init/seed.sql
+
+PASO 2 — Asegurarse de que el contenedor objetivo esté healthy:
+
+  docker ps --filter "name=apimetro_db_dev"
+
+PASO 3 — Inyectar en el contenedor DEV (usa el usuario administrador):
+
+  PGPASSWORD='Dev_Adm1nP4ss!2024' psql \
+    -h localhost -p 5433 \
+    -U admin_apimetro -d db_apimetro \
+    -v ON_ERROR_STOP=1 \
+    -f db/init/seed.sql
+
+  Para QA (puerto 5434):
+  PGPASSWORD='QA_Adm1nP4ss!2024' psql \
+    -h localhost -p 5434 \
+    -U admin_apimetro -d db_apimetro \
+    -v ON_ERROR_STOP=1 \
+    -f db/init/seed.sql
+
+PASO 4 — Verificar conteos:
+
+  PGPASSWORD='Dev_Adm1nP4ss!2024' psql \
+    -h localhost -p 5433 -U admin_apimetro -d db_apimetro -t -c "
+    SELECT relname, n_live_tup
+    FROM pg_stat_user_tables
+    WHERE schemaname = 'public'
+    ORDER BY n_live_tup DESC;"
+
+CONTEOS ESPERADOS (abril 2026):
+  estacions             22,878
+  ramals                   693
+  historico_operacion      690
+  limites_territoriales    553
+  lineas                   317
+  descripcion_lineas         0
+  descripcion_estacions      0
+
+NOTA: La flag --disable-triggers en pg_dump genera sentencias
+SET session_replication_role = replica; en el seed.sql, lo que
+desactiva las FK durante la carga. Esto requiere que el usuario que
+inyecta tenga privilegios de superusuario (admin_apimetro los tiene).
+NUNCA usar apimetro_read para inyectar datos.
