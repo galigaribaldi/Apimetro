@@ -245,7 +245,7 @@ definitions:
 externalDocs:
   description: Github
   url: https://github.com/galigaribaldi/Apimetro
-host: localhost:8080
+host: apimetro.dev
 info:
   contact:
     email: galigaribaldi0@gmail.com
@@ -258,8 +258,8 @@ info:
     Tren Ligero (TL), Mexicable, Mexibús, Interurbano, Cable Car (CC) y CETRAM.
     Base path: /movilidad — Documentación: /swagger/
   license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+    name: Business Source License 1.1
+    url: https://github.com/galigaribaldi/Apimetro/blob/main/LICENSE
   title: Apimetro — API de Movilidad CDMX
   version: "1.0"
 paths:
