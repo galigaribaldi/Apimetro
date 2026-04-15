@@ -1,0 +1,62 @@
+# =====================================================
+# Apimetro — Docker Compose PRODUCCIÓN
+#
+# Uso en el servidor:
+#   docker compose -f docker-compose.prod.yml up -d db
+#   # Esperar: 'ready to accept connections'
+#   docker compose -f docker-compose.prod.yml up -d api
+#
+# La API solo escucha en 127.0.0.1 — acceso externo
+# únicamente a través de Nginx (reverse proxy + SSL).
+# El puerto de la DB NO está expuesto al host.
+# =====================================================
+
+services:
+
+  db:
+    image: postgis/postgis:15-3.4
+    container_name: apimetro_db_prod
+    restart: always
+    env_file: .env.prod
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      API_DB_PASSWORD: ${API_DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - apimetro_net_prod
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: apimetro_api_prod
+    restart: always
+    env_file: .env.prod
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${API_DB_USER}
+      DB_PASSWORD: ${API_DB_PASSWORD}
+      GIN_MODE: release
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - apimetro_net_prod
+
+volumes:
+  postgres_data:
+
+networks:
+  apimetro_net_prod:
+    driver: bridge
