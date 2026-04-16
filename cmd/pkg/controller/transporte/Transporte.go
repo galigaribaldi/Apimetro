@@ -2,23 +2,18 @@ package transporte
 
 import (
 	con "Apimetro/cmd/pkg/controller"
-	models "Apimetro/cmd/pkg/models"
 	"log"
+	"os"
 )
 
-// Inicializa el módulo de Transporte, conectando a la base de datos y migrando las tablas correspondientes.
+// Inicializa el módulo de Transporte conectando a la base de datos.
+// AutoMigrate solo corre en entorno local (DB_HOST vacío o localhost).
+// En producción el esquema es gestionado por db/init/init.sql.
 func init() {
 	log.Println("Inicializando BD y módulo de Transporte")
 	con.ConnectDataBase()
 
-	err := con.DB.AutoMigrate(
-		&models.Linea{},
-		&models.Estacion{},
-		&models.DescripcionLinea{},
-		//&models.Ramal{},
-	)
-	if err != nil {
-		log.Println("Error en la migración del módulo Metro", err)
+	if os.Getenv("DB_HOST") != "" && os.Getenv("DB_HOST") != "localhost" {
+		log.Println("Saltando AutoMigrate en módulo Transporte (entorno Docker)")
 	}
-
 }
