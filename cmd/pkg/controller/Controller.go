@@ -4,6 +4,7 @@ import (
 	models "Apimetro/cmd/pkg/models"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -49,16 +50,23 @@ func ConnectDataBase() {
 }
 
 // buildDSN construye el Data Source Name para GORM.
+// Usa url.URL para codificar correctamente caracteres especiales en la contraseña.
 func buildDSN() string {
-	if url := os.Getenv("DATABASE_URL"); url != "" {
-		return url
+	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
+		return dbURL
 	}
 	host := getEnv("DB_HOST", "localhost")
 	port := getEnv("DB_PORT", "5432")
 	user := getEnv("DB_USER", "prueba")
 	pass := getEnv("DB_PASSWORD", "postgres")
 	name := getEnv("DB_NAME", "db_apimetro")
-	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", user, pass, host, port, name)
+	u := &url.URL{
+		Scheme: "postgresql",
+		User:   url.UserPassword(user, pass),
+		Host:   fmt.Sprintf("%s:%s", host, port),
+		Path:   name,
+	}
+	return u.String()
 }
 
 // getEnv retorna el valor de la variable de entorno o el fallback si está vacía.
