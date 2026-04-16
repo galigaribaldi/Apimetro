@@ -14,8 +14,8 @@ const docTemplate = `{
             "email": "galigaribaldi0@gmail.com"
         },
         "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+            "name": "Business Source License 1.1",
+            "url": "https://github.com/galigaribaldi/Apimetro/blob/main/LICENSE"
         },
         "version": "{{.Version}}"
     },
@@ -1592,7 +1592,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "apimetro.dev",
 	BasePath:         "/movilidad",
 	Schemes:          []string{},
 	Title:            "Apimetro — API de Movilidad CDMX",

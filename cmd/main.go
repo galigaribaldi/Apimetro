@@ -18,10 +18,10 @@ import (
 //	@contact.name	galigaribaldi (Galileo Cabrera Garibaldi)
 //	@contact.email	galigaribaldi0@gmail.com
 
-//	@license.name	Apache 2.0
-//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+//	@license.name	Business Source License 1.1
+//	@license.url	https://github.com/galigaribaldi/Apimetro/blob/main/LICENSE
 
-//	@host		localhost:8080
+//	@host		apimetro.dev
 //	@BasePath	/movilidad
 
 //	@securityDefinitions.basic	BasicAuth

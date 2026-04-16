@@ -202,3 +202,14 @@ tmp/
 bin/apimetro
 tmp/main
 db/init/seed.sql
+
+# Binarios compilados en raíz (Go build output)
+/main
+/apimetro
+
+## Binarios img y pdf
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.JPEG
