@@ -4,6 +4,10 @@ MAIN_PATH=./cmd/main.go
 DOCS_DIR=./cmd/docs
 GOBIN=$(HOME)/go/bin
 
+# Directorio de archivos .env (fuera del repo para no exponer credenciales)
+# Sobreescribir con: make docker-dev SECRETS_DIR=/ruta/alternativa
+SECRETS_DIR ?= $(HOME)/.SecretsFiles
+
 .PHONY: all build dev docs clean docker-dev docker-qa docker-main db-sync
 
 all: dev
@@ -38,27 +42,27 @@ clean:
 docker-dev: docs
 	@echo "Levantando entorno DEV (API :8080 | DB :5433)..."
 	chmod +x db/init/roles.sh
-	docker compose --profile dev --env-file .env.dev up --build
+	docker compose --profile dev --env-file $(SECRETS_DIR)/.env.dev up --build
 
 docker-qa: docs
 	@echo "Levantando entorno QA (API :8081 | DB :5434)..."
 	chmod +x db/init/roles.sh
-	docker compose --profile qa --env-file .env.qa up --build
+	docker compose --profile qa --env-file $(SECRETS_DIR)/.env.qa up --build
 
 docker-main: docs
 	@echo "Levantando entorno MAIN (API :8082 | DB :5435)..."
 	chmod +x db/init/roles.sh
-	docker compose --profile main --env-file .env.main up --build -d
+	docker compose --profile main --env-file $(SECRETS_DIR)/.env.main up --build -d
 
 # Bajar contenedores de un entorno específico
 docker-down-dev:
-	docker compose --profile dev --env-file .env.dev down
+	docker compose --profile dev --env-file $(SECRETS_DIR)/.env.dev down
 
 docker-down-qa:
-	docker compose --profile qa --env-file .env.qa down
+	docker compose --profile qa --env-file $(SECRETS_DIR)/.env.qa down
 
 docker-down-main:
-	docker compose --profile main --env-file .env.main down
+	docker compose --profile main --env-file $(SECRETS_DIR)/.env.main down
 
 # ==========================================
 # db-sync — Exportar esquema de la DB local a init.sql

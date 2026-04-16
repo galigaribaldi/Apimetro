@@ -1,0 +1,277 @@
+# Apimetro — Guía de Conexión y Operación de Base de Datos
+# Base de datos: db_apimetro (PostgreSQL 15 + PostGIS 3.4)
+# =====================================================================
+
+
+## ROLES DISPONIBLES Y SUS PERMISOS
+
+  ┌─────────────────────┬────────────────────────────────────────────────────┐
+  │ ROL                 │ PERMISOS                                           │
+  ├─────────────────────┼────────────────────────────────────────────────────┤
+  │ postgres            │ Superusuario del sistema. Acceso total.            │
+  │                     │ Solo usar dentro del contenedor o emergencias.     │
+  ├─────────────────────┼────────────────────────────────────────────────────┤
+  │ admin_apimetro      │ Usuario administrador de la aplicación.            │
+  │                     │ SELECT, INSERT, UPDATE, DELETE, DDL (ALTER TABLE,  │
+  │                     │ CREATE INDEX, etc.). Lo usa Docker para init.      │
+  │                     │ Usar para: cargar seed.sql, modificar esquema,     │
+  │                     │ mantenimiento, backups.                            │
+  ├─────────────────────┼────────────────────────────────────────────────────┤
+  │ apimetro_read       │ Usuario de solo lectura. Únicamente SELECT.        │
+  │                     │ Lo usa la API de Go en producción.                 │
+  │                     │ Usar para: consultas de verificación seguras,      │
+  │                     │ explorar datos sin riesgo de modificarlos.         │
+  └─────────────────────┴────────────────────────────────────────────────────┘
+
+  REGLA DE ORO:
+  - Operaciones de lectura / verificación → apimetro_read
+  - Operaciones de escritura / mantenimiento → admin_apimetro
+  - Emergencias / reset de contraseñas / DDL crítico → postgres (solo en container)
+
+
+## CONEXIÓN DESDE TERMINAL (psql)
+
+  IMPORTANTE: La DB de producción NO tiene puerto expuesto al exterior.
+  Solo es accesible desde dentro del servidor o vía túnel SSH.
+
+  ─────────────────────────────────────────────────────────────
+  OPCIÓN A — Directo desde dentro del servidor (sin tunnel)
+  ─────────────────────────────────────────────────────────────
+
+  # 1. Conectarte al servidor
+  ssh root@87.99.149.143
+
+  # 2. Entrar al contenedor de la DB como superusuario
+  docker exec -it apimetro_db_prod psql -U postgres -d db_apimetro
+
+  # 2b. Entrar como admin_apimetro (para mantenimiento)
+  docker exec -it apimetro_db_prod psql -U admin_apimetro -d db_apimetro
+
+  # 2c. Entrar como apimetro_read (para verificaciones)
+  docker exec -it apimetro_db_prod psql -U apimetro_read -d db_apimetro
+
+  ─────────────────────────────────────────────────────────────
+  OPCIÓN B — Túnel SSH desde tu máquina local
+  (permite usar psql local o PGAdmin4 apuntando a localhost)
+  ─────────────────────────────────────────────────────────────
+
+  # Abrir el túnel en una terminal (déjala abierta mientras trabajas)
+  ssh -L 5434:localhost:5432 root@87.99.149.143 -N
+
+  # En otra terminal — conectarte como apimetro_read (solo lectura)
+  psql -h localhost -p 5434 -U apimetro_read -d db_apimetro
+
+  # Conectarte como admin_apimetro (escritura/mantenimiento)
+  psql -h localhost -p 5434 -U admin_apimetro -d db_apimetro
+
+  # La contraseña se pedirá interactivamente.
+  # Para evitar escribirla cada vez (solo en local, nunca en scripts):
+  PGPASSWORD='<valor_de_DB_PASSWORD>' psql -h localhost -p 5434 -U apimetro_read -d db_apimetro
+
+
+## CONEXIÓN DESDE PGADMIN4 (interfaz gráfica)
+
+  PGAdmin4 no puede conectarse directamente a producción porque el puerto
+  de la DB no está expuesto. Se debe usar el túnel SSH integrado de PGAdmin.
+
+  ─────────────────────────────────────────────────────────────
+  MÉTODO 1 — Túnel SSH integrado en PGAdmin4 (recomendado)
+  ─────────────────────────────────────────────────────────────
+
+  1. Abrir PGAdmin4
+  2. Click derecho en "Servers" → "Register" → "Server..."
+
+  Pestaña [General]:
+    Name: Apimetro Producción
+
+  Pestaña [Connection]:
+    Host name/address:  localhost        ← PGAdmin usará el túnel, no la IP real
+    Port:               5432
+    Maintenance database: db_apimetro
+    Username:           apimetro_read    ← o admin_apimetro según la tarea
+    Password:           <valor_de_DB_PASSWORD o POSTGRES_ADMIN_PASSWORD>
+    Save password:      según preferencia
+
+  Pestaña [SSH Tunnel]:
+    Use SSH tunneling:  YES (activar el toggle)
+    Tunnel host:        87.99.149.143
+    Tunnel port:        22
+    Username:           root
+    Authentication:     Identity file
+    Identity file:      ~/.ssh/id_ed25519   ← ruta a tu llave privada SSH
+
+  3. Click "Save" → PGAdmin abre el túnel y conecta automáticamente.
+
+  ─────────────────────────────────────────────────────────────
+  MÉTODO 2 — Túnel SSH manual + PGAdmin apuntando a localhost
+  ─────────────────────────────────────────────────────────────
+
+  # Terminal 1 — abrir túnel (mantener abierta)
+  ssh -L 5434:localhost:5432 root@87.99.149.143 -N
+
+  # PGAdmin4 → Register Server:
+  Pestaña [Connection]:
+    Host name/address:  localhost
+    Port:               5434
+    Maintenance database: db_apimetro
+    Username:           apimetro_read
+    Password:           <valor_de_DB_PASSWORD>
+
+  # No configurar SSH Tunnel en PGAdmin (ya está activo el manual).
+
+
+## EJEMPLOS DE CONSULTAS POR ROL
+
+  ─────────────────────────────────────────────────────────────
+  CON apimetro_read — solo lectura, sin riesgo
+  ─────────────────────────────────────────────────────────────
+
+  -- Contar registros por tabla
+  SELECT relname AS tabla, n_live_tup AS registros
+  FROM pg_stat_user_tables
+  WHERE schemaname = 'public'
+  ORDER BY n_live_tup DESC;
+
+  -- Ver líneas del Metro activas
+  SELECT id, nombre, num_comercial, tam_km, existe
+  FROM lineas
+  WHERE sistema = 'METRO' AND existe = true
+  ORDER BY num_comercial;
+
+  -- Ver estaciones de una línea específica (por linea_id)
+  SELECT nombre, alcaldia_municipio, es_cetram
+  FROM estacions
+  WHERE linea_id = 301
+  ORDER BY num_estacion;
+
+  -- Consulta GeoJSON de una estación (igual que hace la API)
+  SELECT ST_AsGeoJSON(geom) AS geojson, nombre, sistema
+  FROM estacions
+  WHERE sistema = 'METRO'
+  LIMIT 3;
+
+  -- Ver estaciones CETRAM
+  SELECT nombre, nombre_cetram, sistema, alcaldia_municipio
+  FROM estacions
+  WHERE es_cetram = true
+  ORDER BY sistema, nombre;
+
+  -- Ver trazos de líneas (geometría como texto legible)
+  SELECT l.nombre, r.nombre_ramal, r.tam_km,
+         ST_AsText(r.geom) AS trazo_wkt
+  FROM ramals r
+  JOIN lineas l ON l.id = r.linea_id
+  WHERE l.sistema = 'MB'
+  LIMIT 5;
+
+  -- Verificar conexión y versión de PostGIS
+  SELECT PostGIS_Version();
+
+  ─────────────────────────────────────────────────────────────
+  CON admin_apimetro — escritura y mantenimiento
+  ─────────────────────────────────────────────────────────────
+
+  -- Ver todos los roles y sus atributos
+  \du
+
+  -- Sincronizar contraseña de apimetro_read
+  ALTER USER apimetro_read WITH PASSWORD '<nueva_contraseña>';
+
+  -- Agregar una nueva columna a lineas
+  ALTER TABLE lineas ADD COLUMN operador TEXT;
+
+  -- Hacer VACUUM ANALYZE (optimizar consultas después de cargas masivas)
+  VACUUM ANALYZE estacions;
+  VACUUM ANALYZE ramals;
+
+  -- Hacer backup manual desde dentro del container
+  -- (ejecutar en la terminal del servidor, no dentro de psql)
+  docker exec apimetro_db_prod pg_dump \
+    -U admin_apimetro -d db_apimetro \
+    --data-only --inserts \
+    -t lineas -t ramals -t estacions \
+    -t historico_operacion -t limites_territoriales \
+    > /root/backups/seed_$(date +%Y%m%d).sql
+
+  -- Recargar seed.sql completo (si se recrea el contenedor)
+  docker exec -i apimetro_db_prod psql \
+    -U postgres -d db_apimetro \
+    < /root/Apimetro/db/init/seed.sql
+
+  -- Ver tamaño de las tablas
+  SELECT tablename,
+         pg_size_pretty(pg_total_relation_size(tablename::text)) AS tamaño
+  FROM pg_tables
+  WHERE schemaname = 'public'
+  ORDER BY pg_total_relation_size(tablename::text) DESC;
+
+  ─────────────────────────────────────────────────────────────
+  CON postgres (superusuario) — dentro del container
+  ─────────────────────────────────────────────────────────────
+
+  -- Entrar al container
+  docker exec -it apimetro_db_prod psql -U postgres -d db_apimetro
+
+  -- Listar bases de datos
+  \l
+
+  -- Listar tablas del esquema public
+  \dt public.*
+
+  -- Describir estructura de una tabla
+  \d estacions
+
+  -- Ver conexiones activas
+  SELECT pid, usename, application_name, state, query
+  FROM pg_stat_activity
+  WHERE datname = 'db_apimetro';
+
+  -- Terminar conexión colgada (reemplazar <pid> con el número real)
+  SELECT pg_terminate_backend(<pid>);
+
+  -- Resetear contraseña de admin_apimetro (emergencia)
+  ALTER USER admin_apimetro WITH PASSWORD '<nueva_contraseña>';
+
+
+## COMANDOS ÚTILES DE psql (dentro de la sesión interactiva)
+
+  \q              Salir de psql
+  \l              Listar bases de datos
+  \dt             Listar tablas del esquema actual
+  \dt public.*    Listar tablas del esquema public
+  \d <tabla>      Describir estructura de una tabla
+  \du             Listar roles y permisos
+  \dn             Listar esquemas
+  \x              Activar/desactivar vista expandida (útil para filas largas)
+  \timing         Activar/desactivar tiempo de ejecución de queries
+  \i archivo.sql  Ejecutar un archivo SQL
+
+
+## TABLAS Y CONTEOS ESPERADOS (referencia abril 2026)
+
+  TABLA                    REGISTROS   NOTAS
+  ─────────────────────    ─────────   ──────────────────────────────────────
+  estacions                22,878      Geometría Point (SRID 4326)
+  ramals                      693      Geometría MultiLineString (SRID 4326)
+  historico_operacion         690      FK → lineas + ramals
+  limites_territoriales       553      Polígonos alcaldías/municipios, ~16 MB
+  lineas                      317      Tabla raíz del modelo
+  descripcion_lineas            0      Pendiente de datos
+  descripcion_estacions         0      Pendiente de datos
+
+
+## ESQUEMAS
+
+  public     Tablas principales de transporte — accesible por apimetro_read
+  plutarco   Reservado para datos INEGI (AGEBs, Red Vial) — vacío actualmente
+
+
+## ORDEN DE INSERCIÓN (para cargas manuales o seed nuevo)
+
+  1. lineas
+  2. ramals              (FK → lineas.id)
+  3. estacions           (FK → lineas.id)
+  4. descripcion_lineas  (FK → lineas.id)
+  5. descripcion_estacions (FK → estacions.id)
+  6. historico_operacion (FK → lineas.id, ramals.id)
+  7. limites_territoriales (sin FK)

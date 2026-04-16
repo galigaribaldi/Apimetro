@@ -15,6 +15,21 @@ Diseñada para integrarse con mapas y sistemas de información geográfica (SIG)
 
 ---
 
+## Servidor de Producción
+
+| Recurso | URL |
+|---------|-----|
+| API base | `https://apimetro.dev/movilidad` |
+| Swagger UI | `https://apimetro.dev/swagger/` |
+| Health check | `https://apimetro.dev/` |
+
+```bash
+# Ejemplo rápido — líneas del Metro en producción
+curl "https://apimetro.dev/movilidad/metro/linea?existe=true"
+```
+
+---
+
 ## Características Principales
 
 - **Respuestas GeoJSON** — Los endpoints de mapas devuelven `FeatureCollection` listos para renderizar en cualquier librería de mapas.
@@ -127,11 +142,10 @@ Consulta [`db/NOTES.txt`](./db/NOTES.txt) para instrucciones detalladas de cada 
 
 ## Documentación de la API
 
-Accede a la documentación interactiva una vez que el servidor esté corriendo:
+Accede a la documentación interactiva:
 
-```
-http://localhost:8080/swagger/
-```
+- **Producción:** `https://apimetro.dev/swagger/`
+- **Local:** `http://localhost:8080/swagger/`
 
 **Base path:** `/movilidad`
 
@@ -185,13 +199,13 @@ GET  /movilidad/{sistema}/descripcion-estacion
 
 ```bash
 # Estaciones tipo CETRAM del METRO en formato GeoJSON
-curl "http://localhost:8080/movilidad/mapas/geojsonEstacion?sistema=METRO&es_cetram=true"
+curl "https://apimetro.dev/movilidad/mapas/geojsonEstacion?sistema=METRO&es_cetram=true"
 
 # Líneas del Metrobús actualmente en operación
-curl "http://localhost:8080/movilidad/MB/linea?existe=true"
+curl "https://apimetro.dev/movilidad/MB/linea?existe=true"
 
 # Polígonos de alcaldías de la CDMX
-curl "http://localhost:8080/movilidad/mapas/geojsonPoligono?entidad=CDMX&nivel=alcaldia"
+curl "https://apimetro.dev/movilidad/mapas/geojsonPoligono?entidad=CDMX&nivel=alcaldia"
 ```
 
 ---
@@ -239,7 +253,7 @@ Apimetro/
 | `DB_NAME` | Nombre de la base de datos | `db_apimetro` |
 | `DB_USER` | Usuario de la API (solo lectura) | `apimetro_read` |
 | `DB_PASSWORD` | Contraseña del usuario API | `***` |
-| `DATABASE_URL` | DSN completo (sobreescribe los anteriores) | `postgresql://user:pass@host/db` |
+| `DATABASE_URL` | DSN completo (sobreescribe los anteriores) | `postgresql://user:pass@host/db` — la contraseña debe estar URL-encoded si contiene `/`, `+` o `=` |
 | `GIN_MODE` | Modo del servidor Gin | `debug` / `release` |
 
 > En desarrollo local sin Docker, si `DB_HOST` está vacío o es `localhost`, la API ejecutará `AutoMigrate` de GORM automáticamente. En Docker, el esquema es gestionado por `db/init/init.sql`.
