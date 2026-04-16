@@ -28,7 +28,7 @@ services:
     networks:
       - apimetro_net_prod
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d db_apimetro"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -38,13 +38,6 @@ services:
     container_name: apimetro_api_prod
     restart: always
     env_file: .env.prod
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      GIN_MODE: release
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:
