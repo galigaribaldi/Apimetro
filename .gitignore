@@ -213,3 +213,4 @@ db/init/seed.sql
 *.jpg
 *.jpeg
 *.JPEG
+.env.prod
