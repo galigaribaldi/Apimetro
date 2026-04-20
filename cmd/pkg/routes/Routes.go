@@ -1,15 +1,20 @@
 package routes
 
 import (
+	"embed"
+	"io/fs"
 	"log"
+	"net/http"
 
 	MiddlewareMod "Apimetro/cmd/pkg/controller/middleware"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+//go:embed static
+var staticFiles embed.FS
 
 var (
 	router = gin.Default()
@@ -21,6 +26,9 @@ var (
 func Run() {
 	getRoutes()
 	router.GET("/", getInit)
+	router.GET("/docs", getDocs)
+	subFS, _ := fs.Sub(staticFiles, "static")
+	router.StaticFS("/static", http.FS(subFS))
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 
@@ -47,9 +55,15 @@ func getRoutes() {
 	}
 }
 
-// getInit obtiene el estado actual de la API y devuelve un mensaje de prueba.
+// getInit sirve la landing page de bienvenida de la API.
 func getInit(c *gin.Context) {
 	log.Println("APImetro (Servidor de Movilidad CDMX) Vivo!")
-	c.JSON(http.StatusOK,
-		gin.H{"status": "alive!"})
+	data, _ := staticFiles.ReadFile("static/index.html")
+	c.Data(http.StatusOK, "text/html; charset=utf-8", data)
+}
+
+// getDocs sirve la página de referencia completa de la API.
+func getDocs(c *gin.Context) {
+	data, _ := staticFiles.ReadFile("static/docs.html")
+	c.Data(http.StatusOK, "text/html; charset=utf-8", data)
 }
