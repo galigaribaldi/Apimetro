@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Referencia API — Apimetro</title>
+  <style>
+    /* ── Variables de tema ─────────────────────────────────── */
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --accent: #dc2626;
+      --accent-soft: #fef2f2;
+      --code-bg: #f1f5f9;
+      --code-text: #334155;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .05);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, .08);
+      --radius: 10px;
+      --transition: .2s ease;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-alt: #162032;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #f87171;
+      --accent-soft: #1f1212;
+      --code-bg: #0d1929;
+      --code-text: #93c5fd;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .4);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, .4);
+    }
+
+    /* ── Reset ──────────────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background var(--transition), color var(--transition);
+      min-height: 100vh;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code {
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: .85em;
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: .1em .35em;
+      border-radius: 4px;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────── */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: var(--shadow);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem 1.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .logo img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 2px var(--border);
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -.01em;
+    }
+
+    .logo-sub {
+      font-size: .72rem;
+      color: var(--text-muted);
+      margin-top: -.1rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: .1rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      font-size: .85rem;
+      font-weight: 500;
+      padding: .35rem .65rem;
+      border-radius: 6px;
+      transition: color .15s, background .15s;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--surface-alt);
+      text-decoration: none;
+    }
+
+    .nav-link.active {
+      color: var(--accent);
+    }
+
+    .theme-btn {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .4rem .7rem;
+      cursor: pointer;
+      font-size: .95rem;
+      color: var(--text);
+      transition: background var(--transition);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .theme-btn:hover {
+      background: var(--border);
+    }
+
+    /* ── Page header ────────────────────────────────────────── */
+    .page-header {
+      padding: 2.5rem 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .breadcrumb {
+      font-size: .8rem;
+      color: var(--text-muted);
+      margin-bottom: .75rem;
+    }
+
+    .breadcrumb a {
+      color: var(--text-muted);
+    }
+
+    .breadcrumb a:hover {
+      color: var(--text);
+    }
+
+    .breadcrumb span {
+      margin: 0 .4rem;
+    }
+
+    .page-header h1 {
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: .5rem;
+    }
+
+    .page-header p {
+      color: var(--text-muted);
+      font-size: .95rem;
+      max-width: 640px;
+    }
+
+    /* ── Base URL box ───────────────────────────────────────── */
+    .base-url-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .9rem 1.2rem;
+      margin: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+
+    .base-url-box .label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      white-space: nowrap;
+    }
+
+    .base-url-box code {
+      font-size: .88rem;
+      background: none;
+      padding: 0;
+      color: var(--text);
+    }
+
+    /* ── Sistemas table ─────────────────────────────────────── */
+    .sistemas-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .875rem;
+      margin-top: .5rem;
+    }
+
+    .sistemas-table th {
+      text-align: left;
+      padding: .55rem .9rem;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border);
+      background: var(--surface-alt);
+    }
+
+    .sistemas-table td {
+      padding: .55rem .9rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sistemas-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .sistema-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: .5rem;
+      vertical-align: middle;
+    }
+
+    /* ── Module sections ────────────────────────────────────── */
+    .module {
+      padding: 2rem 0 1rem;
+    }
+
+    .module-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      margin-bottom: .3rem;
+      padding-bottom: .75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .module-desc {
+      font-size: .875rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      padding-top: .5rem;
+    }
+
+    /* ── Endpoint block ─────────────────────────────────────── */
+    .endpoint {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .85rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-alt);
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .method {
+      font-size: .72rem;
+      font-weight: 700;
+      padding: .22rem .55rem;
+      border-radius: 5px;
+      letter-spacing: .05em;
+      flex-shrink: 0;
+    }
+
+    .method-get {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .method-post {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .method-patch {
+      background: #fef9c3;
+      color: #92400e;
+    }
+
+    .method-delete {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    [data-theme="dark"] .method-get {
+      background: #14532d;
+      color: #86efac;
+    }
+
+    [data-theme="dark"] .method-post {
+      background: #1e3a8a;
+      color: #93c5fd;
+    }
+
+    [data-theme="dark"] .method-patch {
+      background: #713f12;
+      color: #fde047;
+    }
+
+    [data-theme="dark"] .method-delete {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    .endpoint-url {
+      font-family: ui-monospace, monospace;
+      font-size: .85rem;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .endpoint-summary {
+      font-size: .82rem;
+      color: var(--text-muted);
+    }
+
+    .endpoint-body {
+      padding: 1.1rem 1.2rem;
+    }
+
+    .endpoint-body>p {
+      font-size: .875rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    /* ── Params table ───────────────────────────────────────── */
+    .params-label {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-muted);
+      margin-bottom: .5rem;
+    }
+
+    .params-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+      margin-bottom: 1.1rem;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .params-table th {
+      text-align: left;
+      padding: .5rem .85rem;
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      background: var(--surface-alt);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .params-table td {
+      padding: .5rem .85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .params-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .params-table tr:hover td {
+      background: var(--surface-alt);
+    }
+
+    .param-name {
+      font-family: ui-monospace, monospace;
+      font-size: .82rem;
+      color: var(--accent);
+    }
+
+    .param-type {
+      font-size: .7rem;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: .1rem .35rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .param-opt {
+      font-size: .68rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ── Code example ───────────────────────────────────────── */
+    .code-label {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: .4rem;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .85rem 1rem;
+      overflow-x: auto;
+    }
+
+    .code-block pre {
+      font-family: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+      font-size: .78rem;
+      color: var(--code-text);
+      white-space: pre;
+    }
+
+    .copy-btn {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: .2rem .5rem;
+      cursor: pointer;
+      font-size: .72rem;
+      color: var(--text-muted);
+      transition: background .15s;
+    }
+
+    .copy-btn:hover {
+      background: var(--border);
+    }
+
+    .copy-btn.copied {
+      color: #16a34a;
+      border-color: #16a34a;
+    }
+
+    /* ── Body schema block ──────────────────────────────────── */
+    .body-schema {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: .85rem 1rem;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+    }
+
+    .body-schema pre {
+      font-family: ui-monospace, monospace;
+      font-size: .78rem;
+      color: #e6edf3;
+      white-space: pre;
+    }
+
+    .body-schema .key {
+      color: #79c0ff;
+    }
+
+    .body-schema .str {
+      color: #a5d6ff;
+    }
+
+    .body-schema .num {
+      color: #79c0ff;
+    }
+
+    .body-schema .bool {
+      color: #ff7b72;
+    }
+
+    /* ── Note / warning ─────────────────────────────────────── */
+    .note {
+      background: var(--accent-soft);
+      border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      border-radius: 8px;
+      padding: .7rem 1rem;
+      font-size: .82rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .note strong {
+      color: var(--accent);
+    }
+
+    .note-warn {
+      background: #fefce8;
+      border: 1px solid #fde047;
+      border-radius: 8px;
+      padding: .7rem 1rem;
+      font-size: .82rem;
+      color: #713f12;
+      margin-bottom: 1rem;
+    }
+
+    [data-theme="dark"] .note-warn {
+      background: #1c1400;
+      border-color: #713f12;
+      color: #fde047;
+    }
+
+    /* ── Divider ────────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    /* ── Footer ─────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      margin-top: 3rem;
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .footer-inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .footer-main {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 2.5rem;
+      padding: 2.5rem 1.5rem 2rem;
+      align-items: start;
+    }
+
+    .footer-logo-row {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: .75rem;
+    }
+
+    .footer-logo-row img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 0 2px var(--border);
+      flex-shrink: 0;
+    }
+
+    .footer-logo-name {
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -.01em;
+    }
+
+    .footer-logo-sub {
+      font-size: .68rem;
+      color: var(--text-muted);
+    }
+
+    .footer-tagline {
+      font-size: .8rem;
+      color: var(--text-muted);
+      margin-bottom: .9rem;
+      line-height: 1.55;
+    }
+
+    .footer-license-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      border-radius: 6px;
+      padding: .22rem .6rem;
+      font-size: .72rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity .15s;
+    }
+
+    .footer-license-badge:hover {
+      opacity: .8;
+      text-decoration: none;
+    }
+
+    .footer-license-note {
+      font-size: .7rem;
+      color: var(--text-muted);
+      margin-top: .35rem;
+    }
+
+    .footer-section-title {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--text-muted);
+      margin-bottom: .75rem;
+    }
+
+    .footer-links-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer-links-list li {
+      margin-bottom: .4rem;
+    }
+
+    .footer-links-list a {
+      font-size: .83rem;
+      color: var(--text-muted);
+      transition: color .15s;
+    }
+
+    .footer-links-list a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .ext-icon {
+      font-size: .7rem;
+      margin-left: .15rem;
+      opacity: .55;
+    }
+
+    .footer-author-name {
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: .4rem;
+      line-height: 1.45;
+    }
+
+    .footer-email {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .82rem;
+      color: var(--text-muted);
+      transition: color .15s;
+    }
+
+    .footer-email:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: .9rem 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .65rem;
+      flex-wrap: wrap;
+      font-size: .75rem;
+      color: var(--text-muted);
+      transition: border-color var(--transition);
+    }
+
+    .footer-sep {
+      opacity: .35;
+    }
+
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 720px) {
+      .header-nav {
+        display: none;
+      }
+
+      .container {
+        padding: 0 1rem;
+      }
+
+      .header-inner {
+        padding: .65rem 1rem;
+      }
+
+      .page-header {
+        padding: 2rem 1rem 1.5rem;
+      }
+
+      .params-table {
+        font-size: .78rem;
+      }
+
+      .params-table th,
+      .params-table td {
+        padding: .45rem .65rem;
+      }
+
+      .endpoint-header {
+        flex-wrap: wrap;
+      }
+
+      .base-url-box {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .35rem;
+      }
+
+      .sistemas-table {
+        font-size: .8rem;
+      }
+
+      .footer-main {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.75rem 1rem 1.5rem;
+      }
+
+      .footer-bottom {
+        padding: .85rem 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Header ────────────────────────────────────────────── -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <img src="/static/logo.png" alt="Apimetro logo" />
+        <div>
+          <div class="logo-text">Apimetro</div>
+          <div class="logo-sub">API de Movilidad CDMX</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <nav class="nav-links header-nav">
+          <a class="nav-link active" href="/docs">Referencia API</a>
+          <a class="nav-link" href="/swagger/index.html">Swagger UI</a>
+          <a class="nav-link" href="https://github.com/galigaribaldi/Apimetro" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+        <button class="theme-btn" id="themeToggle" aria-label="Cambiar tema">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Page header ───────────────────────────────────────── -->
+  <div class="page-header">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Inicio</a>
+        <span>›</span>
+        Referencia API
+      </div>
+      <h1>Referencia API</h1>
+      <p>
+        Documentación completa de endpoints, parámetros de consulta y esquemas de cuerpo.
+        Para una interfaz interactiva visita la <a href="/swagger/index.html">Swagger UI</a>.
+      </p>
+      <div class="base-url-box">
+        <span class="label">Base URL (nube)</span>
+        <code>https://apimetro.dev/movilidad</code>
+        <span class="label" style="margin-left:.5rem;">Base URL (local)</span>
+        <code>http://localhost:8080/movilidad</code>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+
+    <!-- ── Variable :sistema ─────────────────────────────────── -->
+    <div class="module">
+      <p class="module-title">Variable de ruta <code>{sistema}</code></p>
+      <p class="module-desc">
+        Todos los endpoints de datos tabulares incluyen <code>{sistema}</code> en la ruta.
+        El valor se normaliza automáticamente a mayúsculas.
+      </p>
+      <table class="sistemas-table">
+        <thead>
+          <tr>
+            <th>Sistema</th>
+            <th>Identificador</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="sistema-dot" style="background:#B5121B"></span>Metro</td>
+            <td><code>METRO</code></td>
+            <td>12 líneas, datos completos (GTFS SEMOVI)</td>
+          </tr>
+          <tr>
+            <td><span class="sistema-dot" style="background:#E2231A"></span>Metrobús</td>
+            <td><code>MB</code></td>
+            <td>Fuente no oficial (OSMAN MAPS), <code>num_estacion</code> no poblado</td>
+          </tr>
+          <tr>
+            <td><span class="sistema-dot" style="background:#6D2077"></span>Cablebús</td>
+            <td><code>CBB</code></td>
+            <td>Datos completos</td>
+          </tr>
+          <tr>
+            <td><span class="sistema-dot" style="background:#006B3E"></span>RTP</td>
+            <td><code>RTP</code></td>
+            <td>Red de Transporte de Pasajeros</td>
+          </tr>
+          <tr>
+            <td><span class="sistema-dot" style="background:#003DA5"></span>Trolebús</td>
+            <td><code>TROLE</code></td>
+            <td>Línea 13: <code>DATOS_INCOMPLETOS</code> (ruta loop, sin stop_times en GTFS)</td>
+          </tr>
+          <tr>
+            <td><span class="sistema-dot" style="background:#009B3A"></span>Tren Ligero</td>
+            <td><code>TL</code></td>
+            <td>Datos completos</td>
+          </tr>
+          <tr>
+            <td><span class="sistema-dot" style="background:#C8102E"></span>Mexibús</td>
+            <td><code>MEXIBUS</code></td>
+            <td>Fuente no oficial (OSMAN MAPS), <code>num_estacion</code> no poblado</td>
+          </tr>
+          <tr>
+            <td><span class="sistema-dot" style="background:#F7A600"></span>Mexicable</td>
+            <td><code>MEXICABLE</code></td>
+            <td>Fuente no oficial (OSMAN MAPS), <code>num_estacion</code> no poblado</td>
+          </tr>
+          <tr>
+            <td><span class="sistema-dot" style="background:#0066CC"></span>Interurbano</td>
+            <td><code>INTERURBANO</code></td>
+            <td>Tren Interurbano México-Toluca</td>
+          </tr>
+          <tr>
+            <td><span class="sistema-dot" style="background:#E05A00"></span>Corredor Concesionado</td>
+            <td><code>CC</code></td>
+            <td>Datos completos</td>
+          </tr>
+          <tr>
+            <td>—</td>
+            <td><code>TODOS</code></td>
+            <td>Consulta todos los sistemas sin filtro</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════
+         MÓDULO 1 — LÍNEAS
+    ══════════════════════════════════════════════════════════ -->
+    <div class="module">
+      <p class="module-title">Módulo 1 — Líneas <code>/movilidad/{sistema}/linea</code></p>
+      <p class="module-desc">Datos operativos y características principales de las líneas de transporte.</p>
+
+      <!-- GET Líneas -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <code class="endpoint-url">/movilidad/{sistema}/linea</code>
+          <span class="endpoint-summary">Listar líneas con filtros</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Retorna un listado de líneas del sistema indicado. Todos los parámetros son opcionales y se pueden
+            combinar.</p>
+          <div class="params-label">Parámetros de consulta</div>
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Tipo</th>
+                <th>Ejemplo</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">id</span></td>
+                <td><span class="param-type">int</span></td>
+                <td><code>301</code></td>
+                <td>ID interno de la línea</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">nombre</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Metro Línea 1</code></td>
+                <td>Nombre completo (búsqueda parcial)</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">num_comercial</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>L12</code></td>
+                <td>Número oficial de la línea (ej. L12, 1, 2, B, MB-3)</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">nombre_ramal</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Tláhuac</code></td>
+                <td>Filtro por ramal específico</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">clasificacion</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>existente</code></td>
+                <td>Clasificación operativa: <code>existente</code>, <code>proyecto</code></td>
+              </tr>
+              <tr>
+                <td><span class="param-name">tam_km</span></td>
+                <td><span class="param-type">float</span></td>
+                <td><code>10.5</code></td>
+                <td>Líneas con longitud mayor o igual a X km</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">existe</span></td>
+                <td><span class="param-type">bool</span></td>
+                <td><code>true</code></td>
+                <td>Solo líneas actualmente en operación</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="code-label">
+            <span>Ejemplo</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl "https://apimetro.dev/movilidad/METRO/linea?existe=true&num_comercial=L12"</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST Línea -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <code class="endpoint-url">/movilidad/{sistema}/linea</code>
+          <span class="endpoint-summary">Crear línea</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Crea un nuevo registro en la tabla <code>lineas</code>. Enviar JSON en el cuerpo de la petición.</p>
+          <div class="params-label">Cuerpo (application/json)</div>
+          <div class="body-schema">
+            <pre>{
+  <span class="key">"nombre"</span>:       <span class="str">"Metro Línea L13"</span>,
+  <span class="key">"num_comercial"</span>: <span class="str">"L13"</span>,
+  <span class="key">"sistema"</span>:       <span class="str">"METRO"</span>,
+  <span class="key">"color_esp"</span>:     <span class="str">"Gris"</span>,
+  <span class="key">"color_en"</span>:      <span class="str">"Gray"</span>,
+  <span class="key">"tam_km"</span>:        <span class="num">15.5</span>,
+  <span class="key">"existe"</span>:        <span class="bool">true</span>,
+  <span class="key">"clasificacion"</span>: <span class="str">"proyecto"</span>
+}</pre>
+          </div>
+          <div class="code-label">
+            <span>Ejemplo</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl -X POST "https://apimetro.dev/movilidad/METRO/linea" \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Metro Línea L13","num_comercial":"L13","sistema":"METRO","tam_km":15.5,"existe":true}'</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATCH Línea -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-patch">PATCH</span>
+          <code class="endpoint-url">/movilidad/{sistema}/linea?id={id}</code>
+          <span class="endpoint-summary">Actualizar línea</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Actualiza campos específicos de una línea usando su ID. Solo se modifican los campos incluidos en el
+            cuerpo.</p>
+          <div class="params-label">Parámetro de consulta requerido</div>
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">id</span></td>
+                <td><span class="param-type">int</span></td>
+                <td>ID numérico de la línea a modificar <span class="param-opt">(requerido)</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="code-label">
+            <span>Ejemplo</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl -X PATCH "https://apimetro.dev/movilidad/METRO/linea?id=301" \
+  -H "Content-Type: application/json" \
+  -d '{"tam_km":18.2,"clasificacion":"existente"}'</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- DELETE Línea -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-delete">DELETE</span>
+          <code class="endpoint-url">/movilidad/{sistema}/linea?id={id}</code>
+          <span class="endpoint-summary">Eliminar línea</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Elimina una línea y sus ramales dependientes (borrado en cascada configurado en BD).</p>
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">id</span></td>
+                <td><span class="param-type">int</span></td>
+                <td>ID numérico de la línea a eliminar <span class="param-opt">(requerido)</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="code-label">
+            <span>Ejemplo</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl -X DELETE "https://apimetro.dev/movilidad/METRO/linea?id=301"</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════
+         MÓDULO 2 — ESTACIONES
+    ══════════════════════════════════════════════════════════ -->
+    <div class="module">
+      <p class="module-title">Módulo 2 — Estaciones <code>/movilidad/{sistema}/estacion</code></p>
+      <p class="module-desc">Información administrativa y geográfica de las estaciones de transporte.</p>
+
+      <!-- GET Estaciones -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <code class="endpoint-url">/movilidad/{sistema}/estacion</code>
+          <span class="endpoint-summary">Listar estaciones con filtros</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Retorna un listado tabular con la información administrativa de las estaciones. Todos los parámetros son
+            opcionales.</p>
+          <div class="params-label">Parámetros de consulta</div>
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Tipo</th>
+                <th>Ejemplo</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">id</span></td>
+                <td><span class="param-type">int</span></td>
+                <td><code>11974</code></td>
+                <td>ID único de la estación</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">linea_id</span></td>
+                <td><span class="param-type">int</span></td>
+                <td><code>191</code></td>
+                <td>ID de la línea madre — filtra todas las estaciones de esa línea</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">nombre</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Chapultepec</code></td>
+                <td>Nombre de la estación (búsqueda parcial, no distingue acentos)</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">alcaldia_municipio</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Cuauhtémoc</code></td>
+                <td>Filtro por alcaldía (CDMX) o municipio (Estado de México)</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">color_esp</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Rosa</code></td>
+                <td>Color oficial de la línea en español</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">color_en</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Pink</code></td>
+                <td>Color oficial de la línea en inglés</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">anio</span></td>
+                <td><span class="param-type">int</span></td>
+                <td><code>1969</code></td>
+                <td>Año de inauguración de la estación</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">es_cetram</span></td>
+                <td><span class="param-type">bool</span></td>
+                <td><code>true</code></td>
+                <td>Solo estaciones que son nodos CETRAM</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">existe</span></td>
+                <td><span class="param-type">bool</span></td>
+                <td><code>true</code></td>
+                <td>Solo estaciones actualmente en operación</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="code-label">
+            <span>Ejemplo — estaciones CETRAM en Cuauhtémoc</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl "https://apimetro.dev/movilidad/TODOS/estacion?es_cetram=true&alcaldia_municipio=Cuauhtémoc"</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST Estación -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <code class="endpoint-url">/movilidad/{sistema}/estacion</code>
+          <span class="endpoint-summary">Crear estación</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Crea un nuevo registro en la tabla <code>estacions</code>.</p>
+          <div class="params-label">Cuerpo (application/json)</div>
+          <div class="body-schema">
+            <pre>{
+  <span class="key">"nombre"</span>:             <span class="str">"Estación Nueva"</span>,
+  <span class="key">"tipo"</span>:               <span class="str">"Subterráneo"</span>,
+  <span class="key">"alcaldia_municipio"</span>: <span class="str">"Coyoacán"</span>,
+  <span class="key">"estado_ciudad"</span>:      <span class="str">"Ciudad de México"</span>,
+  <span class="key">"linea_id"</span>:           <span class="num">191</span>,
+  <span class="key">"sistema"</span>:            <span class="str">"METRO"</span>,
+  <span class="key">"existe"</span>:             <span class="bool">true</span>,
+  <span class="key">"es_cetram"</span>:          <span class="bool">false</span>
+}</pre>
+          </div>
+          <div class="code-label">
+            <span>Ejemplo</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl -X POST "https://apimetro.dev/movilidad/METRO/estacion" \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Estación Nueva","tipo":"Subterráneo","linea_id":191,"sistema":"METRO","existe":true}'</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATCH Estación -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-patch">PATCH</span>
+          <code class="endpoint-url">/movilidad/{sistema}/estacion?id={id}</code>
+          <span class="endpoint-summary">Actualizar estación</span>
+        </div>
+        <div class="endpoint-body">
+          <p>Actualiza campos específicos de una estación usando su ID.</p>
+          <div class="code-label">
+            <span>Ejemplo — marcar una estación como CETRAM</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl -X PATCH "https://apimetro.dev/movilidad/METRO/estacion?id=11974" \
+  -H "Content-Type: application/json" \
+  -d '{"es_cetram":true,"nombre_cetram":"Chapultepec"}'</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- DELETE Estación -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-delete">DELETE</span>
+          <code class="endpoint-url">/movilidad/{sistema}/estacion?id={id}</code>
+          <span class="endpoint-summary">Eliminar estación</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="code-label">
+            <span>Ejemplo</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl -X DELETE "https://apimetro.dev/movilidad/METRO/estacion?id=11974"</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ══════════════════════════════════════════════════════
+         MÓDULO 3 — GEOJSON
+    ══════════════════════════════════════════════════════════ -->
+    <div class="module">
+      <p class="module-title">Módulo 3 — GeoJSON <code>/movilidad/mapas/</code></p>
+      <p class="module-desc">
+        Retorna geometrías PostGIS en formato <code>FeatureCollection</code> estándar GeoJSON (RFC 7946).
+        Todos los endpoints son solo lectura (GET). Compatibles con Mapbox GL, Leaflet, QGIS, Kepler.gl y cualquier
+        herramienta GIS.
+      </p>
+
+      <!-- GeoJSON Líneas -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <code class="endpoint-url">/movilidad/mapas/geojsonLinea</code>
+          <span class="endpoint-summary">Trazos de líneas (MultiLineString)</span>
+        </div>
+        <div class="endpoint-body">
+          <p>
+            Retorna una <code>FeatureCollection</code> de geometrías <code>MultiLineString</code>
+            segmentadas tramo a tramo entre estaciones. Incluye propiedades operativas en cada <code>Feature</code>.
+          </p>
+          <div class="params-label">Parámetros de consulta</div>
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Tipo</th>
+                <th>Ejemplo</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">sistema</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>METRO,MB</code></td>
+                <td>Uno o varios sistemas separados por coma <span class="param-opt">(requerido)</span></td>
+              </tr>
+              <tr>
+                <td><span class="param-name">num_comercial</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>L12</code></td>
+                <td>Número oficial — filtra una línea específica</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">nombre_ramal</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Tláhuac</code></td>
+                <td>Ramal específico dentro de la línea</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">jerarquia_transporte</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>masivo_pesado</code></td>
+                <td>Jerarquía del sistema: <code>masivo_pesado</code>, <code>masivo_ligero</code>,
+                  <code>alimentador</code></td>
+              </tr>
+              <tr>
+                <td><span class="param-name">derecho_de_via</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>exclusivo</code></td>
+                <td>Tipo de derecho de vía: <code>exclusivo</code>, <code>compartido</code></td>
+              </tr>
+              <tr>
+                <td><span class="param-name">sentido</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>IDA</code></td>
+                <td>Dirección del trazo: <code>IDA</code> o <code>REGRESO</code></td>
+              </tr>
+              <tr>
+                <td><span class="param-name">cetram_real</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Pantitlán</code></td>
+                <td>Filtro espacial — trazos con estaciones dentro de 250 m del CETRAM indicado</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">existe</span></td>
+                <td><span class="param-type">bool</span></td>
+                <td><code>true</code></td>
+                <td>Solo líneas actualmente en operación</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="code-label">
+            <span>Ejemplo — Línea 12 del Metro, solo trazo de IDA</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl "https://apimetro.dev/movilidad/mapas/geojsonLinea?sistema=METRO&num_comercial=L12&sentido=IDA"</pre>
+          </div>
+          <div class="code-label" style="margin-top:.85rem;">
+            <span>Ejemplo — Toda la red activa (Metro + Metrobús + Cablebús)</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl "https://apimetro.dev/movilidad/mapas/geojsonLinea?sistema=METRO,MB,CBB&existe=true"</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- GeoJSON Estaciones -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <code class="endpoint-url">/movilidad/mapas/geojsonEstacion</code>
+          <span class="endpoint-summary">Puntos de estación (Point)</span>
+        </div>
+        <div class="endpoint-body">
+          <p>
+            Retorna una <code>FeatureCollection</code> de geometrías <code>Point</code>.
+            Cada Feature incluye nombre, sistema, línea, alcaldía/municipio y flag CETRAM.
+          </p>
+          <div class="params-label">Parámetros de consulta</div>
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Tipo</th>
+                <th>Ejemplo</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">sistema</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>METRO</code></td>
+                <td>Uno o varios sistemas separados por coma <span class="param-opt">(requerido)</span></td>
+              </tr>
+              <tr>
+                <td><span class="param-name">num_comercial</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>L12</code></td>
+                <td>Número oficial — filtra estaciones de una línea específica</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">alcaldia_municipio</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Iztapalapa</code></td>
+                <td>Filtro por alcaldía o municipio</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">nombre_ramal</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Tláhuac</code></td>
+                <td>Ramal específico dentro de la línea</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">jerarquia_transporte</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>masivo_pesado</code></td>
+                <td>Jerarquía del sistema de transporte</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">derecho_de_via</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>exclusivo</code></td>
+                <td>Tipo de derecho de vía de la línea</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">es_cetram</span></td>
+                <td><span class="param-type">bool</span></td>
+                <td><code>true</code></td>
+                <td>Solo estaciones que son nodos CETRAM</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">nombre_cetram</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Chapultepec</code></td>
+                <td>Nombre del nodo CETRAM</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">cetram_real</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Tacubaya</code></td>
+                <td>Filtro espacial — estaciones dentro de 250 m del CETRAM indicado</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="code-label">
+            <span>Ejemplo — Todos los nodos CETRAM en GeoJSON</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl "https://apimetro.dev/movilidad/mapas/geojsonEstacion?sistema=TODOS&es_cetram=true"</pre>
+          </div>
+          <div class="code-label" style="margin-top:.85rem;">
+            <span>Ejemplo — Estaciones en Iztapalapa (Metro + Metrobús)</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl "https://apimetro.dev/movilidad/mapas/geojsonEstacion?sistema=METRO,MB&alcaldia_municipio=Iztapalapa"</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- GeoJSON Polígonos -->
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <code class="endpoint-url">/movilidad/mapas/geojsonPoligono</code>
+          <span class="endpoint-summary">Límites territoriales (MultiPolygon)</span>
+        </div>
+        <div class="endpoint-body">
+          <p>
+            Retorna fronteras y límites geográficos de la CDMX y el Área Metropolitana
+            en formato <code>FeatureCollection</code> con geometrías <code>MultiPolygon</code>.
+          </p>
+          <div class="params-label">Parámetros de consulta</div>
+          <table class="params-table">
+            <thead>
+              <tr>
+                <th>Parámetro</th>
+                <th>Tipo</th>
+                <th>Ejemplo</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="param-name">nivel</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>ESTADO</code></td>
+                <td>Nivel territorial: <code>ESTADO</code>, <code>MUNICIPIO</code>, <code>ALCALDIA</code></td>
+              </tr>
+              <tr>
+                <td><span class="param-name">nombre</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Milpa Alta</code></td>
+                <td>Nombre del polígono (búsqueda parcial)</td>
+              </tr>
+              <tr>
+                <td><span class="param-name">entidad</span></td>
+                <td><span class="param-type">string</span></td>
+                <td><code>Ciudad de México</code></td>
+                <td>Entidad federativa: <code>Ciudad de México</code>, <code>Estado de México</code>,
+                  <code>Hidalgo</code>, <code>Morelos</code></td>
+              </tr>
+              <tr>
+                <td><span class="param-name">existe</span></td>
+                <td><span class="param-type">bool</span></td>
+                <td><code>true</code></td>
+                <td>Solo polígonos activos</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="code-label">
+            <span>Ejemplo — Todos los estados del ZMVM</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl "https://apimetro.dev/movilidad/mapas/geojsonPoligono?nivel=ESTADO"</pre>
+          </div>
+          <div class="code-label" style="margin-top:.85rem;">
+            <span>Ejemplo — Alcaldías de la CDMX</span>
+            <button class="copy-btn" onclick="copyPre(this)">Copiar</button>
+          </div>
+          <div class="code-block">
+            <pre>curl "https://apimetro.dev/movilidad/mapas/geojsonPoligono?nivel=ALCALDIA&entidad=Ciudad de México"</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ── Calidad de datos ──────────────────────────────────── -->
+    <div class="module">
+      <p class="module-title">Notas sobre calidad de datos</p>
+      <div class="note-warn">
+        <strong>Fuente no oficial (OSMAN MAPS):</strong> Los sistemas <strong>Metrobús (MB)</strong>,
+        <strong>Mexibús (MEXIBUS)</strong> y <strong>Mexicable (MEXICABLE)</strong> usan datos de fuente
+        no oficial. El campo <code>num_estacion</code> no está poblado para estos sistemas.
+        Los datos pueden no reflejar la operación actual con exactitud.
+      </div>
+      <div class="note">
+        <strong>Datos incompletos:</strong> La línea <strong>TROLE 13</strong> tiene
+        <code>clasificacion = DATOS_INCOMPLETOS</code> porque es una ruta en loop sin
+        <code>stop_times</code> en el GTFS de origen. Solo cuenta con <code>ramal_num = 1</code>.
+      </div>
+      <div class="note">
+        <strong>Fuente oficial:</strong> El resto de los sistemas utiliza datos del GTFS publicado por
+        <strong>SEMOVI</strong> (Secretaría de Movilidad de la Ciudad de México).
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── Footer ────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-main">
+
+        <!-- Marca -->
+        <div>
+          <div class="footer-logo-row">
+            <img src="/static/logo.png" alt="Apimetro logo" />
+            <div>
+              <div class="footer-logo-name">Apimetro</div>
+              <div class="footer-logo-sub">API de Movilidad CDMX</div>
+            </div>
+          </div>
+          <p class="footer-tagline">
+            Datos geoespaciales del transporte público de la Ciudad de México
+            y el Área Metropolitana en JSON y GeoJSON.
+          </p>
+          <a class="footer-license-badge" href="https://github.com/galigaribaldi/Apimetro/blob/main/LICENSE"
+            target="_blank" rel="noopener">
+            BSL&thinsp;1.1
+          </a>
+          <p class="footer-license-note">Convierte a Apache 2.0 el 12 de abril de 2029</p>
+        </div>
+
+        <!-- Documentación -->
+        <div>
+          <p class="footer-section-title">Documentación</p>
+          <ul class="footer-links-list">
+            <li><a href="/">Inicio</a></li>
+            <li><a href="/docs">Referencia API</a></li>
+            <li><a href="/swagger/index.html">Swagger UI</a></li>
+            <li>
+              <a href="https://github.com/galigaribaldi/Apimetro" target="_blank" rel="noopener">
+                GitHub<span class="ext-icon">↗</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/galigaribaldi/Apimetro/blob/main/LICENSE" target="_blank" rel="noopener">
+                Licencia BSL 1.1<span class="ext-icon">↗</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Autor -->
+        <div>
+          <p class="footer-section-title">Autor</p>
+          <p class="footer-author-name">Hernán Galileo<br>Cabrera Garibaldi</p>
+          <a class="footer-email" href="mailto:galigaribaldi0@gmail.com">
+            ✉&thinsp;galigaribaldi0@gmail.com
+          </a>
+        </div>
+
+      </div>
+      <div class="footer-bottom">
+        <span>Datos: GTFS SEMOVI · OSMAN MAPS</span>
+        <span class="footer-sep">·</span>
+        <span>© 2025 Hernán Galileo Cabrera Garibaldi</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Tema ─────────────────────────────────────────────────
+    const themeBtn = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    const saved = localStorage.getItem('apimetro-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initial = saved || (prefersDark ? 'dark' : 'light');
+    html.setAttribute('data-theme', initial);
+    themeBtn.textContent = initial === 'dark' ? '☀️' : '🌙';
+    themeBtn.addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      themeBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('apimetro-theme', next);
+    });
+
+    // ── Copiar bloque de código ──────────────────────────────
+    function copyPre(btn) {
+      const pre = btn.closest('.endpoint-body, .module').querySelector(
+        '.code-label:last-of-type + .code-block pre, .code-label + .code-block pre'
+      );
+      // Buscar el pre más cercano al botón
+      const label = btn.closest('.code-label');
+      const block = label.nextElementSibling;
+      const text = block ? block.querySelector('pre').textContent : '';
+      navigator.clipboard.writeText(text.trim()).then(() => {
+        btn.textContent = '✓ Copiado';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 1800);
+      });
+    }
+  </script>
+
+</body>
+
+</html>

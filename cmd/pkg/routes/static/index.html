@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apimetro — API de Movilidad CDMX</title>
+  <style>
+    /* ── Variables de tema ─────────────────────────────────── */
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --accent: #dc2626;
+      --accent-soft: #fef2f2;
+      --accent-hover: #b91c1c;
+      --code-bg: #f1f5f9;
+      --code-text: #334155;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .05);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, .08);
+      --radius: 10px;
+      --transition: .2s ease;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-alt: #162032;
+      --border: #334155;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #f87171;
+      --accent-soft: #1f1212;
+      --accent-hover: #fca5a5;
+      --code-bg: #0d1929;
+      --code-text: #93c5fd;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .4);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, .4);
+    }
+
+    /* ── Reset y base ──────────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background var(--transition), color var(--transition);
+      min-height: 100vh;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code {
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: .85em;
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: .1em .35em;
+      border-radius: 4px;
+    }
+
+    /* ── Layout ────────────────────────────────────────────── */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Header ────────────────────────────────────────────── */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: var(--shadow);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem 1.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .logo img {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 2px var(--border);
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -.01em;
+    }
+
+    .logo-sub {
+      font-size: .72rem;
+      color: var(--text-muted);
+      margin-top: -.1rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: .1rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      font-size: .85rem;
+      font-weight: 500;
+      padding: .35rem .65rem;
+      border-radius: 6px;
+      transition: color .15s, background .15s;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--surface-alt);
+      text-decoration: none;
+    }
+
+    .theme-btn {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .4rem .7rem;
+      cursor: pointer;
+      font-size: .95rem;
+      color: var(--text);
+      transition: background var(--transition), border-color var(--transition);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .theme-btn:hover {
+      background: var(--border);
+    }
+
+    /* ── Hero ──────────────────────────────────────────────── */
+    .hero {
+      padding: 3.5rem 1.5rem 2.5rem;
+      text-align: center;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      border-radius: 999px;
+      padding: .25rem .85rem;
+      font-size: .75rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .4;
+      }
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.15;
+      margin-bottom: .8rem;
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto 1.75rem;
+    }
+
+    .cta-group {
+      display: flex;
+      gap: .75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .65rem 1.35rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: .9rem;
+      transition: opacity .15s, transform .1s, background .15s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn:hover {
+      opacity: .88;
+      transform: translateY(-1px);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: var(--surface-alt);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Stats strip ───────────────────────────────────────── */
+    .stats-strip {
+      display: flex;
+      justify-content: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .stat-item {
+      flex: 1;
+      padding: 1rem .75rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+
+    .stat-item:last-child {
+      border-right: none;
+    }
+
+    .stat-num {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -.02em;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: .7rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    /* ── Secciones ─────────────────────────────────────────── */
+    section {
+      padding: 2.5rem 0 .5rem;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: .3rem;
+      letter-spacing: -.01em;
+    }
+
+    .section-sub {
+      font-size: .875rem;
+      color: var(--text-muted);
+      margin-bottom: 1.4rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 2rem;
+    }
+
+    /* ── Cards de público ──────────────────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      box-shadow: var(--shadow);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .card-icon {
+      font-size: 1.6rem;
+      margin-bottom: .6rem;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+
+    .card p {
+      font-size: .875rem;
+      color: var(--text-muted);
+    }
+
+    .card ul {
+      margin-top: .6rem;
+      padding-left: 1.1rem;
+      font-size: .875rem;
+      color: var(--text-muted);
+    }
+
+    .card ul li {
+      margin-bottom: .3rem;
+    }
+
+    /* ── Capacidades ───────────────────────────────────────── */
+    .cap-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .cap-head {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: .55rem;
+    }
+
+    .cap-icon {
+      font-size: 1.4rem;
+    }
+
+    .cap-card h3 {
+      font-size: .95rem;
+      font-weight: 700;
+    }
+
+    .cap-card p {
+      font-size: .82rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .method-badges {
+      display: flex;
+      gap: .3rem;
+      flex-wrap: wrap;
+      margin-top: .7rem;
+    }
+
+    .mb {
+      font-size: .67rem;
+      font-weight: 700;
+      padding: .18rem .48rem;
+      border-radius: 4px;
+      letter-spacing: .04em;
+    }
+
+    .mb-get {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .mb-post {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .mb-patch {
+      background: #fef9c3;
+      color: #a16207;
+    }
+
+    .mb-delete {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    [data-theme="dark"] .mb-get {
+      background: #14532d;
+      color: #86efac;
+    }
+
+    [data-theme="dark"] .mb-post {
+      background: #1e3a8a;
+      color: #93c5fd;
+    }
+
+    [data-theme="dark"] .mb-patch {
+      background: #713f12;
+      color: #fde047;
+    }
+
+    [data-theme="dark"] .mb-delete {
+      background: #7f1d1d;
+      color: #fca5a5;
+    }
+
+    /* ── Ejemplos de consultas ─────────────────────────────── */
+    .examples-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+    }
+
+    .ex-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .ex-tag {
+      font-size: .67rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-bottom: .3rem;
+    }
+
+    .ex-title {
+      font-size: .875rem;
+      font-weight: 700;
+      margin-bottom: .45rem;
+    }
+
+    .ex-code {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .4rem .65rem;
+      font-family: ui-monospace, monospace;
+      font-size: .73rem;
+      color: var(--code-text);
+      overflow-x: auto;
+      white-space: nowrap;
+      display: block;
+    }
+
+    .ex-note {
+      font-size: .75rem;
+      color: var(--text-muted);
+      margin-top: .4rem;
+    }
+
+    /* ── Sistemas ──────────────────────────────────────────── */
+    .sistemas-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .sistema-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .3rem .8rem;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 600;
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+    }
+
+    .sistema-chip.dark-text {
+      color: #1e293b;
+    }
+
+    /* ── Try section ───────────────────────────────────────── */
+    .try-tabs {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: .45rem 1.1rem;
+      border-radius: 8px;
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      transition: all .15s;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Subtabs */
+    .subtabs {
+      display: flex;
+      gap: .4rem;
+      margin-bottom: 1.1rem;
+      flex-wrap: wrap;
+    }
+
+    .subtab-btn {
+      padding: .35rem .9rem;
+      border-radius: 7px;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      transition: all .15s;
+    }
+
+    .subtab-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .subtab-panel {
+      display: none;
+    }
+
+    .subtab-panel.active {
+      display: block;
+    }
+
+    /* Try box */
+    .try-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      box-shadow: var(--shadow);
+    }
+
+    /* Steps */
+    .steps {
+      list-style: none;
+      padding: 0;
+    }
+
+    .steps li {
+      display: flex;
+      gap: .9rem;
+      align-items: flex-start;
+      padding: .8rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .steps li:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: .8rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-body strong {
+      display: block;
+      font-size: .9rem;
+      margin-bottom: .15rem;
+    }
+
+    .step-body .hint {
+      font-size: .82rem;
+      color: var(--text-muted);
+    }
+
+    .url-box {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .5rem .75rem;
+      margin-top: .5rem;
+    }
+
+    .url-box code {
+      font-family: ui-monospace, monospace;
+      font-size: .78rem;
+      color: var(--code-text);
+      flex: 1;
+      overflow-x: auto;
+      white-space: nowrap;
+      background: none;
+      padding: 0;
+    }
+
+    .copy-btn {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .25rem .55rem;
+      cursor: pointer;
+      font-size: .75rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+
+    .copy-btn:hover {
+      background: var(--border);
+    }
+
+    .copy-btn.copied {
+      color: #16a34a;
+      border-color: #16a34a;
+    }
+
+    /* Curl generator */
+    .try-dev-controls {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .try-dev-controls label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: .3rem;
+    }
+
+    .try-dev-controls select {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .45rem .75rem;
+      color: var(--text);
+      font-size: .875rem;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color .15s;
+    }
+
+    .try-dev-controls select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .ctrl-group {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .code-block pre {
+      font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+      font-size: .82rem;
+      color: var(--code-text);
+      white-space: pre;
+    }
+
+    .code-label {
+      font-size: .7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: .5rem;
+    }
+
+    /* Docker steps */
+    .docker-steps {
+      list-style: none;
+      padding: 0;
+    }
+
+    .docker-step {
+      display: flex;
+      gap: .9rem;
+      align-items: flex-start;
+      padding: .8rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .docker-step:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .docker-step-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .docker-step-body strong {
+      display: block;
+      font-size: .9rem;
+      margin-bottom: .25rem;
+    }
+
+    .docker-step-body .hint {
+      font-size: .82rem;
+      color: var(--text-muted);
+    }
+
+    .terminal {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: .65rem 1rem;
+      margin-top: .45rem;
+      overflow-x: auto;
+    }
+
+    .terminal pre {
+      font-family: ui-monospace, monospace;
+      font-size: .78rem;
+      color: #e6edf3;
+      white-space: pre;
+      margin: 0;
+    }
+
+    .terminal .cm {
+      color: #8b949e;
+    }
+
+    .terminal .ok {
+      color: #7ee787;
+    }
+
+    .note-box {
+      background: var(--accent-soft);
+      border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      border-radius: 8px;
+      padding: .7rem 1rem;
+      margin-top: .6rem;
+      font-size: .82rem;
+      color: var(--text-muted);
+    }
+
+    .note-box strong {
+      color: var(--accent);
+    }
+
+    /* ── Sistemas ──────────────────────────────────────────── */
+    .sistemas-note {
+      font-size: .8rem;
+      color: var(--text-muted);
+      margin-top: .75rem;
+    }
+
+    /* ── Footer ────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      margin-top: 3rem;
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .footer-inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .footer-main {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 2.5rem;
+      padding: 2.5rem 1.5rem 2rem;
+      align-items: start;
+    }
+
+    .footer-logo-row {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      margin-bottom: .75rem;
+    }
+
+    .footer-logo-row img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 0 2px var(--border);
+      flex-shrink: 0;
+    }
+
+    .footer-logo-name {
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -.01em;
+    }
+
+    .footer-logo-sub {
+      font-size: .68rem;
+      color: var(--text-muted);
+    }
+
+    .footer-tagline {
+      font-size: .8rem;
+      color: var(--text-muted);
+      margin-bottom: .9rem;
+      line-height: 1.55;
+    }
+
+    .footer-license-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      border-radius: 6px;
+      padding: .22rem .6rem;
+      font-size: .72rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: opacity .15s;
+    }
+
+    .footer-license-badge:hover {
+      opacity: .8;
+      text-decoration: none;
+    }
+
+    .footer-license-note {
+      font-size: .7rem;
+      color: var(--text-muted);
+      margin-top: .35rem;
+    }
+
+    .footer-section-title {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--text-muted);
+      margin-bottom: .75rem;
+    }
+
+    .footer-links-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer-links-list li {
+      margin-bottom: .4rem;
+    }
+
+    .footer-links-list a {
+      font-size: .83rem;
+      color: var(--text-muted);
+      transition: color .15s;
+    }
+
+    .footer-links-list a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .ext-icon {
+      font-size: .7rem;
+      margin-left: .15rem;
+      opacity: .55;
+    }
+
+    .footer-author-name {
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: .4rem;
+      line-height: 1.45;
+    }
+
+    .footer-email {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .82rem;
+      color: var(--text-muted);
+      transition: color .15s;
+    }
+
+    .footer-email:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: .9rem 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .65rem;
+      flex-wrap: wrap;
+      font-size: .75rem;
+      color: var(--text-muted);
+      transition: border-color var(--transition);
+    }
+
+    .footer-sep {
+      opacity: .35;
+    }
+
+    /* ── Responsive ────────────────────────────────────────── */
+    @media (max-width: 720px) {
+      .header-nav {
+        display: none;
+      }
+
+      .two-col,
+      .examples-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 2.5rem 1rem 1.75rem;
+      }
+
+      .container {
+        padding: 0 1rem;
+      }
+
+      .header-inner {
+        padding: .65rem 1rem;
+      }
+
+      .stats-strip {
+        flex-wrap: wrap;
+      }
+
+      .stat-item {
+        min-width: calc(50% - 1px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .stat-item:nth-child(2) {
+        border-right: none;
+      }
+
+      .stat-item:nth-child(3),
+      .stat-item:nth-child(4) {
+        border-bottom: none;
+      }
+
+      .try-dev-controls {
+        flex-direction: column;
+      }
+
+      .ctrl-group {
+        min-width: unset;
+      }
+
+      .footer-main {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.75rem 1rem 1.5rem;
+      }
+
+      .footer-bottom {
+        padding: .85rem 1rem;
+      }
+    }
+
+    @media (max-width: 420px) {
+      h1 {
+        font-size: 1.65rem;
+      }
+
+      .stat-item {
+        min-width: 100%;
+        border-right: none !important;
+      }
+
+      .stat-item:nth-child(n) {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .stat-item:last-child {
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Header ────────────────────────────────────────────── -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <img src="/static/logo.png" alt="Apimetro logo" />
+        <div>
+          <div class="logo-text">Apimetro</div>
+          <div class="logo-sub">API de Movilidad CDMX</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <nav class="nav-links header-nav">
+          <a class="nav-link" href="/docs">Referencia API</a>
+          <a class="nav-link" href="/swagger/index.html">Swagger UI</a>
+          <a class="nav-link" href="https://github.com/galigaribaldi/Apimetro" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+        <button class="theme-btn" id="themeToggle" aria-label="Cambiar tema">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Hero ──────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      API activa · apimetro.dev
+    </div>
+    <h1>Datos geoespaciales del<br>transporte público de CDMX</h1>
+    <p class="hero-desc">
+      Accede a líneas, estaciones y polígonos de 10 sistemas de transporte de la
+      Ciudad de México y el Área Metropolitana — filtrados con precisión,
+      en JSON descriptivo o GeoJSON listo para mapas.
+    </p>
+    <div class="cta-group">
+      <a class="btn btn-primary" href="/docs">📋 Referencia API</a>
+      <a class="btn btn-secondary" href="/swagger/index.html">📄 Swagger UI</a>
+      <a class="btn btn-secondary" href="https://github.com/galigaribaldi/Apimetro" target="_blank"
+        rel="noopener">&#128279; GitHub</a>
+    </div>
+    <div class="stats-strip">
+      <div class="stat-item">
+        <span class="stat-num">22,878</span>
+        <span class="stat-label">Estaciones</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">317</span>
+        <span class="stat-label">Líneas</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">10</span>
+        <span class="stat-label">Sistemas</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">2</span>
+        <span class="stat-label">Formatos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Contenido principal ───────────────────────────────── -->
+  <main class="container">
+
+    <!-- Para quién -->
+    <section id="para-quien">
+      <hr class="divider" />
+      <p class="section-title">¿Para quién es Apimetro?</p>
+      <p class="section-sub">Dos perfiles, una misma API</p>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-icon">🗺️</div>
+          <h3>Urbanistas y analistas</h3>
+          <p>Trabaja con datos reales del transporte sin necesidad de programar. Conecta Apimetro a QGIS, Kepler.gl o
+            Google Sheets para visualizar y analizar la red de movilidad de la ciudad.</p>
+          <ul>
+            <li>Geometrías listas para mapas (GeoJSON)</li>
+            <li>Polígonos de alcaldías y municipios</li>
+            <li>Filtros territoriales por alcaldía</li>
+            <li>Compatible con cualquier herramienta GIS</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚙️</div>
+          <h3>Desarrolladores</h3>
+          <p>API REST con respuestas JSON y GeoJSON. Endpoints documentados en Swagger, CRUD completo y geometrías
+            PostGIS como <code>MultiLineString</code> segmentado tramo a tramo.</p>
+          <ul>
+            <li>CRUD completo: GET · POST · PATCH · DELETE</li>
+            <li>Self-hosted: corre en tu localhost con Docker</li>
+            <li>Filtros avanzados por múltiples parámetros</li>
+            <li>Documentación en Swagger UI y Referencia API</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Capacidades -->
+    <section id="capacidades">
+      <hr class="divider" />
+      <p class="section-title">¿Qué puedes hacer con Apimetro?</p>
+      <p class="section-sub">Más que un simple catálogo de paradas</p>
+      <div class="two-col">
+        <div class="cap-card">
+          <div class="cap-head">
+            <span class="cap-icon">🗺️</span>
+            <h3>GeoJSON listo para mapas</h3>
+          </div>
+          <p>Obtén geometrías PostGIS directamente: <code>MultiLineString</code> segmentado tramo a tramo entre
+            estaciones, puntos de estación y polígonos de límites territoriales. Compatibles con Mapbox GL, Leaflet,
+            Kepler.gl, QGIS y cualquier herramienta GIS estándar.</p>
+        </div>
+        <div class="cap-card">
+          <div class="cap-head">
+            <span class="cap-icon">📊</span>
+            <h3>Datos operativos completos</h3>
+          </div>
+          <p>Más allá de las coordenadas: nombre oficial, número comercial, longitud en km, año de inauguración,
+            clasificación operativa, colores de línea, estado de operación y relación con nodos CETRAM.</p>
+          <div class="method-badges">
+            <span class="mb mb-get">GET</span>
+            <span class="mb mb-post">POST</span>
+            <span class="mb mb-patch">PATCH</span>
+            <span class="mb mb-delete">DELETE</span>
+          </div>
+        </div>
+        <div class="cap-card">
+          <div class="cap-head">
+            <span class="cap-icon">🔍</span>
+            <h3>Filtros de precisión</h3>
+          </div>
+          <p>No solo filtras por sistema. Consulta exactamente la <strong>Línea 12 del Metro</strong>, las estaciones de
+            <strong>Iztapalapa</strong>, todos los nodos <strong>CETRAM</strong>, o las líneas con <strong>derecho de
+              vía exclusivo</strong>. También puedes combinar múltiples sistemas en un solo request.</p>
+        </div>
+        <div class="cap-card">
+          <div class="cap-head">
+            <span class="cap-icon">🐳</span>
+            <h3>Self-hosted con Docker</h3>
+          </div>
+          <p>Corre Apimetro en tu propia infraestructura. El repositorio incluye <code>docker-compose</code> con
+            perfiles para entornos dev, QA y producción. PostgreSQL + PostGIS incluidos. Sin dependencias externas.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ejemplos de consultas avanzadas -->
+    <section id="ejemplos">
+      <hr class="divider" />
+      <p class="section-title">Ejemplos de consultas avanzadas</p>
+      <p class="section-sub">Algunos de los filtros más útiles disponibles en la API</p>
+      <div class="examples-grid">
+        <div class="ex-card">
+          <div class="ex-tag">GeoJSON · Líneas</div>
+          <div class="ex-title">Línea 12 del Metro en GeoJSON</div>
+          <code class="ex-code">GET /movilidad/mapas/geojsonLinea
+  ?sistema=METRO&amp;num_comercial=L12</code>
+          <p class="ex-note">Filtra por número comercial oficial — funciona con L1, L2, MB-1, etc.</p>
+        </div>
+        <div class="ex-card">
+          <div class="ex-tag">GeoJSON · Líneas</div>
+          <div class="ex-title">Metro + Metrobús en un solo request</div>
+          <code class="ex-code">GET /movilidad/mapas/geojsonLinea
+  ?sistema=METRO,MB</code>
+          <p class="ex-note">El parámetro <code>sistema</code> acepta múltiples valores separados por coma.</p>
+        </div>
+        <div class="ex-card">
+          <div class="ex-tag">JSON · Estaciones</div>
+          <div class="ex-title">Estaciones del Metro en Iztapalapa</div>
+          <code class="ex-code">GET /movilidad/METRO/estacion
+  ?alcaldia_municipio=Iztapalapa</code>
+          <p class="ex-note">Filtro territorial disponible también en GeoJSON.</p>
+        </div>
+        <div class="ex-card">
+          <div class="ex-tag">JSON · Estaciones</div>
+          <div class="ex-title">Todos los nodos CETRAM del sistema</div>
+          <code class="ex-code">GET /movilidad/TODOS/estacion
+  ?es_cetram=true</code>
+          <p class="ex-note">Usa <code>TODOS</code> para consultar toda la red sin filtrar por sistema.</p>
+        </div>
+        <div class="ex-card">
+          <div class="ex-tag">GeoJSON · Estaciones</div>
+          <div class="ex-title">Estaciones a 250 m de un CETRAM</div>
+          <code class="ex-code">GET /movilidad/mapas/geojsonEstacion
+  ?cetram_real=Pantitlán</code>
+          <p class="ex-note">Filtro espacial: retorna estaciones dentro de 250 m del nodo indicado.</p>
+        </div>
+        <div class="ex-card">
+          <div class="ex-tag">JSON · Líneas</div>
+          <div class="ex-title">Solo líneas actualmente en operación</div>
+          <code class="ex-code">GET /movilidad/TODOS/linea
+  ?existe=true</code>
+          <p class="ex-note">Excluye líneas en proyecto o fuera de servicio.</p>
+        </div>
+      </div>
+      <p style="font-size:.82rem; color:var(--text-muted); margin-top:1rem;">
+        Consulta la <a href="/docs">Referencia API completa</a> para ver todos los parámetros disponibles por endpoint.
+      </p>
+    </section>
+
+    <!-- Sistemas -->
+    <section id="sistemas">
+      <hr class="divider" />
+      <p class="section-title">Sistemas de transporte cubiertos</p>
+      <p class="section-sub">Usa el identificador corto como parámetro <code>sistema</code></p>
+      <div class="sistemas-grid">
+        <span class="sistema-chip" style="background:#B5121B">Metro · METRO</span>
+        <span class="sistema-chip" style="background:#E2231A">Metrobús · MB</span>
+        <span class="sistema-chip" style="background:#6D2077">Cablebús · CBB</span>
+        <span class="sistema-chip" style="background:#006B3E">RTP · RTP</span>
+        <span class="sistema-chip" style="background:#003DA5">Trolebús · TROLE</span>
+        <span class="sistema-chip" style="background:#009B3A">Tren Ligero · TL</span>
+        <span class="sistema-chip" style="background:#C8102E">Mexibús · MEXIBUS</span>
+        <span class="sistema-chip dark-text" style="background:#F7A600">Mexicable · MEXICABLE</span>
+        <span class="sistema-chip" style="background:#0066CC">Interurbano · INTERURBANO</span>
+        <span class="sistema-chip" style="background:#E05A00">Corredor Concesionado · CC</span>
+      </div>
+      <p class="sistemas-note">
+        Usa <strong>TODOS</strong> para consultar toda la red sin filtrar por sistema.
+      </p>
+    </section>
+
+    <!-- Pruébalo -->
+    <section id="prueba">
+      <hr class="divider" />
+      <p class="section-title">Pruébalo ahora</p>
+
+      <div class="try-tabs">
+        <button class="tab-btn active" data-tab="urbanist">🗺️ Soy urbanista / analista</button>
+        <button class="tab-btn" data-tab="dev">⚙️ Soy desarrollador</button>
+      </div>
+
+      <!-- Panel: urbanista -->
+      <div class="tab-panel active" id="tab-urbanist">
+        <div class="try-box">
+          <p style="font-size:.875rem; color:var(--text-muted); margin-bottom:1.1rem;">
+            Sigue estos pasos para visualizar las líneas del Metro en <strong>QGIS</strong> — sin escribir una sola
+            línea de código.
+          </p>
+          <ul class="steps">
+            <li>
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <strong>Abre QGIS y ve al menú Capa → Agregar capa → Agregar capa vectorial</strong>
+                <span class="hint">O usa el atajo <kbd>Ctrl+Shift+V</kbd></span>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <strong>En "Tipo de fuente" selecciona <em>Protocolo: HTTP(S)</em></strong>
+                <span class="hint">Asegúrate de que el tipo sea <em>GeoJSON</em></span>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <strong>Copia y pega esta URL en el campo URI:</strong>
+                <div class="url-box">
+                  <code id="qgis-url">https://apimetro.dev/movilidad/mapas/geojsonLinea?sistema=METRO</code>
+                  <button class="copy-btn" onclick="copyText('qgis-url', this)">Copiar</button>
+                </div>
+                <span class="hint" style="margin-top:.4rem; display:block;">
+                  Cambia <strong>METRO</strong> por cualquier sistema: MB, CBB, RTP, TROLE, TL… o usa
+                  <strong>TODOS</strong> para toda la red.
+                  También puedes filtrar por línea específica añadiendo <code>&amp;num_comercial=L12</code>.
+                </span>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <strong>Haz clic en "Agregar" — ¡listo!</strong>
+                <span class="hint">Las líneas aparecerán en el mapa. Repite el proceso para estaciones
+                  (<code>geojsonEstacion</code>) o polígonos de alcaldías (<code>geojsonPoligono</code>). Combina capas
+                  para análisis de cobertura territorial.</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Panel: desarrollador -->
+      <div class="tab-panel" id="tab-dev">
+        <div class="try-box">
+          <div class="subtabs">
+            <button class="subtab-btn active" data-subtab="cloud">🌐 En la nube (apimetro.dev)</button>
+            <button class="subtab-btn" data-subtab="local">🐳 En local (Docker)</button>
+          </div>
+
+          <!-- Cloud subtab -->
+          <div class="subtab-panel active" id="subtab-cloud">
+            <p style="font-size:.875rem; color:var(--text-muted); margin-bottom:1rem;">
+              Construye tu petición seleccionando el recurso y el sistema. El comando <code>curl</code>
+              se genera automáticamente apuntando a <strong>apimetro.dev</strong>.
+            </p>
+            <div class="try-dev-controls">
+              <div class="ctrl-group">
+                <label for="sel-resource">Recurso</label>
+                <select id="sel-resource">
+                  <option value="geojsonLinea">GeoJSON — Líneas</option>
+                  <option value="geojsonEstacion">GeoJSON — Estaciones</option>
+                  <option value="geojsonPoligono">GeoJSON — Polígonos</option>
+                  <option value="linea">JSON — Datos de líneas</option>
+                  <option value="estacion">JSON — Datos de estaciones</option>
+                </select>
+              </div>
+              <div class="ctrl-group">
+                <label for="sel-system">Sistema</label>
+                <select id="sel-system">
+                  <option value="METRO">METRO</option>
+                  <option value="MB">MB — Metrobús</option>
+                  <option value="CBB">CBB — Cablebús</option>
+                  <option value="RTP">RTP</option>
+                  <option value="TROLE">TROLE — Trolebús</option>
+                  <option value="TL">TL — Tren Ligero</option>
+                  <option value="MEXIBUS">MEXIBUS — Mexibús</option>
+                  <option value="MEXICABLE">MEXICABLE — Mexicable</option>
+                  <option value="INTERURBANO">INTERURBANO</option>
+                  <option value="CC">CC — Corredor Concesionado</option>
+                  <option value="TODOS">TODOS</option>
+                </select>
+              </div>
+            </div>
+            <div class="code-label">
+              <span>Comando generado</span>
+              <button class="copy-btn" id="copy-curl-btn" onclick="copyCurl(this)">Copiar</button>
+            </div>
+            <div class="code-block">
+              <pre id="curl-output">curl "https://apimetro.dev/movilidad/mapas/geojsonLinea?sistema=METRO"</pre>
+            </div>
+            <p style="font-size:.78rem; color:var(--text-muted); margin-top:.75rem;">
+              Para explorar todos los filtros disponibles visita la
+              <a href="/docs">Referencia API</a> o la <a href="/swagger/index.html">documentación Swagger</a>.
+            </p>
+          </div>
+
+          <!-- Local / Docker subtab -->
+          <div class="subtab-panel" id="subtab-local">
+            <p style="font-size:.875rem; color:var(--text-muted); margin-bottom:1rem;">
+              Apimetro es open source. Puedes clonarlo y levantarlo en tu máquina con Docker —
+              sin depender del servicio en línea ni de ninguna API key.
+            </p>
+            <ul class="docker-steps">
+              <li class="docker-step">
+                <div class="step-num">1</div>
+                <div class="docker-step-body">
+                  <strong>Clona el repositorio</strong>
+                  <div class="terminal">
+                    <pre><span class="ok">git clone https://github.com/galigaribaldi/Apimetro.git</span>
+<span class="ok">cd Apimetro</span></pre>
+                  </div>
+                </div>
+              </li>
+              <li class="docker-step">
+                <div class="step-num">2</div>
+                <div class="docker-step-body">
+                  <strong>Configura las credenciales de la base de datos</strong>
+                  <span class="hint">Crea el archivo <code>~/.SecretsFiles/.env.dev</code> con las variables de entorno
+                    necesarias:</span>
+                  <div class="terminal">
+                    <pre><span class="cm"># ~/.SecretsFiles/.env.dev</span>
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=db_apimetro
+DB_USER=apimetro_read
+DB_PASSWORD=tu_password
+POSTGRES_USER=admin_apimetro
+POSTGRES_PASSWORD=tu_admin_password
+GIN_MODE=debug</pre>
+                  </div>
+                  <div class="note-box">
+                    <strong>Nota:</strong> Consulta la lista completa de variables en el
+                    <a href="https://github.com/galigaribaldi/Apimetro#readme" target="_blank"
+                      rel="noopener">README</a>.
+                  </div>
+                </div>
+              </li>
+              <li class="docker-step">
+                <div class="step-num">3</div>
+                <div class="docker-step-body">
+                  <strong>Levanta el entorno de desarrollo</strong>
+                  <div class="terminal">
+                    <pre><span class="ok">make docker-dev</span>
+<span class="cm"># → API disponible en   http://localhost:8080</span>
+<span class="cm"># → PostgreSQL + PostGIS  localhost:5433</span></pre>
+                  </div>
+                </div>
+              </li>
+              <li class="docker-step">
+                <div class="step-num">4</div>
+                <div class="docker-step-body">
+                  <strong>Carga los datos de transporte</strong>
+                  <span class="hint">La base de datos inicia vacía. Para cargar todos los datos de la red (~37
+                    MB):</span>
+                  <div class="terminal">
+                    <pre><span class="ok">bash scripts/load-seed.sh</span>
+<span class="cm"># Carga líneas, estaciones y geometrías PostGIS</span></pre>
+                  </div>
+                </div>
+              </li>
+              <li class="docker-step">
+                <div class="step-num">5</div>
+                <div class="docker-step-body">
+                  <strong>¡Usa la API en tu localhost!</strong>
+                  <span class="hint">Los mismos endpoints funcionan con la base URL local:</span>
+                  <div class="url-box" style="margin-top:.45rem;">
+                    <code id="local-url">curl "http://localhost:8080/movilidad/mapas/geojsonLinea?sistema=METRO"</code>
+                    <button class="copy-btn" onclick="copyText('local-url', this)">Copiar</button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ── Footer ────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-main">
+
+        <!-- Marca -->
+        <div>
+          <div class="footer-logo-row">
+            <img src="/static/logo.png" alt="Apimetro logo" />
+            <div>
+              <div class="footer-logo-name">Apimetro</div>
+              <div class="footer-logo-sub">API de Movilidad CDMX</div>
+            </div>
+          </div>
+          <p class="footer-tagline">
+            Datos geoespaciales del transporte público de la Ciudad de México
+            y el Área Metropolitana en JSON y GeoJSON.
+          </p>
+          <a class="footer-license-badge" href="https://github.com/galigaribaldi/Apimetro/blob/main/LICENSE"
+            target="_blank" rel="noopener">
+            BSL&thinsp;1.1
+          </a>
+          <p class="footer-license-note">Convierte a Apache 2.0 el 12 de abril de 2029</p>
+        </div>
+
+        <!-- Documentación -->
+        <div>
+          <p class="footer-section-title">Documentación</p>
+          <ul class="footer-links-list">
+            <li><a href="/docs">Referencia API</a></li>
+            <li><a href="/swagger/index.html">Swagger UI</a></li>
+            <li>
+              <a href="https://github.com/galigaribaldi/Apimetro" target="_blank" rel="noopener">
+                GitHub<span class="ext-icon">↗</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/galigaribaldi/Apimetro/blob/main/LICENSE" target="_blank" rel="noopener">
+                Licencia BSL 1.1<span class="ext-icon">↗</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Autor -->
+        <div>
+          <p class="footer-section-title">Autor</p>
+          <p class="footer-author-name">Hernán Galileo<br>Cabrera Garibaldi</p>
+          <a class="footer-email" href="mailto:galigaribaldi0@gmail.com">
+            ✉&thinsp;galigaribaldi0@gmail.com
+          </a>
+        </div>
+
+      </div>
+      <div class="footer-bottom">
+        <span>Datos: GTFS SEMOVI · OSMAN MAPS</span>
+        <span class="footer-sep">·</span>
+        <span>© 2025 Hernán Galileo Cabrera Garibaldi</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Tema ─────────────────────────────────────────────────
+    const themeBtn = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    const saved = localStorage.getItem('apimetro-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initial = saved || (prefersDark ? 'dark' : 'light');
+    html.setAttribute('data-theme', initial);
+    themeBtn.textContent = initial === 'dark' ? '☀️' : '🌙';
+    themeBtn.addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      themeBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('apimetro-theme', next);
+    });
+
+    // ── Tabs principales ─────────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ── Subtabs (cloud vs local) ─────────────────────────────
+    document.querySelectorAll('.subtab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const box = btn.closest('.try-box');
+        box.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+        box.querySelectorAll('.subtab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('subtab-' + btn.dataset.subtab).classList.add('active');
+      });
+    });
+
+    // ── Generador de curl ────────────────────────────────────
+    const BASE = 'https://apimetro.dev';
+    const GEO = ['geojsonLinea', 'geojsonEstacion', 'geojsonPoligono'];
+
+    function buildCurl() {
+      const resource = document.getElementById('sel-resource').value;
+      const system = document.getElementById('sel-system').value;
+      let url;
+      if (GEO.includes(resource)) {
+        url = `${BASE}/movilidad/mapas/${resource}?sistema=${system}`;
+      } else {
+        url = `${BASE}/movilidad/${system}/${resource}`;
+      }
+      document.getElementById('curl-output').textContent = `curl "${url}"`;
+    }
+    document.getElementById('sel-resource').addEventListener('change', buildCurl);
+    document.getElementById('sel-system').addEventListener('change', buildCurl);
+
+    // ── Copiar ───────────────────────────────────────────────
+    function copyText(elementId, btn) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ Copiado';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 1800);
+      });
+    }
+    function copyCurl(btn) {
+      const text = document.getElementById('curl-output').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '✓ Copiado';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 1800);
+      });
+    }
+  </script>
+
+</body>
+
+</html>
