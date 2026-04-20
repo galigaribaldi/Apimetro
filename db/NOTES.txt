@@ -344,3 +344,42 @@ SET session_replication_role = replica; en el seed.sql, lo que
 desactiva las FK durante la carga. Esto requiere que el usuario que
 inyecta tenga privilegios de superusuario (admin_apimetro los tiene).
 NUNCA usar apimetro_read para inyectar datos.
+
+
+=====================================================
+ DATOS INCOMPLETOS O DE FUENTE NO OFICIAL
+=====================================================
+
+Las siguientes líneas tienen datos parciales o provenientes de
+fuentes no oficiales. No son errores del ETL sino limitaciones
+conocidas de los datos de origen. Están documentadas en la tabla
+descripcion_lineas mediante el script db/init/UPDATE_TROLE_13.sql.
+
+  SISTEMA     LÍNEAS   TIPO                DETALLE
+  -------     ------   ----                -------
+  TROLE       13       DATOS_INCOMPLETOS   Sin datos de paradas en la fuente
+                                           GTFS (stop_times.txt vacío para TR13).
+                                           El trazo geométrico existe (shape TR13_1,
+                                           263 vértices, ruta tipo loop). ramals.geom
+                                           conserva la geometría completa sin
+                                           segmentación interestación. direction_id
+                                           ausente en trips.txt; solo existe un sentido
+                                           (ramal_num=1) por naturaleza de la ruta loop.
+
+  MEXIBÚS     Todas    FUENTE_NO_OFICIAL   Paradas y trazos recolectados por OSMAN MAPS.
+              (12)                         No provienen del GTFS oficial de la SEMOVI.
+                                           num_estacion no está poblado; las estaciones
+                                           se ordenan por fracción geográfica en el trazo.
+
+  MEXICABLE   Todas    FUENTE_NO_OFICIAL   Paradas y trazos recolectados por OSMAN MAPS.
+              (4)                          No provienen del GTFS oficial de la SEMOVI.
+
+SCRIPT DE DOCUMENTACIÓN:
+  db/init/UPDATE_TROLE_13.sql — inserta 17 registros en descripcion_lineas
+  (1 TROLE 13 + 12 MEXIBÚS + 4 MEXICABLE). Ejecutar una sola vez por entorno.
+
+  Verificar antes de ejecutar (evitar duplicados):
+    SELECT dl.tipo, l.sistema, l.num_comercial
+    FROM descripcion_lineas dl
+    JOIN lineas l ON l.id = dl.linea_base
+    WHERE l.sistema IN ('TROLE','MEXIBÚS','MEXICABLE');
