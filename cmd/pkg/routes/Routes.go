@@ -5,9 +5,11 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"time"
 
 	MiddlewareMod "Apimetro/cmd/pkg/controller/middleware"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -24,6 +26,15 @@ var (
 // La API se configura con las rutas para la API de mapas y la ruta base.
 // Luego se inicia el servidor en el puerto 8080 y se configura la ruta para obtener la documentación de la API.
 func Run() {
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: false,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	getRoutes()
 	router.GET("/", getInit)
 	router.GET("/docs", getDocs)
