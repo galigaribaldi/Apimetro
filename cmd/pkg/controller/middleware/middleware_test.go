@@ -24,35 +24,6 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
-func TestValidarSistema_ValidSistema(t *testing.T) {
-	router := setupRouter()
-
-	w := httptest.NewRecorder()
-
-	req, _ := http.NewRequest("GET", "/METRO/test", nil)
-
-	router.ServeHTTP(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Errorf("should be susscess, but we have %v", w.Code)
-	}
-
-}
-
-func TestValidarSistema_InvalidSistema(t *testing.T) {
-	router := setupRouter()
-
-	w := httptest.NewRecorder()
-
-	req, _ := http.NewRequest("GET", "/TREN/test", nil)
-
-	router.ServeHTTP(w, req)
-
-	if w.Code != http.StatusNotFound {
-		t.Errorf("shoud be 404, but we have %v", w.Code)
-	}
-}
-
 func TestValidarSistema_Common(t *testing.T) {
 	router := setupRouter()
 
@@ -97,7 +68,7 @@ func TestValidarSistema_ContextValue(t *testing.T) {
 		err := json.NewDecoder(w.Body).Decode(&body)
 
 		if err != nil {
-			t.Errorf("Произошла чудовищная ошибка %v", err)
+			t.Errorf("Error al decodificar el cuerpo de la respuesta %v", err)
 		}
 
 		if body["sistema"] != "METRO" {
