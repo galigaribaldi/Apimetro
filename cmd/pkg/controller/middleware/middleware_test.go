@@ -33,10 +33,12 @@ func TestValidarSistema_Common(t *testing.T) {
 		codigoEsperado int
 	}{{"Metro es valid", "METRO", 200},
 		{"MB es valida", "MB", 200},
-		{"MEXIBÚS es valida", "MEXIBÚS", 200},
+		{"metro es valid", "metro", 200},
+		{"MEXIBÚS es valida", "MEXIBÚS", 200}, //Creo que en producción, las solicitudes se enviarán utilizando la opción "MEXIBUS"?.
 		{"MEXIBUS es no valida", "MEXIBUS", 404},
 		{"Cadena vacia es no valida", "", 404},
-		{"Numero es no valida", "1", 404}}
+		{"Numero es no valida", "1", 404},
+	}
 
 	for _, tc := range cases {
 		t.Run(tc.descripcion, func(t *testing.T) {
