@@ -38,8 +38,11 @@ func Run() {
 	getRoutes()
 	router.GET("/", getInit)
 	router.GET("/docs", getDocs)
-	subFS, _ := fs.Sub(staticFiles, "static")
-	router.StaticFS("/static", http.FS(subFS))
+	subFS, err := fs.Sub(staticFiles, "static")
+	if err != nil {
+		log.Fatalf("static fs: %v", err)
+	}
+	router.StaticFS("/static", ginStaticFS(http.FS(subFS)))
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 

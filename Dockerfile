@@ -8,8 +8,16 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
+# Dependencias npm del frontend (capa cacheable)
+COPY web/package.json web/package-lock.json ./web/
+RUN apk add --no-cache nodejs npm \
+	&& cd web && npm ci
+
 # Copiamos todo el código fuente de tu proyecto
 COPY . .
+
+# Mapa demo embebido en el binario (cmd/pkg/routes/static/map)
+RUN cd web && npm run build
 
 # Compilamos la aplicación estáticamente
 # CGO_ENABLED=0 garantiza que el binario funcione perfecto en la etapa 2

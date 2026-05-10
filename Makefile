@@ -8,19 +8,32 @@ GOBIN=$(HOME)/go/bin
 # Sobreescribir con: make docker-dev SECRETS_DIR=/ruta/alternativa
 SECRETS_DIR ?= $(HOME)/.SecretsFiles
 
-.PHONY: all build dev docs clean docker-dev docker-qa docker-main db-sync
+.PHONY: all build dev docs web-build clean docker-dev docker-qa docker-main db-sync
 
 all: dev
 
-# Generar documentación de Swagger
+# Generar documentación de Swagger (opcional): si swag no está instalado no falla —
+# compilación / dev / Docker siguen; usa los docs ya versionados en $(DOCS_DIR).
 docs:
-	@echo "Actualizando documentación de Swagger..."
-	$(GOBIN)/swag init -g main.go -d ./cmd -o $(DOCS_DIR) --parseDependency --parseInternal
+	@if [ -x "$(GOBIN)/swag" ]; then \
+		echo "Actualizando documentación de Swagger..."; \
+		"$(GOBIN)/swag" init -g main.go -d ./cmd -o $(DOCS_DIR) --parseDependency --parseInternal; \
+	elif command -v swag >/dev/null 2>&1; then \
+		echo "Actualizando documentación de Swagger..."; \
+		swag init -g main.go -d ./cmd -o $(DOCS_DIR) --parseDependency --parseInternal; \
+	else \
+		echo "Swagger omitido: no se encontró swag (opcional). Para regenerar docs: go install github.com/swaggo/swag/cmd/swag@latest"; \
+	fi
 
 # Correr el servidor con Air (Live Reload) y actualizar docs al inicio
 dev: docs
 	@echo "Iniciando servidor con Air..."
 	$(GOBIN)/air
+
+# Compilar la demo de mapa (Vite → cmd/pkg/routes/static/map para go:embed)
+web-build:
+	@echo "Construyendo mapa web..."
+	cd web && npm ci && npm run build
 
 # Compilar el binario
 build: docs
