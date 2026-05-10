@@ -179,6 +179,104 @@
   color: var(--code-text);
 }
 
+.map-view__input {
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color var(--transition);
+}
+
+.map-view__input:hover {
+  border-color: var(--text-muted);
+}
+
+.map-view__input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.map-advanced-details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  padding: 0.35rem 0.65rem 0.65rem;
+}
+
+.map-advanced-details__summary {
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  list-style-position: outside;
+  padding: 0.25rem 0;
+}
+
+.map-advanced-details__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.map-advanced-clear {
+  align-self: flex-start;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    color var(--transition),
+    background var(--transition);
+}
+
+.map-advanced-clear:hover:not(:disabled) {
+  border-color: var(--text-muted);
+  color: var(--text);
+  background: var(--surface-alt);
+}
+
+.map-advanced-clear:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.map-fieldset {
+  margin: 0;
+  padding: 0.5rem 0.65rem 0.35rem;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}
+
+.map-fieldset__legend {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 0 0.25rem;
+}
+
+.map-fieldset .map-field {
+  margin-bottom: 0.35rem;
+}
+
+.map-fieldset__hint {
+  margin-top: 0.35rem !important;
+}
+
 .map-view__select {
   font: inherit;
   font-size: 0.875rem;

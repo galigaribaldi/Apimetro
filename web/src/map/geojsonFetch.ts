@@ -1,6 +1,10 @@
 import type { FeatureCollection } from "geojson";
 
-import { geojsonEstacionUrl, geojsonLineaUrl } from "./geojsonUrls";
+import {
+  type MapGeoFilters,
+  geojsonEstacionUrl,
+  geojsonLineaUrl,
+} from "./geojsonUrls";
 
 export type ApimetroGeoJsonBundle = {
   stations: FeatureCollection;
@@ -8,12 +12,11 @@ export type ApimetroGeoJsonBundle = {
 };
 
 export async function fetchApimetroGeoJson(
-  sistema: string,
+  filters: MapGeoFilters,
   signal: AbortSignal,
-  numComercial?: string,
   includeLines = true,
 ): Promise<ApimetroGeoJsonBundle> {
-  const stationsUrl = geojsonEstacionUrl(sistema, numComercial);
+  const stationsUrl = geojsonEstacionUrl(filters);
 
   if (!includeLines) {
     const stationsRes = await fetch(stationsUrl, { signal });
@@ -29,7 +32,7 @@ export async function fetchApimetroGeoJson(
     };
   }
 
-  const linesUrl = geojsonLineaUrl(sistema, numComercial);
+  const linesUrl = geojsonLineaUrl(filters);
 
   const [stationsRes, linesRes] = await Promise.all([
     fetch(stationsUrl, { signal }),

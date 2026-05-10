@@ -14,6 +14,14 @@ function row(label: string, value: unknown): string {
   return `<div class="map-popup__row"><span class="map-popup__k">${escapeHtml(label)}</span> <span class="map-popup__v">${escapeHtml(str)}</span></div>`;
 }
 
+function formatDistanciaMetros(value: unknown): unknown {
+  if (value === null || value === undefined || value === "") return value;
+  const n =
+    typeof value === "number" ? value : Number.parseFloat(String(value));
+  if (!Number.isFinite(n)) return value;
+  return n.toFixed(2);
+}
+
 /** Build popup HTML from GeoJSON feature properties (station / line / polygon). */
 export function formatFeaturePopup(props: Record<string, unknown>): string {
   const tipo =
@@ -40,7 +48,7 @@ export function formatFeaturePopup(props: Record<string, unknown>): string {
       row("Sentido", props.sentido),
       row("Vel. prom. (km/h)", props.velocidad_promedio_kmh),
       row("Frecuencia (min)", props.frecuencia_minutos),
-      row("Distancia (m)", props.distancia_metros),
+      row("Distancia (m)", formatDistanciaMetros(props.distancia_metros)),
     );
   } else if (tipo === "poligono_administrativo" || props.cvegeo) {
     blocks.push(
