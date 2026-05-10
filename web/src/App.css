@@ -181,6 +181,10 @@
   line-height: 1.45;
 }
 
+.map-field__error {
+  color: var(--accent);
+}
+
 .map-stage {
   flex: 1;
   position: relative;

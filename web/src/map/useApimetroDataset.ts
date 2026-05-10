@@ -16,6 +16,7 @@ export function useApimetroDataset(
   mapRef: RefObject<maplibregl.Map | null>,
   mapReady: boolean,
   sistema: string,
+  numComercial: string,
   setStatus: Dispatch<SetStateAction<string>>,
 ) {
   const loadDataset = useCallback(
@@ -26,8 +27,9 @@ export function useApimetroDataset(
       setStatus(`Loading ${label}…`);
       removeTransportLayers(map);
 
+      const nc = numComercial.trim();
       const { stations: stationsData, lines: linesData } =
-        await fetchApimetroGeoJson(sistemaParam, signal);
+        await fetchApimetroGeoJson(sistemaParam, signal, nc || undefined);
 
       map.addSource(SOURCE_LINES, {
         type: "geojson",
@@ -47,11 +49,13 @@ export function useApimetroDataset(
       };
       fitMapToData(map, merged);
 
+      const lineTag =
+        nc.length > 0 ? ` · línea comercial: ${nc}` : "";
       setStatus(
-        `Red: ${label} · estaciones: ${stationsData.features.length} · líneas (tramos): ${linesData.features.length}`,
+        `Red: ${label}${lineTag} · estaciones: ${stationsData.features.length} · líneas (tramos): ${linesData.features.length}`,
       );
     },
-    [setStatus],
+    [setStatus, numComercial],
   );
 
   useEffect(() => {
@@ -67,5 +71,5 @@ export function useApimetroDataset(
     });
 
     return () => abort.abort();
-  }, [mapReady, sistema, loadDataset]);
+  }, [mapReady, sistema, numComercial, loadDataset]);
 }

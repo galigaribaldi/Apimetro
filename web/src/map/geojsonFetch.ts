@@ -10,9 +10,10 @@ export type ApimetroGeoJsonBundle = {
 export async function fetchApimetroGeoJson(
   sistema: string,
   signal: AbortSignal,
+  numComercial?: string,
 ): Promise<ApimetroGeoJsonBundle> {
-  const stationsUrl = geojsonEstacionUrl(sistema);
-  const linesUrl = geojsonLineaUrl(sistema);
+  const stationsUrl = geojsonEstacionUrl(sistema, numComercial);
+  const linesUrl = geojsonLineaUrl(sistema, numComercial);
 
   const [stationsRes, linesRes] = await Promise.all([
     fetch(stationsUrl, { signal }),
