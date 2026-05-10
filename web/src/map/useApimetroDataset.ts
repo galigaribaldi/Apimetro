@@ -17,6 +17,7 @@ export function useApimetroDataset(
   mapReady: boolean,
   sistema: string,
   numComercial: string,
+  includeLines: boolean,
   setStatus: Dispatch<SetStateAction<string>>,
 ) {
   const loadDataset = useCallback(
@@ -29,33 +30,46 @@ export function useApimetroDataset(
 
       const nc = numComercial.trim();
       const { stations: stationsData, lines: linesData } =
-        await fetchApimetroGeoJson(sistemaParam, signal, nc || undefined);
+        await fetchApimetroGeoJson(
+          sistemaParam,
+          signal,
+          nc || undefined,
+          includeLines,
+        );
 
-      map.addSource(SOURCE_LINES, {
-        type: "geojson",
-        data: linesData,
-      });
+      if (includeLines) {
+        map.addSource(SOURCE_LINES, {
+          type: "geojson",
+          data: linesData,
+        });
+        addLineLayers(map);
+      }
+
       map.addSource(SOURCE_STATIONS, {
         type: "geojson",
         data: stationsData,
       });
 
-      addLineLayers(map);
       addPointLayers(map);
 
       const merged: FeatureCollection = {
         type: "FeatureCollection",
-        features: [...stationsData.features, ...linesData.features],
+        features: includeLines
+          ? [...stationsData.features, ...linesData.features]
+          : [...stationsData.features],
       };
       fitMapToData(map, merged);
 
       const lineTag =
         nc.length > 0 ? ` · línea comercial: ${nc}` : "";
+      const tramosTag = includeLines
+        ? ` · líneas (tramos): ${linesData.features.length}`
+        : " · trazos de línea: no cargados";
       setStatus(
-        `Red: ${label}${lineTag} · estaciones: ${stationsData.features.length} · líneas (tramos): ${linesData.features.length}`,
+        `Red: ${label}${lineTag} · estaciones: ${stationsData.features.length}${tramosTag}`,
       );
     },
-    [setStatus, numComercial],
+    [setStatus, numComercial, includeLines],
   );
 
   useEffect(() => {
@@ -71,5 +85,5 @@ export function useApimetroDataset(
     });
 
     return () => abort.abort();
-  }, [mapReady, sistema, numComercial, loadDataset]);
+  }, [mapReady, sistema, numComercial, includeLines, loadDataset]);
 }

@@ -152,6 +152,33 @@
   color: var(--text);
 }
 
+.map-field--checkbox label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.map-field--checkbox input[type="checkbox"] {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.map-field__hint-inline {
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.map-inline-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78em;
+  padding: 0.08em 0.35em;
+  border-radius: 4px;
+  background: var(--code-bg);
+  color: var(--code-text);
+}
+
 .map-view__select {
   font: inherit;
   font-size: 0.875rem;

@@ -16,6 +16,7 @@ export function MapView() {
   const { containerRef, mapRef, mapReady } = useMapInstance(popupRef);
   const [sistema, setSistema] = useState<string>("");
   const [numComercial, setNumComercial] = useState<string>("");
+  const [showLineTrazos, setShowLineTrazos] = useState(true);
   const [status, setStatus] = useState<string>("");
 
   const lineaOptions = useNumComercialOptions(sistema);
@@ -26,6 +27,7 @@ export function MapView() {
     mapReady,
     sistema,
     numComercial,
+    showLineTrazos,
     setStatus,
   );
   useMapFeaturePopup(mapRef, mapReady, sistema, popupRef);
@@ -50,10 +52,25 @@ export function MapView() {
               error={lineaOptions.error}
             />
           ) : null}
+          <div className="map-field map-field--checkbox">
+            <label htmlFor="show-line-trazos">
+              <input
+                id="show-line-trazos"
+                type="checkbox"
+                checked={showLineTrazos}
+                onChange={(e) => setShowLineTrazos(e.target.checked)}
+              />
+              Mostrar trazos de línea{" "}
+              <span className="map-field__hint-inline">
+                (GET geojsonLinea; más datos)
+              </span>
+            </label>
+          </div>
           <p className="map-sidebar__hint">
-            Misma selección aplica a estaciones y trazos de línea (GeoJSON).
-            Acerca el mapa (zoom ≥12) para ver nombres de estaciones con más
-            claridad.
+            El filtro de red y línea comercial aplica a las estaciones. Si
+            activas trazos, la misma selección filtra también{" "}
+            <code className="map-inline-code">geojsonLinea</code>. Acerca el
+            mapa (zoom ≥12) para ver nombres con más claridad.
           </p>
         </div>
       </aside>
