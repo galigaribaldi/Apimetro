@@ -202,6 +202,7 @@ tmp/
 bin/apimetro
 tmp/main
 db/init/seed.sql
+db/init/seed_plutarco.sql
 
 # Binarios compilados en raíz (Go build output)
 /main
@@ -214,3 +215,6 @@ db/init/seed.sql
 *.jpeg
 *.JPEG
 .env.prod
+
+# Archvios temporales de AGEBS
+ETL/Data/AGEBS/*

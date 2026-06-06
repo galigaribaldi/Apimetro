@@ -54,9 +54,16 @@ IMPORTANTE: Si agregas una nueva extensión a la DB local, ejecuta
   public     — Esquema principal. Contiene todas las tablas de transporte
                actualmente en uso por la API.
 
-  plutarco   — Esquema reservado para la integración futura de datos del
-               INEGI: AGEBs (Áreas Geoestadísticas Básicas) y Red Vial
-               (Calles). Ya existe en la DB pero sus tablas están vacías.
+  plutarco   — Esquema para datos geoespaciales del INEGI usados por VFT
+               (motor de Valor de Flujo de Transporte).
+
+               Tablas:
+                 plutarco.agebs   — AGEBs urbanas + Censo 2020. 6 estados
+                                    de la macrometrópoli. Vacía hasta cargar
+                                    ETL/load_agebs.py (~11,979 polígonos).
+                 plutarco.calles  — Red vial. Fuera de scope actual.
+
+               Cargado por: ETL/load_agebs.py (ver sección ETL más abajo).
                El rol apimetro_read tiene permisos SELECT sobre este esquema.
 
 
@@ -344,6 +351,193 @@ SET session_replication_role = replica; en el seed.sql, lo que
 desactiva las FK durante la carga. Esto requiere que el usuario que
 inyecta tenga privilegios de superusuario (admin_apimetro los tiene).
 NUNCA usar apimetro_read para inyectar datos.
+
+
+=====================================================
+ PROCESO DE SEED PLUTARCO
+=====================================================
+
+El archivo db/init/seed_plutarco.sql NO está en git (.gitignore).
+Contiene los datos de las 4 tablas del esquema plutarco en formato COPY.
+Tamaño: ~109 MB. Generado con pg_dump desde la DB DEV.
+
+PARA GENERAR seed_plutarco.sql (desde DB DEV local):
+
+  PGPASSWORD='Dev_Adm1nP4ss!2024' pg_dump \
+    --data-only --schema=plutarco --disable-triggers \
+    -h localhost -p 5433 \
+    -U admin_apimetro db_apimetro \
+    > db/init/seed_plutarco.sql
+
+PARA APLICAR EN UN ENTORNO NUEVO:
+
+  PASO 1 — Asegurarse de que init_plutarco.sql ya fue ejecutado:
+    PGPASSWORD='...' psql -h localhost -p <PUERTO> \
+      -U admin_apimetro -d db_apimetro \
+      -f db/init/init_plutarco.sql
+
+  PASO 2 — Inyectar los datos:
+    PGPASSWORD='Dev_Adm1nP4ss!2024' psql \
+      -h localhost -p 5433 \
+      -U admin_apimetro -d db_apimetro \
+      -v ON_ERROR_STOP=1 \
+      -f db/init/seed_plutarco.sql
+
+CONTEOS ESPERADOS:
+  calles        175,540
+  agebs          11,787
+  uso_suelo       6,879
+  curvas_nivel    2,661
+
+INTEGRIDAD VERIFICADA (2026-06-05):
+  - 0 geometrías nulas en las 4 tablas
+  - 0 geometrías inválidas (ST_IsValid)
+  - 0 registros con SRID != 4326
+  - 0 atributos críticos nulos
+  - agebs: todas las entidades en rango (09,15,17,21,22,29)
+  - calles: 100% cobertura CDMX (cve_ent='09')
+
+DIFERENCIAS VS seed.sql (esquema public):
+  - seed.sql usa --inserts (compatibilidad). seed_plutarco.sql usa COPY
+    (más eficiente para 175k+ filas de geometría).
+  - seed_plutarco.sql NO depende de los archivos fuente (AGEBS/, Censo/,
+    Vialidades/, Medio_Fisico/). Una vez generado, esos directorios
+    pueden eliminarse del equipo local sin perder la capacidad de
+    replicar el entorno.
+
+
+=====================================================
+ ETL — CARGA DE DATOS PLUTARCO
+=====================================================
+
+Los scripts ETL están en ETL/ y usan ETL/conf.py para la conexión a DB.
+conf.py lee variables de entorno con fallback a valores locales.
+
+------------------------------------------------------
+ Credenciales para conectarse desde máquina local
+------------------------------------------------------
+
+Los scripts ETL necesitan el usuario administrador (con permisos de INSERT
+sobre el esquema plutarco). Configura estas variables de entorno antes de
+correr cualquier script ETL:
+
+  export DB_HOST=localhost
+  export DB_PORT=5433          # DEV (5434=QA, 5435=MAIN)
+  export DB_NAME=db_apimetro
+  export DB_USER=admin_apimetro
+  export DB_PASSWORD='Dev_Adm1nP4ss!2024'
+
+  O en una línea para una ejecución puntual:
+  DB_HOST=localhost DB_PORT=5433 DB_NAME=db_apimetro \
+    DB_USER=admin_apimetro DB_PASSWORD='Dev_Adm1nP4ss!2024' \
+    python3 ETL/load_agebs.py
+
+Para conectarte con pgAdmin / DBeaver / psql desde tu máquina local:
+  Host:     localhost
+  Port:     5433
+  Database: db_apimetro
+  User:     admin_apimetro
+  Password: Dev_Adm1nP4ss!2024
+
+NOTA: apimetro_read es de solo lectura — no sirve para ETL.
+
+------------------------------------------------------
+ ETL/load_agebs.py — AGEBs urbanas + Censo 2020
+------------------------------------------------------
+Estado: PENDIENTE DE ESCRIBIR (ver plan en ETL/plutarco_implementacion.md)
+
+Fuentes de datos:
+  Shapefiles: ETL/Data/AGEBS/
+    poligono_ageb_urbanas_cdmx/   → CDMX (09), ya en EPSG:4326
+    15_mexico/conjunto_de_datos/  → EdoMex, ITRF2008/LCC → reproyectar
+    17_morelos/conjunto_de_datos/ → Morelos, ITRF2008/LCC → reproyectar
+    21_puebla/conjunto_de_datos/  → Puebla,  ITRF2008/LCC → reproyectar
+    22_queretaro/conjunto_de_datos/→ Querétaro, ITRF2008/LCC → reproyectar
+    29_tlaxcala/conjunto_de_datos/ → Tlaxcala,  ITRF2008/LCC → reproyectar
+    Shapefile clave: *a.shp (AGEBs urbanas). Columnas: CVE_ENT, CVE_MUN,
+    CVE_LOC, CVE_AGEB, CVEGEO.
+
+  CSVs Censo 2020: ETL/Data/Censo/ (una carpeta por estado)
+    Columnas clave (posición idéntica en todos los CSVs):
+      col[8]  = POBTOT  (población total)
+      col[142]= PEA     (población económicamente activa)
+      col[178]= TVIVHAB (viviendas habitadas)
+    Filtro nivel AGEB: MZA=='000' AND MUN!='000' AND LOC!='0000' AND AGEB!='0000'
+    JOIN con shapefile por: CVEGEO == CVE_ENT+CVE_MUN+CVE_LOC+CVE_AGEB
+
+  Scope: Opción B — 6 estados macrometrópoli (~11,979 AGEBs, ~82 MB)
+
+------------------------------------------------------
+ ETL/load_afluencia.py — Afluencia por línea
+------------------------------------------------------
+Estado: PENDIENTE DE ESCRIBIR
+
+Fuentes de datos:
+  ETL/Data/Pesos/
+    afluencia_desglosada_acumulada_2024_07.csv
+    afluencia_desglosada_cb_03_2026.csv   (Cablebús)
+    afluencia_desglosada_tl_03_2026.csv   (Tren Ligero)
+    afluencia_desglosada_trolebus_03_2026.csv
+    afluenciartp_desglosado_03_2026.csv
+    afluencia_diaria_historica.xlsx
+  Requiere catálogo de homologación nombre CSV → linea_id de public.lineas.
+
+
+=====================================================
+ CORRECCIONES DE CALIDAD DE DATOS (HISTORIAL)
+=====================================================
+
+Las siguientes correcciones se aplicaron manualmente sobre la DB. Deben
+repetirse al construir un volumen nuevo desde cero (después de cargar el seed).
+
+------------------------------------------------------
+ [2026-06-05] Backfill longitud/latitud en estacions (Issue #35)
+------------------------------------------------------
+PROBLEMA:
+  Las 22,878 estaciones tenían longitud=NULL y latitud=NULL. La columna
+  geom (PostGIS Point SRID 4326) sí estaba poblada. La migración GTFS
+  que introdujo ambas columnas no incluyó el backfill post-inserción.
+  El endpoint CRUD /movilidad/:sistema/estacion devolvía "longitud":0,
+  "latitud":0 en todas las estaciones (bug silencioso de presentación).
+  El endpoint GeoJSON no estaba afectado (lee directamente desde geom).
+
+SOLUCIÓN APLICADA EN DEV (2026-06-05):
+  UPDATE public.estacions
+  SET
+    longitud = ST_X(ST_Transform(geom::geometry, 4326)),
+    latitud  = ST_Y(ST_Transform(geom::geometry, 4326))
+  WHERE geom IS NOT NULL;
+  → 22,878 filas actualizadas. Rango resultante:
+    longitud: -99.6950 a -98.9199
+    latitud:  19.1331 a 19.7624
+
+PARA APLICAR EN PRODUCCIÓN:
+  docker exec apimetro_db_prod psql -U admin_apimetro -d db_apimetro -c "
+  UPDATE public.estacions
+  SET longitud=ST_X(ST_Transform(geom::geometry,4326)),
+      latitud=ST_Y(ST_Transform(geom::geometry,4326))
+  WHERE geom IS NOT NULL;"
+
+NOTA PARA FUTUROS SEEDS:
+  Al regenerar seed.sql desde la DB local con datos correctos, el backfill
+  quedará embebido en los INSERTs. No será necesario re-ejecutar el UPDATE.
+
+CÓDIGO ELIMINADO:
+  cmd/pkg/controller/utils/Estacion/FormatterEstacions.go — función
+  ConvertEstacionToJson() era código muerto (definida pero nunca llamada).
+  Usaba est.Longitud/est.Latitud para construir GeoJSON, pero el GeoJSON
+  real se genera en GeoJsonEstacion.go vía ST_AsGeoJSON(geom) directamente.
+
+CONSTRAINT AÑADIDO (misma sesión):
+  ALTER TABLE public.estacions
+  ADD CONSTRAINT chk_coords_consistency
+  CHECK (
+      (longitud IS NULL AND latitud IS NULL AND geom IS NULL) OR
+      (longitud IS NOT NULL AND latitud IS NOT NULL AND geom IS NOT NULL)
+  );
+  Garantiza que los tres campos de coordenadas sean siempre consistentes.
+  Cualquier INSERT o UPDATE que deje longitud/latitud/geom en estado mixto
+  será rechazado por la DB. Ya incluido en db/init/init.sql.
 
 
 =====================================================
