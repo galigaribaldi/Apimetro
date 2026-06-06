@@ -16,4 +16,5 @@ type ResultGeoJsonLinea struct {
 	FrecuenciaMinutos    *float64 `gorm:"column:frecuencia_minutos"`
 	Sentido              *int     `gorm:"column:sentido"`
 	Fuente               *string  `gorm:"column:fuente"`
+	LineaID              int      `gorm:"column:linea_id"`
 }

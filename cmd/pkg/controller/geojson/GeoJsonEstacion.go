@@ -21,6 +21,7 @@ func SelectGeoJsonEstacionConFiltros(filtros map[string]interface{}) modelsGeojs
 	query := con.DB.Table("estacions").
 		Select(`
 			estacions.nombre,
+			estacions.linea_id,
 			lineas.sistema,
 			lineas.num_comercial,
 			estacions.tipo,
@@ -123,6 +124,8 @@ func SelectGeoJsonEstacionConFiltros(filtros map[string]interface{}) modelsGeojs
 			"tipo_entidad":         "estacion",
 			"jerarquia_transporte": row.JerarquiaTransporte,
 			"es_cetram":            row.EsCetram,
+			"linea_id":             row.LineaID,
+			"num_comercial":        row.NumComercial,
 		}
 		// Como NombreCetram es un puntero (*string), debemos validarlo para evitar panic si es nil
 		if row.NombreCetram != nil {

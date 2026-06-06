@@ -495,6 +495,54 @@
         }
       ]
     }
+  ,
+    {
+      "name": "4. Analítico (Plutarco)",
+      "item": [
+        {
+          "name": "GeoJSON AGEBs urbanas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analitico/agebs?entidad=09&limit=500&offset=0",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analitico",
+                "agebs"
+              ],
+              "query": [
+                {
+                  "key": "entidad",
+                  "value": "09",
+                  "description": "Clave de entidad (2 dígitos): 09=CDMX, 15=EdoMex, 17=Morelos, 21=Puebla, 22=Querétaro, 29=Tlaxcala"
+                },
+                {
+                  "key": "municipio_alcaldia",
+                  "value": "Cuauhtémoc",
+                  "description": "Nombre del municipio o alcaldía (búsqueda parcial, ILIKE)",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "500",
+                  "description": "Máximo de AGEBs a retornar (default: 500)"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "AGEBs a saltar para paginación (default: 0)"
+                }
+              ]
+            },
+            "description": "Retorna AGEBs (Áreas Geo-Estadísticas Básicas) urbanas en formato GeoJSON FeatureCollection.\n\nCada Feature contiene:\n- Geometría `MultiPolygon` (EPSG:4326)\n- Atributos censales INEGI Censo 2020: población total, viviendas habitadas, PEA, área km², densidad poblacional\n\nScope: 6 estados de la macrometrópoli (CDMX, EdoMex, Morelos, Puebla, Querétaro, Tlaxcala) — 11,787 AGEBs totales.\n\n**Paginación obligatoria** — solicitar en bloques de máximo 1,000. Usar `offset` para iterar.\n\nLlave de unión con otros datos analíticos: `cve_ageb` (VARCHAR 13 chars = CVE_ENT+CVE_MUN+CVE_LOC+CVE_AGEB).\nRelación espacial con estaciones: `ST_DWithin(ageb.geom, estacion.geom, 800m)` — la calcula VFT internamente."
+          },
+          "response": []
+        }
+      ]
+    }
   ],
   "variable": [
     {

@@ -55,6 +55,10 @@ func getRoutes() {
 	addGeoJsonRouteEstacion(mapas)
 	addGeoJsonRouteLine(mapas)
 	addGeoJsonRoutePoligono(mapas)
+	// Analítico (plutarco) — sin ValidarSistema
+	analitico := api.Group("/analitico")
+	addGeoJsonRouteAgebs(analitico) // #36
+
 	// Arquitectura dinámica dependiendo del sistema de transporte
 	transporte := api.Group("/:sistema")
 	transporte.Use(MiddlewareMod.ValidarSistema())

@@ -22,6 +22,69 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/analitico/agebs": {
+            "get": {
+                "description": "Retorna AGEBs (Áreas Geo-Estadísticas Básicas) urbanas en formato GeoJSON (FeatureCollection).\nCada Feature contiene una geometría tipo ` + "`" + `MultiPolygon` + "`" + ` y atributos censales del INEGI Censo 2020:\npoblación total, viviendas habitadas, PEA, área en km² y densidad poblacional.\nScope geográfico: 6 estados de la macrometrópoli (CDMX, EdoMex, Morelos, Puebla, Querétaro, Tlaxcala).\n**Paginación obligatoria** — default: limit=500, offset=0. Máximo recomendado: 1000 por request.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Analítico"
+                ],
+                "summary": "GeoJSON de AGEBs urbanas",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Clave de entidad federativa (2 dígitos). Ej: 09=CDMX, 15=EdoMex, 17=Morelos, 21=Puebla, 22=Querétaro, 29=Tlaxcala",
+                        "name": "entidad",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nombre del municipio o alcaldía (búsqueda parcial). Ej: 'Cuauhtémoc', 'Naucalpan'",
+                        "name": "municipio_alcaldia",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Número máximo de AGEBs a retornar (default: 500)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Número de AGEBs a saltar para paginación (default: 0)",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "FeatureCollection con AGEBs encontradas",
+                        "schema": {
+                            "$ref": "#/definitions/models.FeatureCollection"
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron AGEBs con los filtros proporcionados",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor al ejecutar la consulta espacial",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/mapas/geojsonEstacion": {
             "get": {
                 "description": "Retorna estaciones de transporte público en formato GeoJSON (FeatureCollection).\nCada Feature contiene una geometría tipo ` + "`" + `Point` + "`" + ` (longitud/latitud) y un objeto ` + "`" + `properties` + "`" + `\ncon atributos como nombre, sistema, alcaldía, número comercial, año y datos de CETRAM.\nSi no se especifica ` + "`" + `sistema` + "`" + `, se devuelven estaciones de todos los sistemas.\nLos textos con caracteres especiales (ñ, tildes) se normalizan automáticamente.",

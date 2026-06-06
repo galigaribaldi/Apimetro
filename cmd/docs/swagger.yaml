@@ -989,6 +989,55 @@ paths:
       summary: Crear Línea de Transporte
       tags:
       - Linea
+  /analitico/agebs:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Retorna AGEBs (Áreas Geo-Estadísticas Básicas) urbanas en formato GeoJSON (FeatureCollection).
+        Cada Feature contiene una geometría tipo `MultiPolygon` y atributos censales del INEGI Censo 2020:
+        población total, viviendas habitadas, PEA, área en km² y densidad poblacional.
+        Scope geográfico: 6 estados de la macrometrópoli (CDMX, EdoMex, Morelos, Puebla, Querétaro, Tlaxcala).
+        **Paginación obligatoria** — default: limit=500, offset=0. Máximo recomendado: 1000 por request.
+      parameters:
+      - description: 'Clave de entidad federativa (2 dígitos). Ej: 09=CDMX, 15=EdoMex,
+          17=Morelos, 21=Puebla, 22=Querétaro, 29=Tlaxcala'
+        in: query
+        name: entidad
+        type: string
+      - description: 'Nombre del municipio o alcaldía (búsqueda parcial). Ej: ''Cuauhtémoc'',
+          ''Naucalpan'''
+        in: query
+        name: municipio_alcaldia
+        type: string
+      - description: 'Número máximo de AGEBs a retornar (default: 500)'
+        in: query
+        name: limit
+        type: integer
+      - description: 'Número de AGEBs a saltar para paginación (default: 0)'
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: FeatureCollection con AGEBs encontradas
+          schema:
+            $ref: '#/definitions/models.FeatureCollection'
+        "404":
+          description: No se encontraron AGEBs con los filtros proporcionados
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error interno del servidor al ejecutar la consulta espacial
+          schema:
+            additionalProperties: true
+            type: object
+      summary: GeoJSON de AGEBs urbanas
+      tags:
+      - Analítico
   /mapas/geojsonEstacion:
     get:
       consumes:
