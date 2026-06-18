@@ -186,9 +186,10 @@ cython_debug/
 # VSCODE
 .vscode/settings.json
 
-## Claude Settings
-CLAUDE.md
-.claude
+## Claude Code (settings.local.json se excluye en gitignore global)
+!CLAUDE.md
+!.claude/
+!.claude/settings.json
 
 ## Archivos de entorno (contienen credenciales)
 .env
@@ -214,6 +215,8 @@ db/init/seed_plutarco.sql
 *.jpg
 *.jpeg
 *.JPEG
+# Excepcion: logo embebido en el binario (go:embed)
+!cmd/pkg/routes/static/logo.png
 .env.prod
 
 # Archvios temporales de AGEBS
