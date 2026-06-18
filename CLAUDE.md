@@ -158,3 +158,19 @@ Los archivos en `cmd/pkg/routes/static/` se embeben en el binario con `//go:embe
 4. Al cerrar un issue de backend, actualizar Swagger (`make docs`) y la coleccion Postman en `cmd/docs/postman_collection/`.
 5. Probar cada endpoint nuevo en el contenedor DEV con curl antes de reportar como cerrado. Swagger UI apunta a `apimetro.dev` por `@host` en main.go — probar siempre contra localhost.
 6. Los archivos `.env.*` contienen credenciales y viven fuera del repo (`~/.SecretsFiles/`). Nunca commitearlos.
+
+## Continuidad entre sesiones y equipos
+
+Los issues de GitHub contienen **comentarios de handoff** con contexto acumulado de sesiones previas (DDL, decisiones tecnicas, estado de BD, blockers). Al iniciar trabajo sobre un issue, leer sus comentarios para recuperar contexto:
+
+```bash
+gh issue view <numero> --json title,body,comments
+```
+
+Al terminar una sesion de trabajo sobre un issue, dejar un comentario de handoff con:
+- Que se hizo y que queda pendiente
+- Decisiones tomadas y por que
+- Archivos creados o modificados
+- Blockers si los hay
+
+Issues con informacion de seguridad (#8 auth, #9 rate limiting) se documentan en GitHub Security Advisories (privados, solo admins).
