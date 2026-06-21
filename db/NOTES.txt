@@ -58,12 +58,16 @@ IMPORTANTE: Si agregas una nueva extensión a la DB local, ejecuta
                (motor de Valor de Flujo de Transporte).
 
                Tablas:
-                 plutarco.agebs   — AGEBs urbanas + Censo 2020. 6 estados
-                                    de la macrometrópoli. Vacía hasta cargar
-                                    ETL/load_agebs.py (~11,979 polígonos).
-                 plutarco.calles  — Red vial. Fuera de scope actual.
+                 plutarco.agebs        — AGEBs urbanas + Censo 2020. 6 estados
+                                         de la macrometrópoli (~11,787 polígonos).
+                 plutarco.calles       — Red vial CDMX (175,540 segmentos).
+                 plutarco.uso_suelo    — Uso de suelo y vegetación (INEGI 1993).
+                 plutarco.curvas_nivel — Isohipsas (INEGI Cartas Topográficas).
+                 plutarco.afluencia_linea — Afluencia mensual por línea (Issue #39).
+                 plutarco.catalogo_homologacion — Mapeo nombre CSV → linea_id.
 
-               Cargado por: ETL/load_agebs.py (ver sección ETL más abajo).
+               Cargado por: ETL/DataCharge/LoadAgebs.py, LoadPlutarcoGeo.py,
+                            LoadAfluencia.py (ver sección ETL más abajo).
                El rol apimetro_read tiene permisos SELECT sobre este esquema.
 
 
@@ -383,11 +387,13 @@ PARA APLICAR EN UN ENTORNO NUEVO:
       -v ON_ERROR_STOP=1 \
       -f db/init/seed_plutarco.sql
 
-CONTEOS ESPERADOS:
-  calles        175,540
-  agebs          11,787
-  uso_suelo       6,879
-  curvas_nivel    2,661
+CONTEOS ESPERADOS (6 tablas):
+  calles                  175,540
+  agebs                    11,787
+  uso_suelo                 6,879
+  curvas_nivel              2,661
+  afluencia_linea           (varía según datos cargados)
+  catalogo_homologacion     ~111 (variantes de nombres CSV)
 
 INTEGRIDAD VERIFICADA (2026-06-05):
   - 0 geometrías nulas en las 4 tablas
@@ -442,45 +448,67 @@ Para conectarte con pgAdmin / DBeaver / psql desde tu máquina local:
 NOTA: apimetro_read es de solo lectura — no sirve para ETL.
 
 ------------------------------------------------------
- ETL/load_agebs.py — AGEBs urbanas + Censo 2020
+ ETL/DataCharge/LoadAgebs.py — AGEBs urbanas + Censo 2020
 ------------------------------------------------------
-Estado: PENDIENTE DE ESCRIBIR (ver plan en ETL/plutarco_implementacion.md)
+Estado: COMPLETADO (11,787 AGEBs cargadas)
 
 Fuentes de datos:
-  Shapefiles: ETL/Data/AGEBS/
-    poligono_ageb_urbanas_cdmx/   → CDMX (09), ya en EPSG:4326
-    15_mexico/conjunto_de_datos/  → EdoMex, ITRF2008/LCC → reproyectar
-    17_morelos/conjunto_de_datos/ → Morelos, ITRF2008/LCC → reproyectar
-    21_puebla/conjunto_de_datos/  → Puebla,  ITRF2008/LCC → reproyectar
-    22_queretaro/conjunto_de_datos/→ Querétaro, ITRF2008/LCC → reproyectar
-    29_tlaxcala/conjunto_de_datos/ → Tlaxcala,  ITRF2008/LCC → reproyectar
-    Shapefile clave: *a.shp (AGEBs urbanas). Columnas: CVE_ENT, CVE_MUN,
-    CVE_LOC, CVE_AGEB, CVEGEO.
-
+  Shapefiles: ETL/Data/AGEBS/ (6 estados macrometrópoli)
   CSVs Censo 2020: ETL/Data/Censo/ (una carpeta por estado)
-    Columnas clave (posición idéntica en todos los CSVs):
-      col[8]  = POBTOT  (población total)
-      col[142]= PEA     (población económicamente activa)
-      col[178]= TVIVHAB (viviendas habitadas)
-    Filtro nivel AGEB: MZA=='000' AND MUN!='000' AND LOC!='0000' AND AGEB!='0000'
-    JOIN con shapefile por: CVEGEO == CVE_ENT+CVE_MUN+CVE_LOC+CVE_AGEB
-
-  Scope: Opción B — 6 estados macrometrópoli (~11,979 AGEBs, ~82 MB)
+  Idempotencia: ON CONFLICT (cve_ageb) DO NOTHING
 
 ------------------------------------------------------
- ETL/load_afluencia.py — Afluencia por línea
+ ETL/DataCharge/LoadAfluencia.py — Afluencia por línea
 ------------------------------------------------------
-Estado: PENDIENTE DE ESCRIBIR
+Estado: IMPLEMENTADO (Issue #39)
+
+Prerequisitos (ejecutar ANTES del ETL):
+  1. psql -f db/migrations/v2.0_afluencia.sql     ← crea tablas
+  2. psql -f db/migrations/seed_catalogo_homologacion.sql  ← carga catálogo
 
 Fuentes de datos:
   ETL/Data/Pesos/
-    afluencia_desglosada_acumulada_2024_07.csv
-    afluencia_desglosada_cb_03_2026.csv   (Cablebús)
-    afluencia_desglosada_tl_03_2026.csv   (Tren Ligero)
-    afluencia_desglosada_trolebus_03_2026.csv
-    afluenciartp_desglosado_03_2026.csv
-    afluencia_diaria_historica.xlsx
-  Requiere catálogo de homologación nombre CSV → linea_id de public.lineas.
+    afluencia_diaria_historica.xlsx           → Fuente principal (todos los sistemas)
+    afluencia_desglosada_cb_03_2026.csv       → Complemento CBB 2026
+    afluencia_desglosada_tl_03_2026.csv       → Complemento TL 2026
+    afluencia_desglosada_trolebus_03_2026.csv → Complemento TROLE 2026
+    afluenciartp_desglosado_03_2026.csv       → Complemento RTP 2026
+    afluencia_desglosada_acumulada_2024_07.csv → NO USAR (global, sin línea)
+
+  Resolución de nombres: plutarco.catalogo_homologacion
+    Mapea nombre_csv heterogéneo → linea_id de public.lineas.
+    Seed estático en db/migrations/seed_catalogo_homologacion.sql
+
+  Idempotencia: ON CONFLICT (linea_id, anio, mes_num) DO NOTHING
+
+
+=====================================================
+ MIGRACIONES — db/migrations/
+=====================================================
+
+Directorio para upgrades de esquema en entornos existentes.
+Los archivos de db/init/ solo se ejecutan en volúmenes nuevos.
+Los de db/migrations/ se ejecutan manualmente con psql -f.
+
+  ARCHIVO                             VERSIÓN   DESCRIPCIÓN
+  -------                             -------   -----------
+  v2.0_afluencia.sql                  v2.0      Tablas afluencia_linea y catalogo_homologacion
+  seed_catalogo_homologacion.sql      v2.0      Datos del catálogo de mapeo CSV→linea_id
+
+  Ejecutar en orden:
+    PGPASSWORD='<ADMIN_PASS>' psql \
+      -h localhost -p 5433 \
+      -U admin_apimetro -d db_apimetro \
+      -v ON_ERROR_STOP=1 \
+      -f db/migrations/v2.0_afluencia.sql
+
+    PGPASSWORD='<ADMIN_PASS>' psql \
+      -h localhost -p 5433 \
+      -U admin_apimetro -d db_apimetro \
+      -v ON_ERROR_STOP=1 \
+      -f db/migrations/seed_catalogo_homologacion.sql
+
+  Todos los archivos son idempotentes (IF NOT EXISTS, ON CONFLICT DO NOTHING).
 
 
 =====================================================

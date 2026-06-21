@@ -192,44 +192,7 @@ CREATE INDEX IF NOT EXISTS idx_ramals_geom ON ramals USING gist (geom);
 
 CREATE INDEX IF NOT EXISTS idx_limites_territoriales_geom ON limites_territoriales USING gist (geom);
 
--- 1. Crear el esquema
-CREATE SCHEMA IF NOT EXISTS plutarco;
-
--- 2. Tabla de AGEBS (Áreas Geoestadísticas Básicas)
--- Polígonos del Marco Geoestadístico Nacional (INEGI) con atributos del Censo 2020.
--- Scope: 6 estados de la macrometrópoli (CDMX=09, EdoMex=15, Morelos=17,
---         Puebla=21, Querétaro=22, Tlaxcala=29).
--- Cve_ageb: CVE_ENT(2)+CVE_MUN(3)+CVE_LOC(4)+CVE_AGEB(4). VARCHAR(20) para margen.
--- Fuente geométrica: shapefiles INEGI (*a.shp). CDMX en WGS84; los demás en
---   ITRF2008/LCC — reproyectados a EPSG:4326 durante el ETL.
--- Cargado por: ETL/load_agebs.py
-CREATE TABLE IF NOT EXISTS plutarco.agebs (
-    id                  SERIAL PRIMARY KEY,
-    cve_ageb            VARCHAR(20) UNIQUE NOT NULL,
-    poblacion_total     INTEGER DEFAULT 0,
-    viviendas_habitadas INTEGER DEFAULT 0,
-    geom                GEOMETRY(MultiPolygon, 4326),
-    created_at          TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    entidad             VARCHAR(2),             -- CVE_ENT (09, 15, 17, 21, 22, 29)
-    municipio_alcaldia  TEXT,                   -- Nombre del municipio/alcaldía
-    area_km2            NUMERIC(10,4),          -- Calculado: ST_Area(geom::geography)/1e6
-    densidad_pob_km2    NUMERIC(12,4),          -- poblacion_total / area_km2
-    pea                 INTEGER,                -- Población Económicamente Activa (Censo 2020)
-    fuente              TEXT DEFAULT 'INEGI Censo 2020'
-);
-
--- 3. Tabla de Calles (Red Vial)
--- Segmentos de líneas para análisis de conectividad
-CREATE TABLE IF NOT EXISTS plutarco.calles (
-    id SERIAL PRIMARY KEY,
-    nombre VARCHAR(255),
-    tipo_vialidad VARCHAR(50), -- Eje vial, Avenida, Calle, Callejón
-    sentido VARCHAR(20), -- Un sentido, ambos sentidos
-    geom GEOMETRY (MultiLineString, 4326), -- Geometría tipo MultiLínea
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 4. Índices Espaciales (Crucial para el rendimiento en GORM)
-CREATE INDEX idx_agebs_geom ON plutarco.agebs USING GIST (geom);
-
-CREATE INDEX idx_calles_geom ON plutarco.calles USING GIST (geom);
+-- =====================================================
+-- NOTA: El DDL del esquema plutarco vive en init_plutarco.sql
+-- (se ejecuta después de este archivo en orden alfabético).
+-- =====================================================

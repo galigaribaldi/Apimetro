@@ -41,14 +41,17 @@ docs/                           <- Copia del Swagger generado
 db/
   init/
     init.sql                    <- DDL esquema public (tablas, indices, PostGIS)
-    init_plutarco.sql           <- DDL esquema plutarco (AGEBs, calles, uso_suelo, curvas_nivel)
+    init_plutarco.sql           <- DDL esquema plutarco (6 tablas: agebs, calles, uso_suelo, curvas_nivel, afluencia_linea, catalogo_homologacion)
     roles.sh                    <- Crea rol apimetro_read (SELECT-only) al iniciar Docker
     seed.sql                    <- Datos (~37MB), NO en git — se genera con scripts/load-seed.sh
+  migrations/
+    v2.0_afluencia.sql          <- Patch para entornos existentes (tablas afluencia)
+    seed_catalogo_homologacion.sql <- Seed del catalogo de mapeo CSV→linea_id
   NOTES.txt                    <- Guia de entornos, tablas, comandos Make, proceso seed
 ETL/
   main.py                      <- Orquestador de cargas ETL
   conf.py                      <- Config DB (usa os.getenv)
-  DataCharge/                   <- Scripts de carga (LoadAgebs.py, LoadPlutarcoGeo.py, etc.)
+  DataCharge/                   <- Scripts de carga (LoadAgebs.py, LoadPlutarcoGeo.py, LoadAfluencia.py)
   Data/                         <- Datos fuente (shapefiles, CSVs) — NO en git
 scripts/
   load-seed.sh                 <- Genera seed.sql local y sube al servidor via SCP
@@ -118,7 +121,7 @@ CRUD /movilidad/:sistema/descripcion-estacion
 
 ### Esquemas
 - **public**: datos de transporte (lineas, ramals, estacions, historico_operacion, limites_territoriales)
-- **plutarco**: datos INEGI para analisis (agebs, calles, uso_suelo, curvas_nivel)
+- **plutarco**: datos INEGI para analisis (agebs, calles, uso_suelo, curvas_nivel, afluencia_linea, catalogo_homologacion)
 
 ### Seguridad
 - Rol `apimetro_read`: SELECT-only sobre esquemas public y plutarco — lo usa la API

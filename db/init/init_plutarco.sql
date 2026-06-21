@@ -130,6 +130,50 @@ CREATE INDEX IF NOT EXISTS idx_curvas_nivel_elevacion ON plutarco.curvas_nivel (
 
 
 -- =====================================================
+-- TABLA: plutarco.afluencia_linea
+-- Afluencia mensual por línea de transporte público
+-- Granularidad: 1 fila = 1 línea × 1 mes × 1 año
+-- Fuente: SEMOVI / organismos operadores (CSVs en ETL/Data/Pesos/)
+-- ETL: DataCharge/LoadAfluencia.py
+-- =====================================================
+CREATE TABLE IF NOT EXISTS plutarco.afluencia_linea (
+    id            SERIAL PRIMARY KEY,
+    linea_id      INTEGER REFERENCES public.lineas(id),
+    sistema       VARCHAR(20) NOT NULL,
+    num_comercial VARCHAR(20),
+    anio          SMALLINT NOT NULL,
+    mes_num       SMALLINT NOT NULL,
+    mes           VARCHAR(20),
+    afluencia     BIGINT NOT NULL,
+    fuente        TEXT,
+    created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(linea_id, anio, mes_num)
+);
+
+CREATE INDEX IF NOT EXISTS idx_afluencia_linea_id ON plutarco.afluencia_linea (linea_id);
+CREATE INDEX IF NOT EXISTS idx_afluencia_anio     ON plutarco.afluencia_linea (anio, mes_num);
+
+
+-- =====================================================
+-- TABLA: plutarco.catalogo_homologacion
+-- Mapeo de nombres de línea en CSVs fuente → linea_id
+-- Permite al ETL de afluencia resolver nombres heterogéneos
+-- (ej. "STC-Línea 1" → linea_id=1, sistema=METRO)
+-- Mantenimiento: manual (seed o INSERT directo)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS plutarco.catalogo_homologacion (
+    id          SERIAL PRIMARY KEY,
+    nombre_csv  TEXT,
+    sistema     VARCHAR(20) NOT NULL,
+    linea_id    INTEGER REFERENCES public.lineas(id),
+    activo      BOOLEAN DEFAULT TRUE,
+    UNIQUE(nombre_csv, sistema)
+);
+
+CREATE INDEX IF NOT EXISTS idx_homologacion_sistema ON plutarco.catalogo_homologacion (sistema);
+
+
+-- =====================================================
 -- PERMISOS — Rol de solo lectura para la API
 -- =====================================================
 GRANT USAGE  ON SCHEMA plutarco TO apimetro_read;
@@ -139,9 +183,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA plutarco
 
 
 -- =====================================================
--- TABLAS PENDIENTES (deuda de datos — v2)
+-- TABLAS PENDIENTES (deuda de datos — v3)
 -- =====================================================
--- plutarco.servicios_area    ← *sia.shp  (falta CDMX)
--- plutarco.afluencia_linea   ← ETL/Data/Pesos/ (Issue #39)
--- plutarco.catalogo_homologacion ← seed manual (Issue #39)
+-- plutarco.servicios_area    ← *sia.shp  (falta CDMX) (Issue #44)
 -- =====================================================
