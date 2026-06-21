@@ -219,5 +219,6 @@ db/init/seed_plutarco.sql
 !cmd/pkg/routes/static/logo.png
 .env.prod
 
-# Archvios temporales de AGEBS
+# Archivos temporales de datos fuente (shapefiles, CSVs pesados)
 ETL/Data/AGEBS/*
+ETL/Data/Pesos/
