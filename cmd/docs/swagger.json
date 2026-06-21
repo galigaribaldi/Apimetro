@@ -16,6 +16,81 @@
     "host": "apimetro.dev",
     "basePath": "/movilidad",
     "paths": {
+        "/analitico/afluencia-estacion": {
+            "get": {
+                "description": "Retorna registros de afluencia mensual por estación desde `plutarco.afluencia_estacion`.\nGranularidad: 1 fila = 1 estación × 1 mes × 1 año.\nSolo sistema Metro (STC) — los demás sistemas no publican datos por estación.\nDatos fuente: STC Metro / datos.cdmx.gob.mx (CC BY 4.0).\nTotal actual: 38,219 registros (195 estaciones, 12 líneas, 2010-2026).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Analítico"
+                ],
+                "summary": "Afluencia mensual por estación del Metro CDMX",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la línea Metro (ref: public.lineas.id)",
+                        "name": "linea_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Número comercial de la línea. Ej: 1, A, L12",
+                        "name": "num_comercial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la estación (ref: public.estacions.id)",
+                        "name": "estacion_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nombre de la estación (búsqueda parcial, ILIKE). Ej: Pantitlán",
+                        "name": "nombre_estacion",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filtrar por año. Ej: 2024",
+                        "name": "anio",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filtrar por mes (1-12). Ej: 3 = Marzo",
+                        "name": "mes_num",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Registros de afluencia encontrados",
+                        "schema": {
+                            "$ref": "#/definitions/models.AfluenciaEstacionResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron registros",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/analitico/afluencia-linea": {
             "get": {
                 "description": "Retorna registros de afluencia mensual por línea desde `plutarco.afluencia_linea`.\nGranularidad: 1 fila = 1 línea × 1 mes × 1 año.\nSistemas disponibles: METRO, MB (Metrobús), CBB (Cablebús), TL (Tren Ligero), TROLE (Trolebús).\nDatos fuente: SEMOVI / organismos operadores.\nTotal actual: 1,197 registros (5 sistemas).",
@@ -1363,6 +1438,66 @@
         }
     },
     "definitions": {
+        "models.AfluenciaEstacion": {
+            "type": "object",
+            "properties": {
+                "afluencia": {
+                    "type": "integer",
+                    "example": 1850000
+                },
+                "anio": {
+                    "type": "integer",
+                    "example": 2024
+                },
+                "estacion_id": {
+                    "type": "integer",
+                    "example": 12001
+                },
+                "fuente": {
+                    "type": "string",
+                    "example": "STC-Metro-DatosAbiertos"
+                },
+                "linea_id": {
+                    "type": "integer",
+                    "example": 191
+                },
+                "mes": {
+                    "type": "string",
+                    "example": "Marzo"
+                },
+                "mes_num": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "nombre_estacion": {
+                    "type": "string",
+                    "example": "Pantitlán"
+                },
+                "nombre_linea": {
+                    "type": "string",
+                    "example": "Metro Línea 1"
+                },
+                "num_comercial": {
+                    "type": "string",
+                    "example": "L1"
+                }
+            }
+        },
+        "models.AfluenciaEstacionResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AfluenciaEstacion"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 500
+                }
+            }
+        },
         "models.AfluenciaLinea": {
             "type": "object",
             "properties": {

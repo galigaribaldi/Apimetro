@@ -58,7 +58,8 @@ func getRoutes() {
 	// Analítico (plutarco) — sin ValidarSistema
 	analitico := api.Group("/analitico")
 	addGeoJsonRouteAgebs(analitico) // #36
-	addAfluenciaRoute(analitico)    // #40
+	addAfluenciaRoute(analitico)         // #40
+	addAfluenciaEstacionRoute(analitico) // #45
 
 	// Arquitectura dinámica dependiendo del sistema de transporte
 	transporte := api.Group("/:sistema")

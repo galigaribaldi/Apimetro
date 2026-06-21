@@ -57,6 +57,16 @@ func getGeoJsonAgebs(c *gin.Context) {
 	featureCollection := GeoJson.SelectGeoJsonAgebs(filtros)
 
 	if len(featureCollection.Features) == 0 {
+		if !GeoJson.PluarcoTableHasData("agebs") {
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"extension":            "plutarco",
+				"activacion_requerida": true,
+				"mensaje":             "Este endpoint requiere activar la extensión Plutarco (AGEBs urbanas).",
+				"guia":                "Ejecuta 'make plutarco-setup' o consulta docs/PLUTARCO_EXTENSION.md",
+				"repositorio":         "https://github.com/galigaribaldi/Apimetro/blob/main/docs/PLUTARCO_EXTENSION.md",
+			})
+			return
+		}
 		c.JSON(http.StatusNotFound, gin.H{
 			"mensaje": "No se encontraron AGEBs para los filtros proporcionados",
 			"data":    featureCollection,

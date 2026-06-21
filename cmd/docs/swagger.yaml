@@ -1,5 +1,48 @@
 basePath: /movilidad
 definitions:
+  models.AfluenciaEstacion:
+    properties:
+      afluencia:
+        example: 1850000
+        type: integer
+      anio:
+        example: 2024
+        type: integer
+      estacion_id:
+        example: 12001
+        type: integer
+      fuente:
+        example: STC-Metro-DatosAbiertos
+        type: string
+      linea_id:
+        example: 191
+        type: integer
+      mes:
+        example: Marzo
+        type: string
+      mes_num:
+        example: 3
+        type: integer
+      nombre_estacion:
+        example: Pantitlán
+        type: string
+      nombre_linea:
+        example: Metro Línea 1
+        type: string
+      num_comercial:
+        example: L1
+        type: string
+    type: object
+  models.AfluenciaEstacionResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.AfluenciaEstacion'
+        type: array
+      total:
+        example: 500
+        type: integer
+    type: object
   models.AfluenciaLinea:
     properties:
       afluencia:
@@ -1029,6 +1072,61 @@ paths:
       summary: Crear Línea de Transporte
       tags:
       - Linea
+  /analitico/afluencia-estacion:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Retorna registros de afluencia mensual por estación desde `plutarco.afluencia_estacion`.
+        Granularidad: 1 fila = 1 estación × 1 mes × 1 año.
+        Solo sistema Metro (STC) — los demás sistemas no publican datos por estación.
+        Datos fuente: STC Metro / datos.cdmx.gob.mx (CC BY 4.0).
+        Total actual: 38,219 registros (195 estaciones, 12 líneas, 2010-2026).
+      parameters:
+      - description: 'ID de la línea Metro (ref: public.lineas.id)'
+        in: query
+        name: linea_id
+        type: integer
+      - description: 'Número comercial de la línea. Ej: 1, A, L12'
+        in: query
+        name: num_comercial
+        type: string
+      - description: 'ID de la estación (ref: public.estacions.id)'
+        in: query
+        name: estacion_id
+        type: integer
+      - description: 'Nombre de la estación (búsqueda parcial, ILIKE). Ej: Pantitlán'
+        in: query
+        name: nombre_estacion
+        type: string
+      - description: 'Filtrar por año. Ej: 2024'
+        in: query
+        name: anio
+        type: integer
+      - description: 'Filtrar por mes (1-12). Ej: 3 = Marzo'
+        in: query
+        name: mes_num
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Registros de afluencia encontrados
+          schema:
+            $ref: '#/definitions/models.AfluenciaEstacionResponse'
+        "404":
+          description: No se encontraron registros
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error interno
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Afluencia mensual por estación del Metro CDMX
+      tags:
+      - Analítico
   /analitico/afluencia-linea:
     get:
       consumes:

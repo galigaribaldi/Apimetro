@@ -584,6 +584,63 @@
             "description": "Retorna registros de afluencia mensual por línea de transporte.\n\nGranularidad: 1 fila = 1 línea × 1 mes × 1 año.\nSistemas disponibles: METRO (204 reg), TROLE (688), MB (119), CBB (118), TL (68) — 1,197 registros totales.\n\n**Respuesta JSON:**\n```json\n{\n  \"total\": 204,\n  \"data\": [\n    {\n      \"linea_id\": 191,\n      \"sistema\": \"METRO\",\n      \"num_comercial\": \"1\",\n      \"nombre_linea\": \"Metro Línea 1\",\n      \"anio\": 2020,\n      \"mes_num\": 3,\n      \"mes\": \"Marzo\",\n      \"afluencia\": 15378080,\n      \"fuente\": \"SEMOVI-Histórico\"\n    }\n  ]\n}\n```\n\n**Campos de respuesta:**\n- `linea_id` — ID interno (FK a public.lineas)\n- `sistema` — METRO, MB, CBB, TL, TROLE\n- `num_comercial` — Número oficial de la línea (ej: \"1\", \"A\", \"L12\")\n- `nombre_linea` — Nombre completo (ej: \"Metro Línea 1\")\n- `anio` — Año del registro\n- `mes_num` — Mes numérico (1-12)\n- `mes` — Nombre del mes en español\n- `afluencia` — Total de viajes en ese mes\n- `fuente` — Origen del dato (SEMOVI-Histórico, SEMOVI-CBB-2026, etc.)\n\nDatos fuente: SEMOVI / organismos operadores. Cobertura: 2020-2026 (varía por sistema)."
           },
           "response": []
+        },
+        {
+          "name": "Afluencia por estación (Metro)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analitico/afluencia-estacion",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analitico",
+                "afluencia-estacion"
+              ],
+              "query": [
+                {
+                  "key": "linea_id",
+                  "value": "191",
+                  "description": "ID de la línea Metro (ref: public.lineas.id). Ej: 191 = Línea 1",
+                  "disabled": true
+                },
+                {
+                  "key": "num_comercial",
+                  "value": "1",
+                  "description": "Número comercial de la línea (match exacto). Ej: 1, A, L12",
+                  "disabled": true
+                },
+                {
+                  "key": "estacion_id",
+                  "value": "12001",
+                  "description": "ID de la estación (ref: public.estacions.id). Ej: 12001 = Bellas Artes",
+                  "disabled": true
+                },
+                {
+                  "key": "nombre_estacion",
+                  "value": "Pantitlán",
+                  "description": "Nombre de la estación (búsqueda parcial, ILIKE). Ej: Pantitlán, Bellas, Chabacano",
+                  "disabled": true
+                },
+                {
+                  "key": "anio",
+                  "value": "2024",
+                  "description": "Filtrar por año. Ej: 2024",
+                  "disabled": true
+                },
+                {
+                  "key": "mes_num",
+                  "value": "3",
+                  "description": "Filtrar por mes (1-12). Ej: 3 = Marzo",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retorna registros de afluencia mensual por estación del Metro CDMX.\n\nGranularidad: 1 fila = 1 estación × 1 mes × 1 año.\nSolo sistema Metro (STC) — los demás sistemas no publican datos por estación.\nCobertura: 195 estaciones, 12 líneas, enero 2010 — abril 2026 (38,219 registros).\n\n**Respuesta JSON:**\n```json\n{\n  \"total\": 38219,\n  \"data\": [\n    {\n      \"estacion_id\": 12001,\n      \"nombre_estacion\": \"Bellas Artes\",\n      \"linea_id\": 191,\n      \"num_comercial\": \"1\",\n      \"nombre_linea\": \"Metro Línea 1\",\n      \"anio\": 2024,\n      \"mes_num\": 3,\n      \"mes\": \"Marzo\",\n      \"afluencia\": 735409,\n      \"fuente\": \"STC-Metro-DatosAbiertos\"\n    }\n  ]\n}\n```\n\n**Campos de respuesta:**\n- `estacion_id` — ID interno (FK a public.estacions)\n- `nombre_estacion` — Nombre de la estación\n- `linea_id` — ID de la línea (FK a public.lineas)\n- `num_comercial` — Número oficial de la línea (ej: \"1\", \"A\", \"L12\")\n- `nombre_linea` — Nombre completo (ej: \"Metro Línea 1\")\n- `anio` — Año del registro\n- `mes_num` — Mes numérico (1-12)\n- `mes` — Nombre del mes en español\n- `afluencia` — Total de viajes en ese mes\n- `fuente` — Siempre \"STC-Metro-DatosAbiertos\"\n\nDatos fuente: STC Metro / datos.cdmx.gob.mx (CC BY 4.0)."
+          },
+          "response": []
         }
       ]
     }

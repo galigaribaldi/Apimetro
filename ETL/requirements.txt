@@ -1,0 +1,8 @@
+# Dependencias Python para ETL de extensión Plutarco
+# Instalar: pip install -r ETL/requirements.txt
+
+pandas>=2.0
+psycopg2-binary>=2.9
+geopandas>=0.14
+shapely>=2.0
+pyogrio>=0.7

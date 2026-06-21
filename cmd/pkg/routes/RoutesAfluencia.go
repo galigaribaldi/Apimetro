@@ -60,6 +60,16 @@ func getAfluenciaLinea(c *gin.Context) {
 	response := GeoJson.SelectAfluenciaLinea(filtros)
 
 	if response.Total == 0 {
+		if !GeoJson.PluarcoTableHasData("afluencia_linea") {
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"extension":            "plutarco",
+				"activacion_requerida": true,
+				"mensaje":             "Este endpoint requiere activar la extensión Plutarco (afluencia por línea).",
+				"guia":                "Ejecuta 'make plutarco-setup' o consulta docs/PLUTARCO_EXTENSION.md",
+				"repositorio":         "https://github.com/galigaribaldi/Apimetro/blob/main/docs/PLUTARCO_EXTENSION.md",
+			})
+			return
+		}
 		c.JSON(http.StatusNotFound, gin.H{
 			"mensaje": "No se encontraron registros de afluencia para los filtros proporcionados",
 			"data":    response,
