@@ -540,6 +540,50 @@
             "description": "Retorna AGEBs (Áreas Geo-Estadísticas Básicas) urbanas en formato GeoJSON FeatureCollection.\n\nCada Feature contiene:\n- Geometría `MultiPolygon` (EPSG:4326)\n- Atributos censales INEGI Censo 2020: población total, viviendas habitadas, PEA, área km², densidad poblacional\n\nScope: 6 estados de la macrometrópoli (CDMX, EdoMex, Morelos, Puebla, Querétaro, Tlaxcala) — 11,787 AGEBs totales.\n\n**Paginación obligatoria** — solicitar en bloques de máximo 1,000. Usar `offset` para iterar.\n\nLlave de unión con otros datos analíticos: `cve_ageb` (VARCHAR 13 chars = CVE_ENT+CVE_MUN+CVE_LOC+CVE_AGEB).\nRelación espacial con estaciones: `ST_DWithin(ageb.geom, estacion.geom, 800m)` — la calcula VFT internamente."
           },
           "response": []
+        },
+        {
+          "name": "Afluencia por línea",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analitico/afluencia-linea?sistema=METRO",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "analitico",
+                "afluencia-linea"
+              ],
+              "query": [
+                {
+                  "key": "sistema",
+                  "value": "METRO",
+                  "description": "Filtrar por sistema: METRO, MB, CBB, TL, TROLE"
+                },
+                {
+                  "key": "linea_id",
+                  "value": "191",
+                  "description": "ID exacto de la línea (ref: public.lineas.id)",
+                  "disabled": true
+                },
+                {
+                  "key": "anio",
+                  "value": "2024",
+                  "description": "Filtrar por año. Ej: 2024",
+                  "disabled": true
+                },
+                {
+                  "key": "mes_num",
+                  "value": "3",
+                  "description": "Filtrar por mes (1-12). Ej: 3 = Marzo",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retorna registros de afluencia mensual por línea de transporte.\n\nGranularidad: 1 fila = 1 línea × 1 mes × 1 año.\nSistemas disponibles: METRO (204 reg), TROLE (688), MB (119), CBB (118), TL (68) — 1,197 registros totales.\n\n**Respuesta JSON:**\n```json\n{\n  \"total\": 204,\n  \"data\": [\n    {\n      \"linea_id\": 191,\n      \"sistema\": \"METRO\",\n      \"num_comercial\": \"1\",\n      \"nombre_linea\": \"Metro Línea 1\",\n      \"anio\": 2020,\n      \"mes_num\": 3,\n      \"mes\": \"Marzo\",\n      \"afluencia\": 15378080,\n      \"fuente\": \"SEMOVI-Histórico\"\n    }\n  ]\n}\n```\n\n**Campos de respuesta:**\n- `linea_id` — ID interno (FK a public.lineas)\n- `sistema` — METRO, MB, CBB, TL, TROLE\n- `num_comercial` — Número oficial de la línea (ej: \"1\", \"A\", \"L12\")\n- `nombre_linea` — Nombre completo (ej: \"Metro Línea 1\")\n- `anio` — Año del registro\n- `mes_num` — Mes numérico (1-12)\n- `mes` — Nombre del mes en español\n- `afluencia` — Total de viajes en ese mes\n- `fuente` — Origen del dato (SEMOVI-Histórico, SEMOVI-CBB-2026, etc.)\n\nDatos fuente: SEMOVI / organismos operadores. Cobertura: 2020-2026 (varía por sistema)."
+          },
+          "response": []
         }
       ]
     }
@@ -547,7 +591,13 @@
   "variable": [
     {
       "key": "base_url",
-      "value": "http://localhost:8080/movilidad"
+      "value": "http://localhost:8080/movilidad",
+      "description": "Desarrollo local (Docker DEV). Cambiar a base_url_prod para producción."
+    },
+    {
+      "key": "base_url_prod",
+      "value": "https://apimetro.dev/movilidad",
+      "description": "Producción. Copiar este valor a base_url para probar contra el servidor live."
     },
     {
       "key": "sistema",

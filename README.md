@@ -54,7 +54,7 @@ curl "https://apimetro.dev/movilidad/metro/linea?existe=true"
 | `MEXIBUS` | Mexibús |
 | `MEXICABLE` | Mexicable |
 | `INTERURBANO` | Tren Interurbano México-Toluca |
-| `CC` | Cable Car |
+| `CC` | Corredor Concesionado |
 | `TODOS` | Todos los sistemas simultáneamente |
 
 ---
@@ -195,6 +195,20 @@ GET  /movilidad/{sistema}/descripcion-linea
 GET  /movilidad/{sistema}/descripcion-estacion
 ```
 
+### Analítico — Datos INEGI y afluencia (esquema Plutarco)
+
+Endpoints del módulo analítico. No requieren parámetro `:sistema` en la ruta.
+
+#### `GET /movilidad/analitico/agebs`
+AGEBs (Áreas Geo-Estadísticas Básicas) urbanas en formato GeoJSON con atributos censales INEGI Censo 2020.
+
+**Parámetros:** `entidad`, `municipio_alcaldia`, `limit` (default 500), `offset`
+
+#### `GET /movilidad/analitico/afluencia-linea`
+Afluencia mensual por línea de transporte público. Respuesta JSON tabular con `total` y `data[]`.
+
+**Parámetros:** `sistema`, `linea_id`, `anio`, `mes_num`
+
 ### Ejemplo de consulta
 
 ```bash
@@ -207,6 +221,76 @@ curl "https://apimetro.dev/movilidad/MB/linea?existe=true"
 # Polígonos de alcaldías de la CDMX
 curl "https://apimetro.dev/movilidad/mapas/geojsonPoligono?entidad=CDMX&nivel=alcaldia"
 ```
+
+---
+
+## Fuentes de Datos — Afluencia
+
+Los datos de afluencia provienen del **Portal de Datos Abiertos de la Ciudad de México** ([datos.cdmx.gob.mx](https://datos.cdmx.gob.mx)), publicados por la **Secretaría de Movilidad (SEMOVI)** y los organismos operadores de transporte.
+
+### Datasets utilizados
+
+| Dataset | Publicador | Cobertura | URL |
+|---------|-----------|-----------|-----|
+| Afluencia preliminar en transporte público (histórico) | SEMOVI | STC Metro, Metrobús, STE (Trolebús, Tren Ligero, Cablebús), RTP — datos diarios 2020-2021 | [datos.cdmx.gob.mx](https://datos.cdmx.gob.mx/dataset/afluencia-preliminar-en-transporte-publico) |
+| Afluencia diaria del Metro CDMX | STC Metro / SEMOVI | Metro por línea y estación, desde enero 2010 | [datos.cdmx.gob.mx](https://datos.cdmx.gob.mx/dataset/afluencia-diaria-del-metro-cdmx) |
+| Afluencia diaria de Metrobús CDMX | SEMOVI | Metrobús por línea, desde julio 2005 | [datos.cdmx.gob.mx](https://datos.cdmx.gob.mx/dataset/afluencia-diaria-de-metrobus-cdmx) |
+| Afluencia diaria Servicio de Transportes Eléctricos | STE / SEMOVI | Cablebús, Tren Ligero y Trolebús (desglosada), desde enero 2022 | [datos.cdmx.gob.mx](https://datos.cdmx.gob.mx/dataset/afluencia-diaria-servicio-de-transportes-electricos) |
+
+### Granularidad disponible en las fuentes
+
+Cada dataset del portal ofrece dos versiones del CSV: **Simple** y **Desglosada**. La diferencia está en el nivel de detalle por tipo de acceso.
+
+| Fuente | Granularidad geográfica | Granularidad temporal | Desglose por tipo de pago |
+|--------|------------------------|----------------------|--------------------------|
+| **Metro (Simple)** | Por **línea y estación** | Diaria | No |
+| **Metro (Desglosada)** | Por **línea y estación** | Diaria | Tarjeta, boleto, gratuidad |
+| **Metrobús (Simple)** | Por **línea** (sin estación) | Diaria | No |
+| **Metrobús (Desglosada)** | Por **línea** (sin estación) | Diaria | Tarjeta, gratuidad |
+| **STE Trolebús** | Por **línea** | Diaria | Boleto, prepago, gratuidad |
+| **STE Cablebús** | Por **línea** | Diaria | Prepago, gratuidad |
+| **STE Tren Ligero** | **Agregado** (sin línea ni estación) | Diaria | Prepago, gratuidad |
+| **Histórico (Excel)** | Por **línea/servicio** (sin estación) | Diaria | Tarjeta, boleto, total |
+
+> **Dato clave para VFT:** Solo el Metro tiene datos a nivel de estación en el portal de datos abiertos. Para los demás sistemas, la afluencia más granular disponible es por línea. Para calcular afluencia por estación en esos sistemas, VFT tendría que distribuir la afluencia de la línea entre sus estaciones usando algún modelo de prorrateo.
+
+### Columnas de los archivos fuente
+
+**Excel histórico** (`afluencia_diaria_historica.xlsx`):
+`id`, `organismo`, `linea_servicio`, `dia`, `fecha`, `afluencia_tarjeta`, `afluencia_boleto`, `afluencia_total_preliminar`
+
+**CSVs complementarios STE** (Cablebús, Trolebús):
+`fecha`, `mes`, `anio`, `linea`, `tipo_pago`, `afluencia`
+
+**CSV Tren Ligero** (sin columna linea — sistema de línea única):
+`fecha`, `mes`, `anio`, `tipo_pago`, `afluencia`
+
+**CSV RTP** (excluido — reporta por servicio, no por línea):
+`fecha`, `mes`, `anio`, `servicio`, `tipo_pago`, `afluencia`
+
+**CSV acumulado Metrobús** (`afluencia_desglosada_acumulada_2024_07.csv` — no utilizado actualmente):
+`anio`, `mes`, `fecha_corte`, `hora`, `genero`, `rango_edad`, `viajes` — contiene datos demográficos (género, rango de edad) y por hora del día, sin desglose por línea ni estación.
+
+### Metodología de procesamiento
+
+1. **Extracción**: Los archivos fuente (Excel y CSVs) se descargan del portal de datos abiertos. El archivo principal (`afluencia_diaria_historica.xlsx`) contiene datos diarios preliminares de todos los sistemas durante la emergencia sanitaria COVID-19 (2020-2021). Los CSVs complementarios contienen datos desglosados por sistema para periodos más recientes (2022-2026).
+
+2. **Transformación**: El ETL (`ETL/DataCharge/LoadAfluencia.py`) agrega los datos diarios a nivel mensual (suma por sistema + línea + año + mes). Los nombres de línea de cada fuente se homologan a un `linea_id` unificado mediante el catálogo `plutarco.catalogo_homologacion` (~151 variantes mapeadas).
+
+3. **Carga**: Los registros mensuales se insertan en `plutarco.afluencia_linea` con idempotencia (`ON CONFLICT DO NOTHING`). Granularidad final: 1 fila = 1 línea x 1 mes x 1 año.
+
+### Cobertura actual
+
+| Sistema | Líneas | Periodo | Registros |
+|---------|--------|---------|-----------|
+| METRO | 12 | 2020-2021 | 204 |
+| TROLE | 12 | 2020-2026 | 688 |
+| MB (Metrobús) | 7 | 2020-2021 | 119 |
+| CBB (Cablebús) | 3 | 2021-2026 | 118 |
+| TL (Tren Ligero) | 1 | 2020-2026 | 68 |
+| **Total** | **35** | **2020-2026** | **1,197** |
+
+> **Nota:** Los datos marcados como "preliminares" por SEMOVI fueron publicados durante la emergencia sanitaria COVID-19 con fines informativos. Los datos definitivos son validados por los organismos operadores mediante un proceso mensual de consolidación. RTP fue excluido porque reporta por tipo de servicio (Ordinario, Expreso, Ecobús), no por línea, lo cual no es compatible con el modelo de datos de Apimetro.
 
 ---
 

@@ -22,6 +22,69 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/analitico/afluencia-linea": {
+            "get": {
+                "description": "Retorna registros de afluencia mensual por línea desde ` + "`" + `plutarco.afluencia_linea` + "`" + `.\nGranularidad: 1 fila = 1 línea × 1 mes × 1 año.\nSistemas disponibles: METRO, MB (Metrobús), CBB (Cablebús), TL (Tren Ligero), TROLE (Trolebús).\nDatos fuente: SEMOVI / organismos operadores.\nTotal actual: 1,197 registros (5 sistemas).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Analítico"
+                ],
+                "summary": "Afluencia mensual por línea de transporte",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filtrar por sistema: METRO, MB, CBB, TL, TROLE",
+                        "name": "sistema",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID exacto de la línea (ref: public.lineas.id)",
+                        "name": "linea_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filtrar por año. Ej: 2024",
+                        "name": "anio",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filtrar por mes (1-12). Ej: 3 = Marzo",
+                        "name": "mes_num",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Registros de afluencia encontrados",
+                        "schema": {
+                            "$ref": "#/definitions/models.AfluenciaLineaResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron registros",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/analitico/agebs": {
             "get": {
                 "description": "Retorna AGEBs (Áreas Geo-Estadísticas Básicas) urbanas en formato GeoJSON (FeatureCollection).\nCada Feature contiene una geometría tipo ` + "`" + `MultiPolygon` + "`" + ` y atributos censales del INEGI Censo 2020:\npoblación total, viviendas habitadas, PEA, área en km² y densidad poblacional.\nScope geográfico: 6 estados de la macrometrópoli (CDMX, EdoMex, Morelos, Puebla, Querétaro, Tlaxcala).\n**Paginación obligatoria** — default: limit=500, offset=0. Máximo recomendado: 1000 por request.",
@@ -1306,6 +1369,62 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.AfluenciaLinea": {
+            "type": "object",
+            "properties": {
+                "afluencia": {
+                    "type": "integer",
+                    "example": 24300000
+                },
+                "anio": {
+                    "type": "integer",
+                    "example": 2025
+                },
+                "fuente": {
+                    "type": "string",
+                    "example": "DGST"
+                },
+                "linea_id": {
+                    "type": "integer",
+                    "example": 191
+                },
+                "mes": {
+                    "type": "string",
+                    "example": "Marzo"
+                },
+                "mes_num": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "nombre_linea": {
+                    "type": "string",
+                    "example": "Metro Línea 1"
+                },
+                "num_comercial": {
+                    "type": "string",
+                    "example": "1"
+                },
+                "sistema": {
+                    "type": "string",
+                    "example": "METRO"
+                }
+            }
+        },
+        "models.AfluenciaLineaResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.AfluenciaLinea"
+                    }
+                },
+                "total": {
+                    "type": "integer",
+                    "example": 150
+                }
+            }
+        },
         "models.DescripcionEstacion": {
             "type": "object",
             "properties": {
