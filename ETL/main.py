@@ -6,6 +6,7 @@ from DataCharge import DataEstacion
 from DataCharge import DataHistorico
 from DataCharge import LoadAgebs
 from DataCharge import LoadPlutarcoGeo
+from DataCharge import LoadAfluencia
 
 def main_etl():
     print("==================================================")
@@ -81,6 +82,17 @@ def main_etl():
         # print("\n--- 6. PROCESANDO CAPAS GEOGRÁFICAS PLUTARCO ---")
         # etl_geo = LoadPlutarcoGeo.PlutarcoGeoETL()
         # etl_geo.run()
+
+        # ----------------------------------------------------
+        # 7. CARGA DE AFLUENCIA POR LÍNEA → plutarco.afluencia_linea
+        # Fuentes: Data/Pesos/ (Excel histórico + CSVs complementarios)
+        # Prerequisitos: v2.0_afluencia.sql + seed_catalogo_homologacion.sql
+        # [PENDIENTE — descomentar cuando tablas y catálogo estén cargados]
+        # Idempotente: ON CONFLICT (linea_id, anio, mes_num) DO NOTHING
+        # ----------------------------------------------------
+        # print("\n--- 7. PROCESANDO AFLUENCIA POR LÍNEA (PLUTARCO) ---")
+        # etl_afluencia = LoadAfluencia.AfluenciaETL()
+        # etl_afluencia.run()
 
         print("\n==================================================")
         print(" ¡PROCESO ETL FINALIZADO (Fase de Validación)! 🥳 ")
