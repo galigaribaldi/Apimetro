@@ -174,6 +174,32 @@ CREATE INDEX IF NOT EXISTS idx_homologacion_sistema ON plutarco.catalogo_homolog
 
 
 -- =====================================================
+-- TABLA: plutarco.afluencia_estacion
+-- Afluencia mensual por estación de Metro
+-- Granularidad: 1 fila = 1 estación × 1 mes × 1 año
+-- Fuente: datos.cdmx.gob.mx — Afluencia Diaria del Metro (Simple)
+-- ETL: DataCharge/LoadAfluenciaEstacion.py
+-- Issue: #45
+-- =====================================================
+CREATE TABLE IF NOT EXISTS plutarco.afluencia_estacion (
+    id            SERIAL PRIMARY KEY,
+    estacion_id   INTEGER REFERENCES public.estacions(id),
+    linea_id      INTEGER REFERENCES public.lineas(id),
+    anio          SMALLINT NOT NULL,
+    mes_num       SMALLINT NOT NULL,
+    mes           VARCHAR(20),
+    afluencia     BIGINT NOT NULL,
+    fuente        TEXT DEFAULT 'STC-Metro-DatosAbiertos',
+    created_at    TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(estacion_id, anio, mes_num)
+);
+
+CREATE INDEX IF NOT EXISTS idx_afluencia_estacion_id    ON plutarco.afluencia_estacion (estacion_id);
+CREATE INDEX IF NOT EXISTS idx_afluencia_estacion_linea ON plutarco.afluencia_estacion (linea_id);
+CREATE INDEX IF NOT EXISTS idx_afluencia_estacion_anio  ON plutarco.afluencia_estacion (anio, mes_num);
+
+
+-- =====================================================
 -- PERMISOS — Rol de solo lectura para la API
 -- =====================================================
 GRANT USAGE  ON SCHEMA plutarco TO apimetro_read;
