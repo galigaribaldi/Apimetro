@@ -186,16 +186,16 @@ cython_debug/
 # VSCODE
 .vscode/settings.json
 
-## Claude Code (settings.local.json se excluye en gitignore global)
-!CLAUDE.md
-!.claude/
-!.claude/settings.json
+## Claude Settings
+CLAUDE.md
+.claude
 
 ## Archivos de entorno (contienen credenciales)
 .env
 .env.dev
 .env.qa
 .env.main
+.env.prod
 
 ## Binarios y temporales de Go/Air
 bin/
@@ -203,7 +203,6 @@ tmp/
 bin/apimetro
 tmp/main
 db/init/seed.sql
-db/init/seed_plutarco.sql
 
 # Binarios compilados en raíz (Go build output)
 /main
@@ -215,10 +214,8 @@ db/init/seed_plutarco.sql
 *.jpg
 *.jpeg
 *.JPEG
-# Excepcion: logo embebido en el binario (go:embed)
-!cmd/pkg/routes/static/logo.png
-.env.prod
 
-# Archivos temporales de datos fuente (shapefiles, CSVs pesados)
+## Extension Plutarco (datos fuente y seed pesado)
 ETL/Data/AGEBS/*
-ETL/Data/Pesos/
+ETL/Data/Pesos/*
+db/init/seed_plutarco.sql
