@@ -195,6 +195,7 @@ CLAUDE.md
 .env.dev
 .env.qa
 .env.main
+.env.prod
 
 ## Binarios y temporales de Go/Air
 bin/
@@ -213,4 +214,8 @@ db/init/seed.sql
 *.jpg
 *.jpeg
 *.JPEG
-.env.prod
+
+## Extension Plutarco (datos fuente y seed pesado)
+ETL/Data/AGEBS/*
+ETL/Data/Pesos/*
+db/init/seed_plutarco.sql

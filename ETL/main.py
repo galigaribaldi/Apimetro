@@ -4,6 +4,9 @@ from DataCharge import DataLinea
 from DataCharge import DataRamal
 from DataCharge import DataEstacion
 from DataCharge import DataHistorico
+from DataCharge import LoadAgebs
+from DataCharge import LoadPlutarcoGeo
+from DataCharge import LoadAfluencia
 
 def main_etl():
     print("==================================================")
@@ -51,18 +54,45 @@ def main_etl():
         """
         # ----------------------------------------------------
         # 4. CARGA DE HISTÓRICOS DE OPERACIÓN (Velocidad y Frecuencia)
+        # [COMPLETADO — comentado para evitar reinserción]
         # ----------------------------------------------------
-        print("\n--- 4. PROCESANDO HISTÓRICOS DE OPERACIÓN ---")
-        etl_historico = DataHistorico.HistoricoOperacionETL()
-        df_trips, df_stop_times, df_shapes = etl_historico.extractGTFS()
-        
-        # Aquí se calculan las métricas y se genera el Excel automáticamente
-        df_historico_final = etl_historico.processOperation(df_trips, df_stop_times, df_shapes)
-        print(f"-> Se calcularon métricas para {len(df_historico_final)} ramales.")
-        
-        # COMENTAMOS LA INYECCIÓN A LA BASE DE DATOS PARA VALIDACIÓN PREVIA
-        etl_historico.chargeHistoricoDB(df_historico_final)
-        #print("-> [PAUSA DE VALIDACIÓN] Carga a BD omitida. Revisa el Excel generado.")
+        # print("\n--- 4. PROCESANDO HISTÓRICOS DE OPERACIÓN ---")
+        # etl_historico = DataHistorico.HistoricoOperacionETL()
+        # df_trips, df_stop_times, df_shapes = etl_historico.extractGTFS()
+        # df_historico_final = etl_historico.processOperation(df_trips, df_stop_times, df_shapes)
+        # print(f"-> Se calcularon métricas para {len(df_historico_final)} ramales.")
+        # etl_historico.chargeHistoricoDB(df_historico_final)
+
+        # ----------------------------------------------------
+        # 5. CARGA DE AGEBs URBANAS + CENSO 2020 → plutarco.agebs
+        # Scope: 6 estados macrometrópoli (09, 15, 17, 21, 22, 29)
+        # [COMPLETADO — comentado para evitar reinserción]
+        # Idempotente si se descomenta: ON CONFLICT (cve_ageb) DO NOTHING
+        # ----------------------------------------------------
+        # print("\n--- 5. PROCESANDO AGEBs URBANAS (PLUTARCO) ---")
+        # etl_agebs = LoadAgebs.AgebsETL()
+        # etl_agebs.run()
+
+        # ----------------------------------------------------
+        # 6. CARGA CAPAS GEO PLUTARCO (calles, uso_suelo, curvas_nivel)
+        # Fuentes: lineas_ejes_de_vialidad.shp + MedioFisicoNatural.gpkg
+        # [COMPLETADO — comentado para evitar re-ejecución]
+        # Re-ejecutable (TRUNCATE + INSERT). Descomenta si necesitas recargar.
+        # ----------------------------------------------------
+        # print("\n--- 6. PROCESANDO CAPAS GEOGRÁFICAS PLUTARCO ---")
+        # etl_geo = LoadPlutarcoGeo.PlutarcoGeoETL()
+        # etl_geo.run()
+
+        # ----------------------------------------------------
+        # 7. CARGA DE AFLUENCIA POR LÍNEA → plutarco.afluencia_linea
+        # Fuentes: Data/Pesos/ (Excel histórico + CSVs complementarios)
+        # Prerequisitos: v2.0_afluencia.sql + seed_catalogo_homologacion.sql
+        # [PENDIENTE — descomentar cuando tablas y catálogo estén cargados]
+        # Idempotente: ON CONFLICT (linea_id, anio, mes_num) DO NOTHING
+        # ----------------------------------------------------
+        # print("\n--- 7. PROCESANDO AFLUENCIA POR LÍNEA (PLUTARCO) ---")
+        # etl_afluencia = LoadAfluencia.AfluenciaETL()
+        # etl_afluencia.run()
 
         print("\n==================================================")
         print(" ¡PROCESO ETL FINALIZADO (Fase de Validación)! 🥳 ")

@@ -17,6 +17,7 @@ var sistemasValidos = map[string]bool{
 	"TL":          true,
 	"TODOS":       true,
 	"MEXIBÚS":     true,
+	"MEXIBUS":     true, // alias sin acento → se normaliza a MEXIBÚS en línea 43
 	"MEXICABLE":   true,
 	"INTERURBANO": true,
 	"CC":          true,
@@ -37,6 +38,10 @@ func ValidarSistema() gin.HandlerFunc {
 				"mensaje": "El sistema'" + sistemaParam + "' no existe",
 			})
 			return
+		}
+		// Normalizar alias sin acento al valor canónico de la DB
+		if sistemaUpper == "MEXIBUS" {
+			sistemaUpper = "MEXIBÚS"
 		}
 		c.Set("sistemaValidado", sistemaUpper)
 		c.Next()
