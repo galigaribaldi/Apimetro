@@ -1,0 +1,75 @@
+version: 2
+updates:
+  # Go modules — runtime principal, expuesto a internet
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "DEV"
+    labels:
+      - "dependencies"
+      - "go"
+    groups:
+      go-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "gorm.io/gorm"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "gorm.io/driver/postgres"
+        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 3
+
+  # Python (ETL) — scripts offline contra la DB
+  - package-ecosystem: "pip"
+    directory: "/ETL"
+    schedule:
+      interval: "monthly"
+    target-branch: "DEV"
+    labels:
+      - "dependencies"
+      - "python"
+    open-pull-requests-limit: 3
+
+  # Docker — imagenes base (postgis/postgis, golang, node)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    target-branch: "DEV"
+    labels:
+      - "dependencies"
+      - "docker"
+    open-pull-requests-limit: 2
+
+  # npm (frontend) — visor interactivo MapLibre
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "weekly"
+    target-branch: "DEV"
+    labels:
+      - "dependencies"
+      - "frontend"
+    groups:
+      npm-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    open-pull-requests-limit: 3
+
+  # GitHub Actions — CI/CD workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    target-branch: "DEV"
+    labels:
+      - "dependencies"
+      - "ci"
+    open-pull-requests-limit: 2
