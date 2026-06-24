@@ -1124,6 +1124,11 @@ paths:
           schema:
             additionalProperties: true
             type: object
+        "503":
+          description: Extensión Plutarco no activada — ejecutar make plutarco-setup
+          schema:
+            additionalProperties: true
+            type: object
       summary: Afluencia mensual por estación del Metro CDMX
       tags:
       - Analítico
@@ -1168,6 +1173,11 @@ paths:
             type: object
         "500":
           description: Error interno
+          schema:
+            additionalProperties: true
+            type: object
+        "503":
+          description: Extensión Plutarco no activada — ejecutar make plutarco-setup
           schema:
             additionalProperties: true
             type: object
@@ -1217,6 +1227,11 @@ paths:
             type: object
         "500":
           description: Error interno del servidor al ejecutar la consulta espacial
+          schema:
+            additionalProperties: true
+            type: object
+        "503":
+          description: Extensión Plutarco no activada — ejecutar make plutarco-setup
           schema:
             additionalProperties: true
             type: object

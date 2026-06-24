@@ -31,6 +31,7 @@ func addGeoJsonRouteAgebs(rg *gin.RouterGroup) {
 //	@Success		200					{object}	models.FeatureCollection	"FeatureCollection con AGEBs encontradas"
 //	@Failure		404					{object}	map[string]interface{}		"No se encontraron AGEBs con los filtros proporcionados"
 //	@Failure		500					{object}	map[string]interface{}		"Error interno del servidor al ejecutar la consulta espacial"
+//	@Failure		503					{object}	map[string]interface{}		"Extensión Plutarco no activada — ejecutar make plutarco-setup"
 //	@Router			/analitico/agebs [get]
 func getGeoJsonAgebs(c *gin.Context) {
 	filtros := make(map[string]interface{})

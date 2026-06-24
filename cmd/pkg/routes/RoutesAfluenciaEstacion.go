@@ -33,6 +33,7 @@ func addAfluenciaEstacionRoute(rg *gin.RouterGroup) {
 //	@Success		200			{object}	models.AfluenciaEstacionResponse	"Registros de afluencia encontrados"
 //	@Failure		404			{object}	map[string]interface{}				"No se encontraron registros"
 //	@Failure		500			{object}	map[string]interface{}				"Error interno"
+//	@Failure		503			{object}	map[string]interface{}				"Extensión Plutarco no activada — ejecutar make plutarco-setup"
 //	@Router			/analitico/afluencia-estacion [get]
 func getAfluenciaEstacion(c *gin.Context) {
 	filtros := make(map[string]interface{})

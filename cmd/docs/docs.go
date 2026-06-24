@@ -93,6 +93,13 @@ const docTemplate = `{
                             "type": "object",
                             "additionalProperties": true
                         }
+                    },
+                    "503": {
+                        "description": "Extensión Plutarco no activada — ejecutar make plutarco-setup",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
                     }
                 }
             }
@@ -156,6 +163,13 @@ const docTemplate = `{
                             "type": "object",
                             "additionalProperties": true
                         }
+                    },
+                    "503": {
+                        "description": "Extensión Plutarco no activada — ejecutar make plutarco-setup",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
                     }
                 }
             }
@@ -215,6 +229,13 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Error interno del servidor al ejecutar la consulta espacial",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "503": {
+                        "description": "Extensión Plutarco no activada — ejecutar make plutarco-setup",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
