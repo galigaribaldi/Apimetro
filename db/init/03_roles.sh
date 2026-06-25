@@ -1,7 +1,7 @@
 #!/bin/bash
 # =====================================================
 # roles.sh — Creación del rol de solo lectura para la API
-# Se ejecuta DESPUÉS de init.sql (orden alfabético: i < r)
+# Se ejecuta DESPUÉS de 01_init.sql y 02_init_plutarco.sql (orden numérico)
 # Variables requeridas en el contenedor:
 #   POSTGRES_USER, POSTGRES_DB, API_DB_PASSWORD
 # =====================================================

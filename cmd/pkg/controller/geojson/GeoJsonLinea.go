@@ -15,12 +15,13 @@ func SelectGeoJsonLineaConFiltros(filtros map[string]interface{}) modelsGeojson.
 
 	query := con.DB.Table("lineas").
 		Select(`
-			lineas.nombre AS nombre_linea, 
-			lineas.sistema, 
-			lineas.num_comercial, 
-			lineas.color_esp, 
-			lineas.tam_km, 
-			ramals.nombre_ramal, 
+			lineas.id AS linea_id,
+			lineas.nombre AS nombre_linea,
+			lineas.sistema,
+			lineas.num_comercial,
+			lineas.color_esp,
+			lineas.tam_km,
+			ramals.nombre_ramal,
 			ramals.ramal_num AS sentido,
 			ST_AsGeoJSON(ST_Multi(ST_Union(ramals.geom))) AS mapa,
 			ST_Length(ST_Union(ramals.geom)::geography) AS distancia_metros,
@@ -39,16 +40,17 @@ func SelectGeoJsonLineaConFiltros(filtros map[string]interface{}) modelsGeojson.
 		) h ON ramals.id = h.ramal_id`).
 		Where("ramals.geom IS NOT NULL").
 		Group(`
-			lineas.nombre, 
-			lineas.sistema, 
+			lineas.id,
+			lineas.nombre,
+			lineas.sistema,
 			lineas.num_comercial,
-			lineas.color_esp, 
-			lineas.tam_km, 
-			ramals.nombre_ramal, 
+			lineas.color_esp,
+			lineas.tam_km,
+			ramals.nombre_ramal,
 			ramals.ramal_num,
-			lineas.derecho_de_via, 
-			lineas.capacidad_vehiculo, 
-			h.velocidad_promedio_kmh, 
+			lineas.derecho_de_via,
+			lineas.capacidad_vehiculo,
+			h.velocidad_promedio_kmh,
 			h.frecuencia_minutos,
 			h.fuente,
 			lineas.jerarquia_transporte
@@ -107,8 +109,6 @@ func SelectGeoJsonLineaConFiltros(filtros map[string]interface{}) modelsGeojson.
 	//     // Implementar consulta espacial para encontrar líneas dentro de 250m de un cetram
 	// }
 
-	query = query.Group("lineas.nombre, lineas.sistema, lineas.color_esp, lineas.tam_km, ramals.nombre_ramal")
-
 	if result := query.Scan(&resultados); result.Error != nil {
 		log.Println("Error obteniendo GeoJson de líneas", result.Error)
 		return modelsGeojson.FeatureCollection{}
@@ -128,6 +128,7 @@ func SelectGeoJsonLineaConFiltros(filtros map[string]interface{}) modelsGeojson.
 		}
 
 		propertys := map[string]interface{}{
+			"linea_id":               row.LineaID,
 			"nombre_linea":           row.NombreLinea,
 			"sistema":                row.Sistema,
 			"color_esp":              row.ColorEsp,

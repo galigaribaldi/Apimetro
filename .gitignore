@@ -195,13 +195,14 @@ CLAUDE.md
 .env.dev
 .env.qa
 .env.main
+.env.prod
 
 ## Binarios y temporales de Go/Air
 bin/
 tmp/
 bin/apimetro
 tmp/main
-db/init/seed.sql
+db/init/04_seed.sql
 
 # Binarios compilados en raíz (Go build output)
 /main
@@ -213,4 +214,8 @@ db/init/seed.sql
 *.jpg
 *.jpeg
 *.JPEG
-.env.prod
+
+## Extension Plutarco (datos fuente y seed pesado)
+ETL/Data/AGEBS/*
+ETL/Data/Pesos/*
+db/init/05_seed_plutarco.sql

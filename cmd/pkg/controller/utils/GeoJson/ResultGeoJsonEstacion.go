@@ -10,4 +10,5 @@ type ResultGeoJsonEstacion struct {
 	JerarquiaTransporte *string `gorm:"column:jerarquia_transporte"`
 	EsCetram            bool
 	NombreCetram        *string
+	LineaID             int    `gorm:"column:linea_id"`
 }
