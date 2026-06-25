@@ -61,10 +61,11 @@ func buildDSN() string {
 	pass := getEnv("DB_PASSWORD", "postgres")
 	name := getEnv("DB_NAME", "db_apimetro")
 	u := &url.URL{
-		Scheme: "postgresql",
-		User:   url.UserPassword(user, pass),
-		Host:   fmt.Sprintf("%s:%s", host, port),
-		Path:   name,
+		Scheme:   "postgresql",
+		User:     url.UserPassword(user, pass),
+		Host:     fmt.Sprintf("%s:%s", host, port),
+		Path:     name,
+		RawQuery: "sslmode=disable",
 	}
 	return u.String()
 }

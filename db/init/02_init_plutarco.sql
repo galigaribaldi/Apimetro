@@ -200,12 +200,8 @@ CREATE INDEX IF NOT EXISTS idx_afluencia_estacion_anio  ON plutarco.afluencia_es
 
 
 -- =====================================================
--- PERMISOS — Rol de solo lectura para la API
+-- PERMISOS — Se configuran en 03_roles.sh (el rol aún no existe aquí)
 -- =====================================================
-GRANT USAGE  ON SCHEMA plutarco TO apimetro_read;
-GRANT SELECT ON ALL TABLES IN SCHEMA plutarco TO apimetro_read;
-ALTER DEFAULT PRIVILEGES IN SCHEMA plutarco
-    GRANT SELECT ON TABLES TO apimetro_read;
 
 
 -- =====================================================

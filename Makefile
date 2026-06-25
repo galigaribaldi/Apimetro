@@ -42,17 +42,17 @@ clean:
 # Asegura que roles.sh sea ejecutable antes de montar en Docker
 docker-dev: docs
 	@echo "Levantando entorno DEV (API :8080 | DB :5433)..."
-	chmod +x db/init/roles.sh
+	chmod +x db/init/03_roles.sh
 	docker compose --profile dev --env-file $(SECRETS_DIR)/.env.dev up --build
 
 docker-qa: docs
 	@echo "Levantando entorno QA (API :8081 | DB :5434)..."
-	chmod +x db/init/roles.sh
+	chmod +x db/init/03_roles.sh
 	docker compose --profile qa --env-file $(SECRETS_DIR)/.env.qa up --build
 
 docker-main: docs
 	@echo "Levantando entorno MAIN (API :8082 | DB :5435)..."
-	chmod +x db/init/roles.sh
+	chmod +x db/init/03_roles.sh
 	docker compose --profile main --env-file $(SECRETS_DIR)/.env.main up --build -d
 
 # Bajar contenedores de un entorno específico
@@ -78,7 +78,7 @@ db-sync:
 		--exclude-table=ramales_backup \
 		--exclude-table=spatial_ref_sys \
 		-h localhost -p 5432 -U prueba db_apimetro \
-		> db/init/init.sql
+		> db/init/01_init.sql
 	@echo "init.sql actualizado. Revisa y ajusta el archivo antes de usarlo con Docker."
 
 # ==========================================
@@ -125,7 +125,7 @@ plutarco-setup: plutarco-deps
 	@echo "=== Aplicando migraciones plutarco ==="
 	docker exec apimetro_db_dev psql -U $$(grep POSTGRES_USER $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
 		-d $$(grep DB_NAME $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
-		-f /docker-entrypoint-initdb.d/init_plutarco.sql
+		-f /docker-entrypoint-initdb.d/02_init_plutarco.sql
 	@echo ""
 	@echo "=== Cargando seed del catálogo de homologación ==="
 	docker cp db/migrations/seed_catalogo_homologacion.sql apimetro_db_dev:/tmp/seed_cat.sql

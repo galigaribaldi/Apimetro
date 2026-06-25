@@ -40,10 +40,10 @@ cmd/
 docs/                           <- Copia del Swagger generado
 db/
   init/
-    init.sql                    <- DDL esquema public (tablas, indices, PostGIS)
-    init_plutarco.sql           <- DDL esquema plutarco (6 tablas: agebs, calles, uso_suelo, curvas_nivel, afluencia_linea, catalogo_homologacion)
-    roles.sh                    <- Crea rol apimetro_read (SELECT-only) al iniciar Docker
-    seed.sql                    <- Datos (~37MB), NO en git — se genera con scripts/load-seed.sh
+    01_init.sql                 <- DDL esquema public (tablas, indices, PostGIS)
+    02_init_plutarco.sql        <- DDL esquema plutarco (6 tablas: agebs, calles, uso_suelo, curvas_nivel, afluencia_linea, catalogo_homologacion)
+    03_roles.sh                 <- Crea rol apimetro_read (SELECT-only) al iniciar Docker
+    04_seed.sql                 <- Datos (~37MB), NO en git — se genera con scripts/load-seed.sh
   migrations/
     v2.0_afluencia.sql          <- Patch para entornos existentes (tablas afluencia)
     seed_catalogo_homologacion.sql <- Seed del catalogo de mapeo CSV→linea_id

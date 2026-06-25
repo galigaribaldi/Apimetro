@@ -202,7 +202,7 @@ bin/
 tmp/
 bin/apimetro
 tmp/main
-db/init/seed.sql
+db/init/04_seed.sql
 
 # Binarios compilados en raíz (Go build output)
 /main
@@ -218,4 +218,4 @@ db/init/seed.sql
 ## Extension Plutarco (datos fuente y seed pesado)
 ETL/Data/AGEBS/*
 ETL/Data/Pesos/*
-db/init/seed_plutarco.sql
+db/init/05_seed_plutarco.sql

@@ -29,7 +29,7 @@ DB_LOCAL_PORT="${DB_PORT:-5432}"
 DB_LOCAL_USER="${DB_USER:-prueba}"
 DB_LOCAL_PASS="${DB_PASSWORD:-postgres}"
 DB_LOCAL_NAME="${DB_NAME:-db_apimetro}"
-SEED_FILE="db/init/seed.sql"
+SEED_FILE="db/init/04_seed.sql"
 
 echo "======================================================"
 echo " Apimetro — Carga de seed.sql en producción"

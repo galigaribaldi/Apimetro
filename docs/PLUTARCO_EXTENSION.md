@@ -66,12 +66,12 @@ Descargar shapefiles de entidades: 09 (CDMX), 15 (EdoMex), 17 (Morelos), 21 (Pue
 
 ### Paso 3: Ejecutar migraciones DDL
 
-Si es una instalación fresca con Docker, las tablas se crean automáticamente via `init_plutarco.sql`. Para entornos existentes:
+Si es una instalación fresca con Docker, las tablas se crean automáticamente via `02_init_plutarco.sql`. Para entornos existentes:
 
 ```bash
 # Aplicar migración de afluencia por línea
 docker exec apimetro_db_dev psql -U admin_apimetro -d db_apimetro \
-    -f /docker-entrypoint-initdb.d/init_plutarco.sql
+    -f /docker-entrypoint-initdb.d/02_init_plutarco.sql
 
 # Cargar catálogo de homologación
 docker cp db/migrations/seed_catalogo_homologacion.sql apimetro_db_dev:/tmp/seed_cat.sql

@@ -312,9 +312,11 @@ Apimetro/
 │       └── routes/                    # Handlers HTTP + anotaciones Swagger
 ├── db/
 │   ├── init/
-│   │   ├── init.sql                   # DDL completo (tablas, índices, esquemas)
-│   │   ├── roles.sh                   # Creación del rol apimetro_read
-│   │   └── seed.sql                   # Datos de transporte (no incluido en git)
+│   │   ├── 01_init.sql                # DDL completo (tablas, índices, esquemas)
+│   │   ├── 02_init_plutarco.sql       # DDL esquema plutarco (analíticos)
+│   │   ├── 03_roles.sh                # Creación del rol apimetro_read
+│   │   ├── 04_seed.sql                # Datos de transporte (no incluido en git)
+│   │   └── 05_seed_plutarco.sql       # Datos plutarco (no incluido en git)
 │   └── NOTES.txt                      # Guía de comandos y operaciones de DB
 ├── .env.dev                           # Variables de entorno DEV (no en git)
 ├── .env.qa                            # Variables de entorno QA (no en git)
@@ -340,7 +342,7 @@ Apimetro/
 | `DATABASE_URL` | DSN completo (sobreescribe los anteriores) | `postgresql://user:pass@host/db` — la contraseña debe estar URL-encoded si contiene `/`, `+` o `=` |
 | `GIN_MODE` | Modo del servidor Gin | `debug` / `release` |
 
-> En desarrollo local sin Docker, si `DB_HOST` está vacío o es `localhost`, la API ejecutará `AutoMigrate` de GORM automáticamente. En Docker, el esquema es gestionado por `db/init/init.sql`.
+> En desarrollo local sin Docker, si `DB_HOST` está vacío o es `localhost`, la API ejecutará `AutoMigrate` de GORM automáticamente. En Docker, el esquema es gestionado por `db/init/01_init.sql`.
 
 ---
 
