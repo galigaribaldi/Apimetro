@@ -328,7 +328,6 @@ definitions:
 externalDocs:
   description: Github
   url: https://github.com/galigaribaldi/Apimetro
-host: apimetro.dev
 info:
   contact:
     email: galigaribaldi0@gmail.com
