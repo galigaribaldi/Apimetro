@@ -21,7 +21,7 @@ import (
 //	@license.name	Business Source License 1.1
 //	@license.url	https://github.com/galigaribaldi/Apimetro/blob/main/LICENSE
 
-//	@host		apimetro.dev
+//	@host
 //	@BasePath	/movilidad
 
 //	@securityDefinitions.basic	BasicAuth

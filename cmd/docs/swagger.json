@@ -13,7 +13,6 @@
         },
         "version": "1.0"
     },
-    "host": "apimetro.dev",
     "basePath": "/movilidad",
     "paths": {
         "/analitico/afluencia-estacion": {

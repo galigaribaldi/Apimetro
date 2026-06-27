@@ -1930,7 +1930,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "apimetro.dev",
+	Host:             "",
 	BasePath:         "/movilidad",
 	Schemes:          []string{},
 	Title:            "Apimetro — API de Movilidad CDMX",
