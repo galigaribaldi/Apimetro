@@ -647,16 +647,6 @@
   ],
   "variable": [
     {
-      "key": "base_url",
-      "value": "http://localhost:8080/movilidad",
-      "description": "Desarrollo local (Docker DEV). Cambiar a base_url_prod para producción."
-    },
-    {
-      "key": "base_url_prod",
-      "value": "https://apimetro.dev/movilidad",
-      "description": "Producción. Copiar este valor a base_url para probar contra el servidor live."
-    },
-    {
       "key": "sistema",
       "value": "metro",
       "description": "Sistemas válidos: metro, metrobus, rtp, cablebus, trenligero, trolebus, concesionado, mexibus, mexicable"

@@ -21,7 +21,7 @@ import (
 //	@license.name	Business Source License 1.1
 //	@license.url	https://github.com/galigaribaldi/Apimetro/blob/main/LICENSE
 
-//	@host		apimetro.dev
+// Host omitido: Swagger UI usa la URL del navegador (funciona en local y prod)
 //	@BasePath	/movilidad
 
 //	@securityDefinitions.basic	BasicAuth
