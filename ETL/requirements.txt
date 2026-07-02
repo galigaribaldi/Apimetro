@@ -3,6 +3,6 @@
 
 pandas>=2.0
 psycopg2-binary>=2.9
-geopandas>=0.14
+geopandas>=1.1.3
 shapely>=2.0
 pyogrio>=0.7
