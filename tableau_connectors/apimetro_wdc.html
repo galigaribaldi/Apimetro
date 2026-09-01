@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Apimetro — Conector Tableau</title>
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f4f5f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      padding: 32px;
+      width: 100%;
+      max-width: 480px;
+    }
+    .logo { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+    .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 24px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+    input[type="text"] {
+      width: 100%; padding: 9px 12px; border: 1px solid #d1d5db;
+      border-radius: 6px; font-size: 14px; color: #111827; margin-bottom: 20px;
+    }
+    input[type="text"]:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    .tables-label { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 10px; }
+    .table-option {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px;
+      margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s;
+    }
+    .table-option:hover { border-color: #3b82f6; }
+    .table-option input[type="checkbox"] { margin-top: 2px; accent-color: #3b82f6; width: 16px; height: 16px; cursor: pointer; }
+    .table-option .name { font-size: 14px; font-weight: 600; color: #111827; }
+    .table-option .desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .btn {
+      width: 100%; padding: 11px; background: #1a1a2e; color: white;
+      border: none; border-radius: 6px; font-size: 15px; font-weight: 600;
+      cursor: pointer; margin-top: 20px; transition: background 0.15s;
+    }
+    .btn:hover { background: #2d2d4e; }
+    .btn:disabled { background: #9ca3af; cursor: not-allowed; }
+    #status { font-size: 13px; color: #ef4444; margin-top: 12px; min-height: 20px; }
+  </style>
+  <script src="https://connectors.tableau.com/libs/tableauwdc-2.3.latest.js"></script>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">Apimetro</div>
+  <div class="subtitle">Conector Tableau — Red de Transporte CDMX y ZMVM</div>
+
+  <label for="baseUrl">URL base de Apimetro</label>
+  <input type="text" id="baseUrl" value="http://localhost:8080" placeholder="http://localhost:8080" />
+
+  <div class="tables-label">Tablas a cargar</div>
+
+  <label class="table-option">
+    <input type="checkbox" id="chk_afluencia_linea" checked />
+    <div>
+      <div class="name">afluencia_linea</div>
+      <div class="desc">Afluencia mensual por línea — CBB, MB, METRO, TL, TROLE (1,197 registros)</div>
+    </div>
+  </label>
+
+  <label class="table-option">
+    <input type="checkbox" id="chk_afluencia_estacion" checked />
+    <div>
+      <div class="name">afluencia_estacion</div>
+      <div class="desc">Afluencia mensual por estación Metro CDMX 2010-2026 (38,219 registros)</div>
+    </div>
+  </label>
+
+  <label class="table-option">
+    <input type="checkbox" id="chk_estaciones" checked />
+    <div>
+      <div class="name">estaciones</div>
+      <div class="desc">Estaciones de todos los sistemas con lat/lon para mapas en Tableau</div>
+    </div>
+  </label>
+
+  <button class="btn" id="btnConnect">Obtener datos</button>
+  <div id="status"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var connector = tableau.makeConnector();
+
+  connector.getSchema = function (schemaCallback) {
+    var cfg = JSON.parse(tableau.connectionData);
+    var tables = cfg.tables;
+    var defs = [];
+
+    if (tables.afluencia_linea) {
+      defs.push({
+        id: "afluencia_linea",
+        alias: "Afluencia mensual por línea",
+        columns: [
+          { id: "linea_id",      alias: "ID Línea",        dataType: tableau.dataTypeEnum.int },
+          { id: "sistema",       alias: "Sistema",         dataType: tableau.dataTypeEnum.string },
+          { id: "num_comercial", alias: "Núm. Comercial",  dataType: tableau.dataTypeEnum.string },
+          { id: "nombre_linea",  alias: "Nombre Línea",    dataType: tableau.dataTypeEnum.string },
+          { id: "anio",          alias: "Año",             dataType: tableau.dataTypeEnum.int },
+          { id: "mes_num",       alias: "Mes (número)",    dataType: tableau.dataTypeEnum.int },
+          { id: "mes",           alias: "Mes",             dataType: tableau.dataTypeEnum.string },
+          { id: "afluencia",     alias: "Afluencia",       dataType: tableau.dataTypeEnum.int },
+          { id: "fuente",        alias: "Fuente",          dataType: tableau.dataTypeEnum.string }
+        ]
+      });
+    }
+
+    if (tables.afluencia_estacion) {
+      defs.push({
+        id: "afluencia_estacion",
+        alias: "Afluencia mensual por estación (Metro CDMX)",
+        columns: [
+          { id: "estacion_id",     alias: "ID Estación",     dataType: tableau.dataTypeEnum.int },
+          { id: "nombre_estacion", alias: "Estación",        dataType: tableau.dataTypeEnum.string },
+          { id: "linea_id",        alias: "ID Línea",        dataType: tableau.dataTypeEnum.int },
+          { id: "num_comercial",   alias: "Línea",           dataType: tableau.dataTypeEnum.string },
+          { id: "nombre_linea",    alias: "Nombre Línea",    dataType: tableau.dataTypeEnum.string },
+          { id: "anio",            alias: "Año",             dataType: tableau.dataTypeEnum.int },
+          { id: "mes_num",         alias: "Mes (número)",    dataType: tableau.dataTypeEnum.int },
+          { id: "mes",             alias: "Mes",             dataType: tableau.dataTypeEnum.string },
+          { id: "afluencia",       alias: "Afluencia",       dataType: tableau.dataTypeEnum.int },
+          { id: "fuente",          alias: "Fuente",          dataType: tableau.dataTypeEnum.string }
+        ]
+      });
+    }
+
+    if (tables.estaciones) {
+      defs.push({
+        id: "estaciones",
+        alias: "Estaciones — puntos geográficos",
+        columns: [
+          { id: "nombre",               alias: "Nombre",               dataType: tableau.dataTypeEnum.string },
+          { id: "sistema",              alias: "Sistema",              dataType: tableau.dataTypeEnum.string },
+          { id: "linea_id",             alias: "ID Línea",             dataType: tableau.dataTypeEnum.int },
+          { id: "num_comercial",        alias: "Línea",                dataType: tableau.dataTypeEnum.string },
+          { id: "tipo",                 alias: "Tipo",                 dataType: tableau.dataTypeEnum.string },
+          { id: "alcaldia_municipio",   alias: "Alcaldía/Municipio",   dataType: tableau.dataTypeEnum.string },
+          { id: "jerarquia_transporte", alias: "Jerarquía Transporte", dataType: tableau.dataTypeEnum.string },
+          { id: "es_cetram",            alias: "Es CETRAM",            dataType: tableau.dataTypeEnum.bool },
+          { id: "lat",                  alias: "Latitud",              dataType: tableau.dataTypeEnum.float },
+          { id: "lon",                  alias: "Longitud",             dataType: tableau.dataTypeEnum.float }
+        ]
+      });
+    }
+
+    schemaCallback(defs);
+  };
+
+  connector.getData = function (table, doneCallback) {
+    var cfg  = JSON.parse(tableau.connectionData);
+    var base = cfg.baseUrl.replace(/\/$/, "");
+    var id   = table.tableInfo.id;
+    var url;
+
+    if (id === "afluencia_linea") {
+      url = base + "/movilidad/analitico/afluencia-linea";
+    } else if (id === "afluencia_estacion") {
+      url = base + "/movilidad/analitico/afluencia-estacion";
+    } else if (id === "estaciones") {
+      url = base + "/movilidad/mapas/geojsonEstacion";
+    } else {
+      doneCallback();
+      return;
+    }
+
+    fetch(url)
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function (json) {
+        var rows = [];
+
+        if (id === "afluencia_linea") {
+          rows = (json.data || []).map(function (r) {
+            return {
+              linea_id:      r.linea_id,
+              sistema:       r.sistema,
+              num_comercial: r.num_comercial,
+              nombre_linea:  r.nombre_linea,
+              anio:          r.anio,
+              mes_num:       r.mes_num,
+              mes:           r.mes,
+              afluencia:     r.afluencia,
+              fuente:        r.fuente
+            };
+          });
+
+        } else if (id === "afluencia_estacion") {
+          rows = (json.data || []).map(function (r) {
+            return {
+              estacion_id:     r.estacion_id,
+              nombre_estacion: r.nombre_estacion,
+              linea_id:        r.linea_id,
+              num_comercial:   r.num_comercial,
+              nombre_linea:    r.nombre_linea,
+              anio:            r.anio,
+              mes_num:         r.mes_num,
+              mes:             r.mes,
+              afluencia:       r.afluencia,
+              fuente:          r.fuente
+            };
+          });
+
+        } else if (id === "estaciones") {
+          rows = (json.features || [])
+            .filter(function (f) { return f.geometry && f.geometry.type === "Point"; })
+            .map(function (f) {
+              var p = f.properties;
+              var c = f.geometry.coordinates; // GeoJSON: [lon, lat]
+              return {
+                nombre:               p.nombre               || "",
+                sistema:              p.sistema              || "",
+                linea_id:             p.linea_id             || 0,
+                num_comercial:        p.num_comercial        || "",
+                tipo:                 p.tipo                 || "",
+                alcaldia_municipio:   p.alcaldia_municipio   || "",
+                jerarquia_transporte: p.jerarquia_transporte || "",
+                es_cetram:            p.es_cetram            || false,
+                lat:                  c[1],
+                lon:                  c[0]
+              };
+            });
+        }
+
+        table.appendRows(rows);
+        doneCallback();
+      })
+      .catch(function (err) {
+        tableau.abortWithError("Error al obtener " + id + ": " + err.message);
+      });
+  };
+
+  tableau.registerConnector(connector);
+
+  // UI — fase interactiva
+  document.getElementById("btnConnect").addEventListener("click", function () {
+    var baseUrl = document.getElementById("baseUrl").value.trim();
+    var status  = document.getElementById("status");
+
+    if (!baseUrl) {
+      status.textContent = "Ingresa la URL base de Apimetro.";
+      return;
+    }
+
+    var tables = {
+      afluencia_linea:    document.getElementById("chk_afluencia_linea").checked,
+      afluencia_estacion: document.getElementById("chk_afluencia_estacion").checked,
+      estaciones:         document.getElementById("chk_estaciones").checked
+    };
+
+    if (!tables.afluencia_linea && !tables.afluencia_estacion && !tables.estaciones) {
+      status.textContent = "Selecciona al menos una tabla.";
+      return;
+    }
+
+    status.textContent = "";
+    document.getElementById("btnConnect").disabled = true;
+
+    // Verificar que Apimetro responde antes de enviar a Tableau
+    fetch(baseUrl.replace(/\/$/, "") + "/movilidad/analitico/afluencia-linea?mes_num=1&anio=2021")
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function () {
+        tableau.connectionName = "Apimetro — " + baseUrl;
+        tableau.connectionData = JSON.stringify({ baseUrl: baseUrl, tables: tables });
+        tableau.submit();
+      })
+      .catch(function (err) {
+        status.textContent = "No se pudo conectar a Apimetro: " + err.message;
+        document.getElementById("btnConnect").disabled = false;
+      });
+  });
+
+}());
+</script>
+</body>
+</html>
