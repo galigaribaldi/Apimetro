@@ -6,3 +6,4 @@ psycopg2-binary>=2.9
 geopandas>=0.14
 shapely>=2.0
 pyogrio>=0.7
+openpyxl>=3.1

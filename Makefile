@@ -109,12 +109,18 @@ plutarco-deps:
 plutarco-etl:
 	@echo "=== Ejecutando ETL de extensión Plutarco ==="
 	@echo "Requiere: CSVs en ETL/Data/Pesos/ y shapefiles en ETL/Data/AGEBS/"
-	@echo "Conectando a DB en localhost:5433..."
+	@echo "Conectando a DB en 127.0.0.1:5433..."
 	@echo ""
-	cd ETL && DB_HOST=localhost DB_PORT=5433 DB_USER=prueba DB_PASSWORD=postgres DB_NAME=db_apimetro \
+	cd ETL && DB_HOST=127.0.0.1 DB_PORT=5433 \
+		DB_USER=$$(grep ^POSTGRES_USER $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		DB_PASSWORD=$$(grep ^POSTGRES_PASSWORD $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		DB_NAME=$$(grep ^DB_NAME $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
 		python3 -c "from DataCharge import LoadAfluencia; LoadAfluencia.run()"
 	@echo ""
-	cd ETL && DB_HOST=localhost DB_PORT=5433 DB_USER=prueba DB_PASSWORD=postgres DB_NAME=db_apimetro \
+	cd ETL && DB_HOST=127.0.0.1 DB_PORT=5433 \
+		DB_USER=$$(grep ^POSTGRES_USER $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		DB_PASSWORD=$$(grep ^POSTGRES_PASSWORD $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		DB_NAME=$$(grep ^DB_NAME $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
 		python3 -c "from DataCharge import LoadAfluenciaEstacion; LoadAfluenciaEstacion.run()"
 	@echo ""
 	@echo "ETL completado. Verifica con: make plutarco-status"

@@ -203,6 +203,7 @@ tmp/
 bin/apimetro
 tmp/main
 db/init/04_seed.sql
+db/init/seed.sql
 
 # Binarios compilados en raíz (Go build output)
 /main
@@ -219,3 +220,7 @@ db/init/04_seed.sql
 ETL/Data/AGEBS/*
 ETL/Data/Pesos/*
 db/init/05_seed_plutarco.sql
+db/init/seed_plutarco.sql
+
+## Python version file (local, no commit)
+.python-version

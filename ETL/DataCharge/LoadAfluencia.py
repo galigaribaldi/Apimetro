@@ -422,3 +422,7 @@ class AfluenciaETL:
 
         finally:
             self.conn.close()
+
+
+def run():
+    AfluenciaETL().run()
