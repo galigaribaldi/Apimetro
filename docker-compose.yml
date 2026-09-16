@@ -111,6 +111,104 @@ services:
       - apimetro_net_qa
 
   # ==========================================
+  # SCENARIO-MB — Anillo Periférico Interior como BRT (Metrobús)
+  # Red actual + propuesta. Aislado para análisis VFTModel.
+  # ==========================================
+  db_scenario_mb:
+    profiles: [ "scenario-mb" ]
+    image: postgis/postgis:15-3.4
+    container_name: apimetro_db_scenario_mb
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      API_DB_PASSWORD: ${API_DB_PASSWORD}
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata_scenario_mb:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - apimetro_net_scenario_mb
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api_scenario_mb:
+    profiles: [ "scenario-mb" ]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apimetro_api_scenario_mb
+    restart: unless-stopped
+    environment:
+      DB_HOST: db_scenario_mb
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${API_DB_USER}
+      DB_PASSWORD: ${API_DB_PASSWORD}
+      GIN_MODE: ${GIN_MODE}
+    ports:
+      - "8083:8080"
+    depends_on:
+      db_scenario_mb:
+        condition: service_healthy
+    networks:
+      - apimetro_net_scenario_mb
+
+  # ==========================================
+  # SCENARIO-METRO — Anillo Periférico Interior como Metro
+  # Red actual + propuesta. Aislado para análisis VFTModel.
+  # ==========================================
+  db_scenario_metro:
+    profiles: [ "scenario-metro" ]
+    image: postgis/postgis:15-3.4
+    container_name: apimetro_db_scenario_metro
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      API_DB_PASSWORD: ${API_DB_PASSWORD}
+    ports:
+      - "5437:5432"
+    volumes:
+      - pgdata_scenario_metro:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - apimetro_net_scenario_metro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api_scenario_metro:
+    profiles: [ "scenario-metro" ]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apimetro_api_scenario_metro
+    restart: unless-stopped
+    environment:
+      DB_HOST: db_scenario_metro
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${API_DB_USER}
+      DB_PASSWORD: ${API_DB_PASSWORD}
+      GIN_MODE: ${GIN_MODE}
+    ports:
+      - "8084:8080"
+    depends_on:
+      db_scenario_metro:
+        condition: service_healthy
+    networks:
+      - apimetro_net_scenario_metro
+
+  # ==========================================
   # MAIN — producción
   # ==========================================
   db_main:
@@ -165,6 +263,8 @@ volumes:
   pgdata_dev:
   pgdata_qa:
   pgdata_main:
+  pgdata_scenario_mb:
+  pgdata_scenario_metro:
 
     # =====================================================
     # REDES — una por entorno para aislamiento total
@@ -175,4 +275,8 @@ networks:
   apimetro_net_qa:
     driver: bridge
   apimetro_net_main:
+    driver: bridge
+  apimetro_net_scenario_mb:
+    driver: bridge
+  apimetro_net_scenario_metro:
     driver: bridge

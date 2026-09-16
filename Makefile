@@ -9,7 +9,10 @@ GOBIN=$(HOME)/go/bin
 SECRETS_DIR ?= $(HOME)/.SecretsFiles
 
 .PHONY: all build dev docs clean docker-dev docker-qa docker-main db-sync \
-       plutarco-setup plutarco-status plutarco-etl
+       plutarco-setup plutarco-status plutarco-etl \
+       docker-scenario-mb docker-scenario-metro \
+       docker-down-scenario-mb docker-down-scenario-metro \
+       anillar-mb-setup anillar-metro-setup anillar-status anillar-cleanup
 
 all: dev
 
@@ -64,6 +67,67 @@ docker-down-qa:
 
 docker-down-main:
 	docker compose --profile main --env-file $(SECRETS_DIR)/.env.main down
+
+# ==========================================
+# Escenarios Anillo Periférico — Entornos aislados para VFTModel
+# ==========================================
+
+docker-scenario-mb: docs
+	@echo "Levantando escenario MB — Anillo Periférico como BRT (API :8083 | DB :5436)..."
+	chmod +x db/init/03_roles.sh
+	docker compose --profile scenario-mb --env-file $(SECRETS_DIR)/.env.dev up --build -d
+
+docker-scenario-metro: docs
+	@echo "Levantando escenario METRO — Anillo Periférico como Metro (API :8084 | DB :5437)..."
+	chmod +x db/init/03_roles.sh
+	docker compose --profile scenario-metro --env-file $(SECRETS_DIR)/.env.dev up --build -d
+
+docker-down-scenario-mb:
+	docker compose --profile scenario-mb --env-file $(SECRETS_DIR)/.env.dev down
+
+docker-down-scenario-metro:
+	docker compose --profile scenario-metro --env-file $(SECRETS_DIR)/.env.dev down
+
+# Cargar datos del Anillo Periférico en el escenario MB
+anillar-mb-setup:
+	@echo "=== Cargando Anillo Periférico Interior (escenario MB) ==="
+	docker cp db/migrations/v4.0_anillar_mb.sql apimetro_db_scenario_mb:/tmp/anillar_mb.sql
+	docker exec apimetro_db_scenario_mb psql -U $$(grep POSTGRES_USER $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		-d $$(grep DB_NAME $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		-f /tmp/anillar_mb.sql
+	@echo ""
+	@echo "Verificando carga..."
+	@$(MAKE) anillar-status CONTAINER=apimetro_db_scenario_mb
+
+# Cargar datos del Anillo Periférico en el escenario METRO
+anillar-metro-setup:
+	@echo "=== Cargando Anillo Periférico Interior (escenario METRO) ==="
+	docker cp db/migrations/v4.0_anillar_metro.sql apimetro_db_scenario_metro:/tmp/anillar_metro.sql
+	docker exec apimetro_db_scenario_metro psql -U $$(grep POSTGRES_USER $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		-d $$(grep DB_NAME $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		-f /tmp/anillar_metro.sql
+	@echo ""
+	@echo "Verificando carga..."
+	@$(MAKE) anillar-status CONTAINER=apimetro_db_scenario_metro
+
+# Verificar estado de datos del anillo en un contenedor
+CONTAINER ?= apimetro_db_scenario_mb
+anillar-status:
+	@echo "=== Estado del Anillo Periférico Interior ==="
+	@docker exec $(CONTAINER) psql -U $$(grep POSTGRES_USER $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		-d $$(grep DB_NAME $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		-c "SELECT 'lineas' AS tabla, count(*) FROM lineas WHERE clasificacion = 'propuesta_periferico' \
+		    UNION ALL SELECT 'estacions', count(*) FROM estacions WHERE id BETWEEN 20001 AND 30200 \
+		    UNION ALL SELECT 'ramals', count(*) FROM ramals WHERE linea_id BETWEEN 2071 AND 3074 \
+		    UNION ALL SELECT 'historico_op', count(*) FROM historico_operacion WHERE linea_id BETWEEN 2071 AND 3074;"
+
+# Limpiar datos del anillo de un contenedor
+anillar-cleanup:
+	@echo "=== Limpiando datos del Anillo Periférico Interior ==="
+	docker cp scripts/anillar_cleanup.sql $(CONTAINER):/tmp/anillar_cleanup.sql
+	docker exec $(CONTAINER) psql -U $$(grep POSTGRES_USER $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		-d $$(grep DB_NAME $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
+		-f /tmp/anillar_cleanup.sql
 
 # ==========================================
 # db-sync — Exportar esquema de la DB local a init.sql

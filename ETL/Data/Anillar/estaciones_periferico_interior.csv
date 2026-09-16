@@ -1,0 +1,99 @@
+num_estacion,nombre,tipo,alcaldia_municipio,estado_ciudad,longitud,latitud,linea_id,linea_nombre
+1,Periférico Oriente/Tláhuac,Terminal / Transbordo,Iztapalapa,CDMX,-99.0745175260824,19.3176186017939,71,Periférico Interior Sur
+2,Estrella del Sur,Intermedia,Iztapalapa,CDMX,-99.08,19.31,71,Periférico Interior Sur
+3,Culhuacán,Intermedia,Iztapalapa,CDMX,-99.0845,19.304,71,Periférico Interior Sur
+4,Atlalilco/Periférico,Transbordo,Iztapalapa,CDMX,-99.087,19.301,71,Periférico Interior Sur
+5,Canal de Chalco/Periférico,Intermedia,Tláhuac,CDMX,-99.09,19.2995,71,Periférico Interior Sur
+6,Cuemanco,Intermedia,Xochimilco,CDMX,-99.0942407817674,19.2984866689764,71,Periférico Interior Sur
+7,Canal Nacional,Intermedia,Xochimilco,CDMX,-99.1022150696128,19.2951373900851,71,Periférico Interior Sur
+8,Muyuguarda/Cafetales,Transbordo,Xochimilco,CDMX,-99.1151871930735,19.2896182983505,71,Periférico Interior Sur
+9,Vaqueritos,Transbordo,Xochimilco,CDMX,-99.1263201882756,19.2848434038385,71,Periférico Interior Sur
+10,Coapa,Intermedia,Tlalpan,CDMX,-99.1315359290786,19.2837426599594,71,Periférico Interior Sur
+11,Tepepan,Intermedia,Tlalpan,CDMX,-99.1413095240045,19.2826902381638,71,Periférico Interior Sur
+12,ESCA,Intermedia,Tlalpan,CDMX,-99.1471534331923,19.2855171865218,71,Periférico Interior Sur
+13,Zona de Hospitales,Intermedia,Tlalpan,CDMX,-99.1520826881746,19.2904007344833,71,Periférico Interior Sur
+14,Huipulco,Intermedia,Tlalpan,CDMX,-99.154638074917,19.2947326036117,71,Periférico Interior Sur
+15,Imán/Circuito Azteca,Intermedia,Tlalpan,CDMX,-99.1605958187857,19.3010375800792,71,Periférico Interior Sur
+16,Gran Sur,Intermedia,Tlalpan,CDMX,-99.165564430135,19.3021048026286,71,Periférico Interior Sur
+17,Santa Ursula,Intermedia,Coyoacán,CDMX,-99.1728062297974,19.3030265199362,71,Periférico Interior Sur
+18,Cuicuilco,Intermedia,Tlalpan,CDMX,-99.1814065330579,19.3031746140771,71,Periférico Interior Sur
+19,Periférico Sur,Transbordo,Coyoacán,CDMX,-99.1858597527883,19.3031599255714,71,Periférico Interior Sur
+20,Jardines del Pedregal,Intermedia,Coyoacán,CDMX,-99.1997557764832,19.304247670836,71,Periférico Interior Sur
+21,Ajusco,Transbordo,Coyoacán,CDMX,-99.204757323956,19.3058181987807,71,Periférico Interior Sur
+22,Santa Teresa,Intermedia,Álvaro Obregón,CDMX,-99.2158309051932,19.3075696512559,71,Periférico Interior Sur
+23,Ángeles,Intermedia,La Magdalena Contreras,CDMX,-99.2199193504131,19.3129905724798,71,Periférico Interior Sur
+24,Suiza,Intermedia,La Magdalena Contreras,CDMX,-99.2216738353594,19.3186553545115,71,Periférico Interior Sur
+25,Luis Cabrera,Terminal / Transbordo,La Magdalena Contreras,CDMX,-99.220328643837,19.320925949733,71,Periférico Interior Sur
+1,Luis Cabrera,Terminal / Transbordo,La Magdalena Contreras,CDMX,-99.220328643837,19.320925949733,72,Periférico Interior Poniente
+2,San Antonio Elevado,Intermedia,La Magdalena Contreras,CDMX,-99.2156603800189,19.324062314384,72,Periférico Interior Poniente
+3,Tarasquillo,Intermedia,Álvaro Obregón,CDMX,-99.2120483506634,19.3286106861771,72,Periférico Interior Poniente
+4,Glorieta Monumental,Intermedia,Álvaro Obregón,CDMX,-99.2109659153388,19.3306707865798,72,Periférico Interior Poniente
+5,Parque el Batán,Intermedia,Álvaro Obregón,CDMX,-99.2089943081942,19.3342970580488,72,Periférico Interior Poniente
+6,Toluca,Transbordo,Álvaro Obregón,CDMX,-99.2032322288589,19.3408894521725,72,Periférico Interior Poniente
+7,Desierto de los Leones,Intermedia,Álvaro Obregón,CDMX,-99.2020378704102,19.3479263629079,72,Periférico Interior Poniente
+8,Rómulo O'Farril,Intermedia,Álvaro Obregón,CDMX,-99.1988823295185,19.3557316805212,72,Periférico Interior Poniente
+9,Barranca del Muerto/Periférico,Transbordo,Álvaro Obregón,CDMX,-99.1912054597844,19.3617955262867,72,Periférico Interior Poniente
+10,Prepa 8,Intermedia,Álvaro Obregón,CDMX,-99.1911488730648,19.366922941138,72,Periférico Interior Poniente
+11,Rosa Trepadora,Intermedia,Álvaro Obregón,CDMX,-99.193938817374,19.3721026926363,72,Periférico Interior Poniente
+12,Celini,Intermedia,Álvaro Obregón,CDMX,-99.1915218752405,19.3762729468749,72,Periférico Interior Poniente
+13,Distribuidor Vial San Antonio,Intermedia,Álvaro Obregón,CDMX,-99.1912526191116,19.3847724156345,72,Periférico Interior Poniente
+14,San Pedro de los Pinos/Periférico,Transbordo,Benito Juárez,CDMX,-99.188913461022,19.3909745202463,72,Periférico Interior Poniente
+15,11 de Abril,Intermedia,Benito Juárez,CDMX,-99.1887382399895,19.3955383249044,72,Periférico Interior Poniente
+16,Miguel Alemán Valdés,Intermedia,Miguel Hidalgo,CDMX,-99.1917529384344,19.4001935073707,72,Periférico Interior Poniente
+17,Parque Lira,Intermedia,Miguel Hidalgo,CDMX,-99.1918864435316,19.4064246330255,72,Periférico Interior Poniente
+18,Constituyentes/Periférico,Intermedia,Miguel Hidalgo,CDMX,-99.1941158560232,19.4112098768217,72,Periférico Interior Poniente
+19,Los Pinos,Intermedia,Miguel Hidalgo,CDMX,-99.1948212702859,19.4179379699072,72,Periférico Interior Poniente
+20,Alencastre,Intermedia,Miguel Hidalgo,CDMX,-99.1990471598163,19.4227045760294,72,Periférico Interior Poniente
+21,Paseo de la Reforma,Intermedia,Miguel Hidalgo,CDMX,-99.2033829224792,19.427271778236,72,Periférico Interior Poniente
+22,Presidente Masaryk,Intermedia,Miguel Hidalgo,CDMX,-99.2080967842068,19.4320351650801,72,Periférico Interior Poniente
+23,Homero,Intermedia,Miguel Hidalgo,CDMX,-99.2129461326464,19.4367463974964,72,Periférico Interior Poniente
+24,Ejército Nacional,Intermedia,Miguel Hidalgo,CDMX,-99.214626690685,19.4392638928012,72,Periférico Interior Poniente
+25,Hipódromo las Américas,Intermedia,Miguel Hidalgo,CDMX,-99.216389674011,19.4423772420843,72,Periférico Interior Poniente
+26,Cuatro Caminos/Periférico,Transbordo,Naucalpan de Juárez,EDOMEX,-99.2205876390333,19.4587801108788,72,Periférico Interior Poniente
+27,Las Torres,Intermedia,Naucalpan de Juárez,EDOMEX,-99.2245013622917,19.4660189895512,72,Periférico Interior Poniente
+28,Naucalpan,Intermedia,Naucalpan de Juárez,EDOMEX,-99.2285223588608,19.47375676818,72,Periférico Interior Poniente
+29,Gustavo Baz Prada,Intermedia,Naucalpan de Juárez,EDOMEX,-99.2319348869996,19.4790829347871,72,Periférico Interior Poniente
+30,Lomas Verdes,Intermedia,Naucalpan de Juárez,EDOMEX,-99.2350808843679,19.4861748591816,72,Periférico Interior Poniente
+31,Parque Naucalli,Terminal / Transbordo,Naucalpan de Juárez,EDOMEX,-99.2372188516262,19.4942303629856,72,Periférico Interior Poniente
+1,Parque Naucalli,Terminal / Transbordo,Naucalpan de Juárez,EDOMEX,-99.2372188516262,19.4942303629856,73,Periférico Interior Norte
+2,Torres de Satélite,Intermedia,Naucalpan de Juárez,EDOMEX,-99.237,19.502,73,Periférico Interior Norte
+3,Ciudad Satélite,Intermedia,Naucalpan de Juárez,EDOMEX,-99.2368132396803,19.5092138203163,73,Periférico Interior Norte
+4,Circunvalación,Intermedia,Naucalpan de Juárez,EDOMEX,-99.2306362052263,19.5193013624258,73,Periférico Interior Norte
+5,Viveros de Atizapán,Intermedia,Tlalnepantla de Baz,EDOMEX,-99.2185048168838,19.5185963862678,73,Periférico Interior Norte
+6,Presidente Juárez,Intermedia,Tlalnepantla de Baz,EDOMEX,-99.2117073099832,19.5168414273159,73,Periférico Interior Norte
+7,Tlalnepantla,Intermedia,Tlalnepantla de Baz,EDOMEX,-99.1964973796254,19.5170094114134,73,Periférico Interior Norte
+8,Av de las Granjas,Intermedia,Tlalnepantla de Baz,EDOMEX,-99.1793753322663,19.5116041682883,73,Periférico Interior Norte
+9,El Heraldo,Intermedia,Tlalnepantla de Baz,EDOMEX,-99.1729985503897,19.5145114374118,73,Periférico Interior Norte
+10,Vaso Regulador de Carretas,Intermedia,Tlalnepantla de Baz,EDOMEX,-99.1655936278391,19.5124915987051,73,Periférico Interior Norte
+11,Progreso Nacional,Intermedia,Tlalnepantla de Baz,EDOMEX,-99.1603951642349,19.512747482633,73,Periférico Interior Norte
+12,Fábricas/Periférico,Intermedia,Tlalnepantla de Baz,EDOMEX,-99.154068179484,19.5146094622948,73,Periférico Interior Norte
+13,Río San Joaquín,Intermedia,Azcapotzalco,CDMX,-99.1430542558633,19.5180624295389,73,Periférico Interior Norte
+14,Acueducto,Intermedia,Gustavo A. Madero,CDMX,-99.1345326557674,19.5179557253226,73,Periférico Interior Norte
+15,La Presa,Intermedia,Gustavo A. Madero,CDMX,-99.1242526088899,19.5191546977744,73,Periférico Interior Norte
+16,Hermilo Mena,Transbordo,Gustavo A. Madero,CDMX,-99.114145246139,19.5214580487031,73,Periférico Interior Norte
+17,Constituyentes de 1857,Intermedia,Gustavo A. Madero,CDMX,-99.1012458364103,19.5147915769313,73,Periférico Interior Norte
+18,Río de los Remedios MB/Periférico,Transbordo,Ecatepec de Morelos,EDOMEX,-99.0859313881947,19.5071286247817,73,Periférico Interior Norte
+19,Gran Canal de Desagüe,Intermedia,Ecatepec de Morelos,EDOMEX,-99.0779649889604,19.5038193655209,73,Periférico Interior Norte
+20,Parque Orizaba,Intermedia,Ecatepec de Morelos,EDOMEX,-99.0642759104053,19.4982680721875,73,Periférico Interior Norte
+21,Valle de Santiago,Intermedia,Ecatepec de Morelos,EDOMEX,-99.053966727543,19.4938637992146,73,Periférico Interior Norte
+22,Río de los Remedios Metro/Periférico,Transbordo,Ecatepec de Morelos,EDOMEX,-99.0466020294544,19.4911807713892,73,Periférico Interior Norte
+23,Valle de San Lorenzo,Intermedia,Nezahualcóyotl,EDOMEX,-99.0388115288086,19.4873294113852,73,Periférico Interior Norte
+24,Colonias de Aragón,Terminal / Transbordo,Nezahualcóyotl,EDOMEX,-99.0316621504572,19.4793309527282,73,Periférico Interior Norte
+1,Colonias de Aragón,Terminal / Transbordo,Nezahualcóyotl,EDOMEX,-99.0316621504572,19.4793309527282,74,Periférico Interior Oriente
+2,FES Aragón,Transbordo,Nezahualcóyotl,EDOMEX,-99.0356457017992,19.4730405471889,74,Periférico Interior Oriente
+3,Pirules,Intermedia,Nezahualcóyotl,EDOMEX,-99.0373166530742,19.4666123777387,74,Periférico Interior Oriente
+4,Peñón Texcoco/Periférico,Intermedia,Nezahualcóyotl,EDOMEX,-99.0383847433583,19.4571699263318,74,Periférico Interior Oriente
+5,Alameda Oriente,Intermedia,Venustiano Carranza,CDMX,-99.0522269700144,19.4297107907808,74,Periférico Interior Oriente
+6,Ciudad Nezahualcóyotl,Intermedia,Nezahualcóyotl,EDOMEX,-99.0554993142479,19.4223645933323,74,Periférico Interior Oriente
+7,Av Pantitlán,Intermedia,Iztacalco,CDMX,-99.0567857536576,19.4119961559513,74,Periférico Interior Oriente
+8,Valesquillo,Intermedia,Iztapalapa,CDMX,-99.0575875865377,19.4046000958895,74,Periférico Interior Oriente
+9,Canal de San Juan/Periférico,Transbordo,Iztapalapa,CDMX,-99.0579318907728,19.3983599751904,74,Periférico Interior Oriente
+10,Constitución de Apatzingán,Intermedia,Iztapalapa,CDMX,-99.0599752608567,19.3896460289669,74,Periférico Interior Oriente
+11,Canal de Tezontle,Intermedia,Iztapalapa,CDMX,-99.0606372559403,19.3820692425108,74,Periférico Interior Oriente
+12,Leyes de Reforma,Intermedia,Iztapalapa,CDMX,-99.0601250788034,19.3767183843786,74,Periférico Interior Oriente
+13,Luis Méndez,Intermedia,Iztapalapa,CDMX,-99.0574385618996,19.3633810991953,74,Periférico Interior Oriente
+14,Revolución Social,Intermedia,Iztapalapa,CDMX,-99.0596560450222,19.3535104905475,74,Periférico Interior Oriente
+15,Constitución de 1917/Periférico,Transbordo,Iztapalapa,CDMX,-99.0626549863211,19.3450857602017,74,Periférico Interior Oriente
+16,5 de Mayo,Intermedia,Iztapalapa,CDMX,-99.0642540491586,19.3391428958489,74,Periférico Interior Oriente
+17,Iztapalapa,Transbordo,Iztapalapa,CDMX,-99.067599524439,19.3283774337608,74,Periférico Interior Oriente
+18,Periférico Oriente/Tláhuac,Terminal / Transbordo,Iztapalapa,CDMX,-99.0745175260824,19.3176186017939,74,Periférico Interior Oriente
