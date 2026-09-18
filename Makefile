@@ -10,9 +10,9 @@ SECRETS_DIR ?= $(HOME)/.SecretsFiles
 
 .PHONY: all build dev docs clean docker-dev docker-qa docker-main db-sync \
        plutarco-setup plutarco-status plutarco-etl \
-       docker-scenario-mb docker-scenario-metro \
+       docker-dev-scenario-mb docker-dev-scenario-metro \
        docker-down-scenario-mb docker-down-scenario-metro \
-       anillar-mb-setup anillar-metro-setup anillar-status anillar-cleanup
+       anillar-status anillar-cleanup
 
 all: dev
 
@@ -72,43 +72,23 @@ docker-down-main:
 # Escenarios Anillo Periférico — Entornos aislados para VFTModel
 # ==========================================
 
-docker-scenario-mb: docs
-	@echo "Levantando escenario MB — Anillo Periférico como BRT (API :8083 | DB :5436)..."
+docker-dev-scenario-mb: docs
+	@echo "Levantando escenario MB — Red real + Anillo Periférico como BRT (API :8083 | DB :5436)..."
+	@echo "La migración del anillo se carga automáticamente al inicializar la DB."
 	chmod +x db/init/03_roles.sh
-	docker compose --profile scenario-mb --env-file $(SECRETS_DIR)/.env.dev up --build -d
+	docker compose --profile scenario-mb --env-file $(SECRETS_DIR)/.env.dev up --build
 
-docker-scenario-metro: docs
-	@echo "Levantando escenario METRO — Anillo Periférico como Metro (API :8084 | DB :5437)..."
+docker-dev-scenario-metro: docs
+	@echo "Levantando escenario METRO — Red real + Anillo Periférico como Metro (API :8084 | DB :5437)..."
+	@echo "La migración del anillo se carga automáticamente al inicializar la DB."
 	chmod +x db/init/03_roles.sh
-	docker compose --profile scenario-metro --env-file $(SECRETS_DIR)/.env.dev up --build -d
+	docker compose --profile scenario-metro --env-file $(SECRETS_DIR)/.env.dev up --build
 
 docker-down-scenario-mb:
-	docker compose --profile scenario-mb --env-file $(SECRETS_DIR)/.env.dev down
+	docker compose --profile scenario-mb --env-file $(SECRETS_DIR)/.env.dev down -v
 
 docker-down-scenario-metro:
-	docker compose --profile scenario-metro --env-file $(SECRETS_DIR)/.env.dev down
-
-# Cargar datos del Anillo Periférico en el escenario MB
-anillar-mb-setup:
-	@echo "=== Cargando Anillo Periférico Interior (escenario MB) ==="
-	docker cp db/migrations/v4.0_anillar_mb.sql apimetro_db_scenario_mb:/tmp/anillar_mb.sql
-	docker exec apimetro_db_scenario_mb psql -U $$(grep POSTGRES_USER $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
-		-d $$(grep DB_NAME $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
-		-f /tmp/anillar_mb.sql
-	@echo ""
-	@echo "Verificando carga..."
-	@$(MAKE) anillar-status CONTAINER=apimetro_db_scenario_mb
-
-# Cargar datos del Anillo Periférico en el escenario METRO
-anillar-metro-setup:
-	@echo "=== Cargando Anillo Periférico Interior (escenario METRO) ==="
-	docker cp db/migrations/v4.0_anillar_metro.sql apimetro_db_scenario_metro:/tmp/anillar_metro.sql
-	docker exec apimetro_db_scenario_metro psql -U $$(grep POSTGRES_USER $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
-		-d $$(grep DB_NAME $(SECRETS_DIR)/.env.dev | cut -d= -f2) \
-		-f /tmp/anillar_metro.sql
-	@echo ""
-	@echo "Verificando carga..."
-	@$(MAKE) anillar-status CONTAINER=apimetro_db_scenario_metro
+	docker compose --profile scenario-metro --env-file $(SECRETS_DIR)/.env.dev down -v
 
 # Verificar estado de datos del anillo en un contenedor
 CONTAINER ?= apimetro_db_scenario_mb

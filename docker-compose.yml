@@ -129,6 +129,7 @@ services:
     volumes:
       - pgdata_scenario_mb:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d
+      - ./db/migrations/v4.0_anillar_mb.sql:/docker-entrypoint-initdb.d/05_anillar.sql:ro
     networks:
       - apimetro_net_scenario_mb
     healthcheck:
@@ -178,6 +179,7 @@ services:
     volumes:
       - pgdata_scenario_metro:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d
+      - ./db/migrations/v4.0_anillar_metro.sql:/docker-entrypoint-initdb.d/05_anillar.sql:ro
     networks:
       - apimetro_net_scenario_metro
     healthcheck:

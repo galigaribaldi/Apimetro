@@ -68,30 +68,32 @@ Entregar 2 entornos Docker aislados con la red actual de transporte + 4 líneas 
 
 | Paso | Estado | Descripción |
 |------|--------|-------------|
-| 4.1 Commit inicial | PENDIENTE | Todos los archivos generados en Fases 0-3 |
-| 4.2 Push a origin | PENDIENTE | `feat/propuesta-anillar` |
+| 4.1 Commit inicial | COMPLETADO | `97239ae` — Todos los archivos generados en Fases 0-3 |
+| 4.2 Commit tracking | COMPLETADO | Tracking file commiteado y pusheado |
+| 4.3 Push a origin | COMPLETADO | `feat/propuesta-anillar` |
 
 ### Fase 5 — Testing Docker
 
 | Paso | Estado | Descripción |
 |------|--------|-------------|
-| 5.1 Levantar scenario-mb | PENDIENTE | `make docker-scenario-mb` |
-| 5.2 Cargar datos MB | PENDIENTE | `make anillar-mb-setup` |
-| 5.3 Verificar endpoint estaciones MB | PENDIENTE | `curl localhost:8083/movilidad/mapas/geojsonEstacion?sistema=MB&existe=false` |
-| 5.4 Verificar endpoint líneas MB | PENDIENTE | `curl localhost:8083/movilidad/mapas/geojsonLinea?sistema=MB&existe=false` |
-| 5.5 Validar formato GeoJSON vs requisitos VFTModel | PENDIENTE | Campos: sistema, tipo_entidad, jerarquia_transporte, derecho_de_via, sentido, velocidad, frecuencia |
-| 5.6 Levantar scenario-metro | PENDIENTE | `make docker-scenario-metro` |
-| 5.7 Cargar datos METRO | PENDIENTE | `make anillar-metro-setup` |
-| 5.8 Verificar endpoints METRO | PENDIENTE | Mismas validaciones que MB |
-| 5.9 Verificar aislamiento | PENDIENTE | Confirmar que los datos de un escenario no aparecen en el otro |
+| 5.1 Levantar scenario-mb | COMPLETADO | `make docker-dev-scenario-mb` (primer plano, carga automática) |
+| 5.2 Verificar endpoint estaciones MB | COMPLETADO | 98 estaciones, campos VFTModel presentes |
+| 5.3 Verificar endpoint líneas MB | COMPLETADO | 8 ramales, velocidad=16.3, frecuencia=5, capacidad=160 |
+| 5.4 Levantar scenario-metro | COMPLETADO | `make docker-dev-scenario-metro` (primer plano, carga automática) |
+| 5.5 Verificar endpoint estaciones METRO | COMPLETADO | 98 estaciones, jerarquia=masivo_pesado |
+| 5.6 Verificar endpoint líneas METRO | COMPLETADO | 8 ramales, velocidad=36.0, frecuencia=3, capacidad=1000 |
+| 5.7 Verificar aislamiento | COMPLETADO | MB(:8083)→METRO=0, METRO(:8084)→MB=0 |
+| 5.8 Refactor comandos Makefile | COMPLETADO | Renombrado a `docker-dev-scenario-*`, carga automática via volumen Docker |
 
 ### Fase 6 — Entrega
 
 | Paso | Estado | Descripción |
 |------|--------|-------------|
-| 6.1 Handoff en issue GitHub | PENDIENTE | Documentar estado, comandos, decisiones |
-| 6.2 PR hacia DEV | PENDIENTE | `feat/propuesta-anillar` → `DEV` |
+| 6.1 Documentación actualizada | COMPLETADO | `ANILLAR_EXTENSION.md` reescrito con procedimientos, validación y arquitectura |
+| 6.2 Handoff en issue GitHub | PENDIENTE | Documentar estado, comandos, decisiones |
 | 6.3 Notificar equipo VFTModel | PENDIENTE | URLs, puertos, comandos de setup |
+
+> **Nota:** Esta rama NO se mergea a DEV ni a main. Los datos hipotéticos contaminarían la red real. La rama se mantiene aislada para uso exclusivo de VFTModel.
 
 ---
 
