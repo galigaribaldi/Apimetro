@@ -87,8 +87,39 @@ GET /movilidad/mapas/geojsonLinea?sistema=METRO
 
 - Docker y docker-compose instalados
 - Archivos `.env.dev` en `~/.SecretsFiles/` (mismos que el entorno DEV)
-- Seed de datos (`04_seed.sql`) en `db/init/`
 - Estar en la rama `feat/propuesta-anillar`
+- **Seed de datos (`04_seed.sql`) en `db/init/`** — ver sección siguiente
+
+### Obtener el seed de la red real
+
+El archivo `db/init/04_seed.sql` contiene el dump de la red de transporte real (~37 MB: estaciones, líneas, ramales, históricos). **No está en el repositorio** (gitignoreado por peso).
+
+Sin este archivo, los escenarios levantan con tablas vacías y el anillo se inserta sin red real de fondo — lo cual invalida el análisis comparativo con VFTModel.
+
+**Opciones para obtenerlo:**
+
+1. **Solicitar al equipo Apimetro** — Pedir el archivo directamente (medio privado: Drive, SCP, etc.)
+2. **Generarlo desde una instancia local** — Si ya tienes una DB Apimetro con datos:
+   ```bash
+   # Genera el dump y lo deja en db/init/04_seed.sql
+   PGPASSWORD=postgres pg_dump \
+     --data-only --inserts --disable-triggers \
+     -t lineas -t ramals -t estacions \
+     -t descripcion_lineas -t descripcion_estacions \
+     -t historico_operacion -t limites_territoriales \
+     -h localhost -p 5432 -U prueba db_apimetro \
+     > db/init/04_seed.sql
+   ```
+
+**Conteos esperados en el seed:**
+
+| Tabla | Registros |
+|-------|-----------|
+| estacions | 22,878 |
+| ramals | 693 |
+| historico_operacion | 690 |
+| limites_territoriales | 553 |
+| lineas | 317 |
 
 ### Levantar un escenario
 
