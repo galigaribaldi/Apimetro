@@ -124,12 +124,13 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
       API_DB_PASSWORD: ${API_DB_PASSWORD}
+      ANILLAR_MIGRATION: /migrations/v4.0_anillar_mb.sql
     ports:
       - "5436:5432"
     volumes:
       - pgdata_scenario_mb:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d
-      - ./db/migrations/v4.0_anillar_mb.sql:/docker-entrypoint-initdb.d/05_anillar.sql:ro
+      - ./db/migrations:/migrations:ro
     networks:
       - apimetro_net_scenario_mb
     healthcheck:
@@ -174,12 +175,13 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
       API_DB_PASSWORD: ${API_DB_PASSWORD}
+      ANILLAR_MIGRATION: /migrations/v4.0_anillar_metro.sql
     ports:
       - "5437:5432"
     volumes:
       - pgdata_scenario_metro:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d
-      - ./db/migrations/v4.0_anillar_metro.sql:/docker-entrypoint-initdb.d/05_anillar.sql:ro
+      - ./db/migrations:/migrations:ro
     networks:
       - apimetro_net_scenario_metro
     healthcheck:

@@ -57,6 +57,14 @@ PGPASSWORD="$DB_LOCAL_PASS" pg_dump \
 SEED_SIZE=$(du -sh "$SEED_FILE" | cut -f1)
 echo "    seed.sql generado: $SEED_SIZE"
 
+# pg_dump agrega marcas de agua \restrict y \unrestrict que psql no reconoce
+# como comandos válidos. El Docker entrypoint usa set -e, así que cualquier
+# error de psql detiene toda la inicialización — los scripts posteriores
+# (05_anillar.sql, 05_apply_anillar.sh, seed_plutarco.sql) nunca corren.
+echo "    Removiendo marcas de agua del dump..."
+sed -i '' '/^\\restrict /d; /^\\unrestrict /d' "$SEED_FILE"
+echo "    Marcas de agua removidas."
+
 # Paso 2: Subir al servidor
 echo ""
 echo "[2/3] Subiendo $SEED_FILE al servidor ($SERVER_IP)..."

@@ -107,8 +107,8 @@ CREATE TABLE IF NOT EXISTS estacions (
     nombre_cetram TEXT,
     CONSTRAINT fk_estacions_linea FOREIGN KEY (linea_id) REFERENCES lineas (id),
     CONSTRAINT chk_coords_consistency CHECK (
-        (longitud IS NULL AND latitud IS NULL AND geom IS NULL) OR
-        (longitud IS NOT NULL AND latitud IS NOT NULL AND geom IS NOT NULL)
+        (longitud IS NULL AND latitud IS NULL) OR
+        (longitud IS NOT NULL AND latitud IS NOT NULL)
     )
 );
 
