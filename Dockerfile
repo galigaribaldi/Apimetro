@@ -1,5 +1,5 @@
 # ---- Etapa 1: Constructor (Builder) ----
-FROM golang:1.25-alpine AS builder
+FROM golang:1.27-alpine AS builder
 
 # Establecemos el directorio de trabajo dentro del contenedor
 WORKDIR /app
