@@ -39,6 +39,11 @@ SET
 WHERE
     sistema = 'TROLE';
 
+-- 4a. Trolebús Línea 10 (elevado oriente → Chalco): infraestructura aérea segregada
+UPDATE lineas
+SET derecho_de_via = 'confinado'
+WHERE id = 63;
+
 -- 5. Cablebús (Cabinas aéreas)
 UPDATE lineas
 SET
@@ -104,7 +109,7 @@ SET
         WHEN l.sistema = 'MB' THEN 16.3
         WHEN l.sistema = 'MEXIBÚS' THEN 16.3
         WHEN l.sistema = 'SUB' THEN 65.0
-        WHEN l.sistema = 'INTERURBANO' THEN 160.0
+        WHEN l.sistema = 'INTERURBANO' THEN 70.0
         WHEN l.sistema = 'TL' THEN 22.0
         WHEN l.sistema = 'CBB' THEN 20.0
         WHEN l.sistema = 'MEXICABLE' THEN 20.0
@@ -113,7 +118,7 @@ SET
         WHEN l.sistema = 'PUMABUS' THEN 14.0
         WHEN l.sistema = 'TROLE' THEN (
             CASE
-                WHEN l.nombre ILIKE '%Elevado%' THEN 25.0
+                WHEN l.id = 63 THEN 25.0  -- Trolebús Línea 10 (elevado oriente → Chalco)
                 ELSE 18.0
             END
         )
